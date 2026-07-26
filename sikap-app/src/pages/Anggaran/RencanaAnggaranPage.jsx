@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { anggaranService } from '../../services/anggaran.service'
 import { pengaturanService } from '../../services/firebase.service'
 import { formatRupiah } from '../../utils/formatRupiah'
+import referensiAnggaran from '../../data/referensiAnggaran.json'
 import Modal from '../../components/ui/Modal'
 import EmptyState from '../../components/ui/EmptyState'
 
@@ -64,6 +65,24 @@ export default function RencanaAnggaranPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const activeReferensi = referensiAnggaran.anggaran.filter(item => 
+    kategori === 'pendapatan' ? item.kode.startsWith('04') : item.kode.startsWith('05')
+  )
+
+  const handleKodeChange = (e) => {
+    const val = e.target.value
+    let newForm = { ...formData, kode: val }
+    
+    const ref = activeReferensi.find(item => item.kode === val)
+    if (ref) {
+      if (ref.uraian) newForm.uraian = ref.uraian
+      if (ref.pelaksana) newForm.pelaksana = ref.pelaksana
+      if (ref.satuan) newForm.satuan = ref.satuan
+      if (ref.waktu_pelaksanaan) newForm.waktu_pelaksanaan = ref.waktu_pelaksanaan
+    }
+    setFormData(newForm)
   }
 
   const openAdd = () => {
@@ -233,20 +252,20 @@ export default function RencanaAnggaranPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="label">Kode Anggaran</label>
-            <input type="text" className="input" required value={formData.kode} onChange={e => setFormData({...formData, kode: e.target.value})} placeholder="Misal: 04.01" />
+            <input type="text" className="input" required value={formData.kode} onChange={handleKodeChange} placeholder="Misal: 04.01" list="kode-list" />
           </div>
           <div>
             <label className="label">Uraian / Nama Kegiatan</label>
-            <input type="text" className="input" required value={formData.uraian} onChange={e => setFormData({...formData, uraian: e.target.value})} placeholder="Misal: SPP Murid" />
+            <input type="text" className="input" required value={formData.uraian} onChange={e => setFormData({...formData, uraian: e.target.value})} placeholder="Misal: SPP Murid" list="uraian-list" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="label">Waktu Pelaksanaan</label>
-              <input type="text" className="input" value={formData.waktu_pelaksanaan} onChange={e => setFormData({...formData, waktu_pelaksanaan: e.target.value})} placeholder="Misal: Saniyah/Tahunan" />
+              <input type="text" className="input" value={formData.waktu_pelaksanaan} onChange={e => setFormData({...formData, waktu_pelaksanaan: e.target.value})} placeholder="Misal: Saniyah/Tahunan" list="waktu-list" />
             </div>
             <div>
               <label className="label">Pelaksana</label>
-              <input type="text" className="input" value={formData.pelaksana} onChange={e => setFormData({...formData, pelaksana: e.target.value})} placeholder="Misal: Bendahara" />
+              <input type="text" className="input" value={formData.pelaksana} onChange={e => setFormData({...formData, pelaksana: e.target.value})} placeholder="Misal: Bendahara" list="pelaksana-list" />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4">
@@ -256,7 +275,7 @@ export default function RencanaAnggaranPage() {
             </div>
             <div>
               <label className="label">Satuan</label>
-              <input type="text" className="input" required value={formData.satuan} onChange={e => setFormData({...formData, satuan: e.target.value})} placeholder="Org / Keg" />
+              <input type="text" className="input" required value={formData.satuan} onChange={e => setFormData({...formData, satuan: e.target.value})} placeholder="Org / Keg" list="satuan-list" />
             </div>
             <div>
               <label className="label">Harga Satuan</label>
@@ -272,6 +291,23 @@ export default function RencanaAnggaranPage() {
             <button type="button" onClick={() => setIsModalOpen(false)} className="btn-secondary">Batal</button>
             <button type="submit" className="btn-primary">Simpan</button>
           </div>
+
+          {/* Datalists for Autocomplete */}
+          <datalist id="kode-list">
+            {referensiAnggaran.anggaran.map(item => <option key={item.kode} value={item.kode}>{item.uraian}</option>)}
+          </datalist>
+          <datalist id="uraian-list">
+            {referensiAnggaran.anggaran.map(item => <option key={item.kode} value={item.uraian} />)}
+          </datalist>
+          <datalist id="pelaksana-list">
+            {referensiAnggaran.pelaksanaOptions.map(opt => <option key={opt} value={opt} />)}
+          </datalist>
+          <datalist id="satuan-list">
+            {referensiAnggaran.satuanOptions.map(opt => <option key={opt} value={opt} />)}
+          </datalist>
+          <datalist id="waktu-list">
+            {referensiAnggaran.waktuPelaksanaanOptions.map(opt => <option key={opt} value={opt} />)}
+          </datalist>
         </form>
       </Modal>
 
