@@ -20,6 +20,10 @@ import HutangPiutangPage from './pages/HutangPiutang/HutangPiutangPage'
 import BukuKasHutangPiutangPage from './pages/HutangPiutang/BukuKasHutangPiutangPage'
 import LaporanHutangPiutangPage from './pages/HutangPiutang/LaporanHutangPiutangPage'
 
+import RencanaAnggaranPage from './pages/Anggaran/RencanaAnggaranPage'
+import RealisasiAnggaranPage from './pages/Anggaran/RealisasiAnggaranPage'
+import LaporanAnggaranPage from './pages/Anggaran/LaporanAnggaranPage'
+
 export default function App() {
   return (
     <AuthProvider>
@@ -46,6 +50,11 @@ export default function App() {
               <Route path="/piutang" element={<HutangPiutangPage type="piutang" />} />
               <Route path="/buku-kas-hutang" element={<BukuKasHutangPiutangPage />} />
               <Route path="/laporan-hutang" element={<LaporanHutangPiutangPage />} />
+
+              {/* Anggaran / RAPBM */}
+              <Route path="/anggaran/rencana" element={<RencanaAnggaranPage />} />
+              <Route path="/anggaran/realisasi" element={<RealisasiAnggaranPage />} />
+              <Route path="/anggaran/laporan" element={<LaporanAnggaranPage />} />
 
               <Route 
                 path="/instansi"

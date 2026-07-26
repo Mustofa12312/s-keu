@@ -20,7 +20,10 @@ import {
   ArrowDownCircleIcon,
   ArrowUpCircleIcon,
   WalletIcon,
-  ClipboardDocumentCheckIcon
+  ClipboardDocumentCheckIcon,
+  ChartPieIcon,
+  DocumentCheckIcon,
+  ChartBarSquareIcon
 } from '@heroicons/react/24/outline'
 
 const menuGroups = [
@@ -47,6 +50,15 @@ const menuGroups = [
       { to: '/piutang',          label: 'Data Piutang',      icon: ArrowUpCircleIcon },
       { to: '/buku-kas-hutang',  label: 'Buku Kas Hutang',   icon: BookOpenIcon },
       { to: '/laporan-hutang',   label: 'Laporan Hutang',    icon: ClipboardDocumentCheckIcon },
+    ]
+  },
+  {
+    label: 'RAPBM (Anggaran)',
+    icon: ChartPieIcon,
+    items: [
+      { to: '/anggaran/rencana',   label: 'Rencana Anggaran',  icon: ChartBarSquareIcon },
+      { to: '/anggaran/realisasi', label: 'Realisasi Anggaran',icon: DocumentCheckIcon },
+      { to: '/anggaran/laporan',   label: 'Laporan RAPBM',     icon: ClipboardDocumentCheckIcon },
     ]
   }
 ]
