@@ -6,13 +6,19 @@ import { PlusIcon, PencilIcon, TrashIcon, MagnifyingGlassIcon, DocumentTextIcon,
 import Modal from '../../components/ui/Modal'
 import EmptyState from '../../components/ui/EmptyState'
 import { formatRupiah } from '../../utils/formatRupiah'
-import { hutangService, instansiService } from '../../services/firebase.service'
+import { hutangService, instansiService, pengaturanService } from '../../services/firebase.service'
 import { useAuth } from '../../context/AuthContext'
+import { BULAN_HIJRIYAH, getBulanLabel } from '../../utils/hijriyah'
 
 const EMPTY_FORM = {
   nama_pihak: '',
   nominal_total: '',
   tanggal: '',
+  tanggal_hijriyah: '',
+  bulan_hijriyah: '',
+  tahun_hijriyah: '1446',
+  kode_transaksi: '',
+  nomor_bukti: '',
   keterangan: '',
   instansi_id: '',
 }
@@ -31,6 +37,8 @@ export default function HutangPiutangPage({ type }) {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [search, setSearch] = useState('')
+  const [filterBulan, setFilterBulan] = useState(BULAN_HIJRIYAH[0])
+  const [filterTahun, setFilterTahun] = useState('1446')
   const [filterInstansi, setFilterInstansi] = useState(instansiId || '')
 
   // Modal Induk
@@ -50,6 +58,9 @@ export default function HutangPiutangPage({ type }) {
 
   useEffect(() => {
     instansiService.getAll().then(setInstansiList).catch(console.error)
+    pengaturanService.getSettings().then(s => {
+      if (s?.tahun_aktif) setFilterTahun(s.tahun_aktif)
+    }).catch(console.error)
   }, [])
 
   async function load() {
@@ -59,6 +70,8 @@ export default function HutangPiutangPage({ type }) {
       const data = await hutangService.getAll({
         instansiId: id,
         jenis: type,
+        bulanHijriyah: filterBulan || null,
+        tahunHijriyah: filterTahun || null,
         search: search || null,
         orderDesc: true
       })
@@ -67,7 +80,7 @@ export default function HutangPiutangPage({ type }) {
     finally { setLoading(false) }
   }
 
-  useEffect(() => { load() }, [type, filterInstansi, instansiId, isSuperAdmin])
+  useEffect(() => { load() }, [type, filterBulan, filterTahun, filterInstansi, instansiId, isSuperAdmin])
 
   function handleSearch(e) {
     e.preventDefault()
@@ -75,7 +88,11 @@ export default function HutangPiutangPage({ type }) {
   }
 
   function openAdd() {
-    setForm({ ...EMPTY_FORM, instansi_id: isSuperAdmin ? (filterInstansi || '') : instansiId })
+    setForm({ 
+      ...EMPTY_FORM, 
+      instansi_id: isSuperAdmin ? (filterInstansi || '') : instansiId,
+      tahun_hijriyah: filterTahun
+    })
     setEditRow(null)
     setModalOpen(true)
   }
@@ -85,6 +102,11 @@ export default function HutangPiutangPage({ type }) {
       nama_pihak: row.nama_pihak || '',
       nominal_total: String(row.nominal_total || ''),
       tanggal: row.tanggal || '',
+      tanggal_hijriyah: row.tanggal_hijriyah || '',
+      bulan_hijriyah: row.bulan_hijriyah || '',
+      tahun_hijriyah: row.tahun_hijriyah || '1446',
+      kode_transaksi: row.kode_transaksi || '',
+      nomor_bukti: row.nomor_bukti || '',
       keterangan: row.keterangan || '',
       instansi_id: row.instansi_id || '',
     })
@@ -216,6 +238,18 @@ export default function HutangPiutangPage({ type }) {
         </form>
 
         <div className="flex gap-2 flex-wrap">
+          <select className="input w-auto" value={filterBulan} onChange={e => setFilterBulan(e.target.value)}>
+            <option value="">Semua Bulan</option>
+            {BULAN_HIJRIYAH.map(b => <option key={b} value={b}>{getBulanLabel(b)}</option>)}
+          </select>
+          <input
+            type="text"
+            className="input w-24"
+            placeholder="Tahun H"
+            value={filterTahun}
+            onChange={e => setFilterTahun(e.target.value)}
+            title="Filter Tahun Hijriyah"
+          />
           {isSuperAdmin && (
             <select className="input w-auto" value={filterInstansi} onChange={e => setFilterInstansi(e.target.value)}>
               <option value="">Semua Instansi</option>
@@ -316,7 +350,7 @@ export default function HutangPiutangPage({ type }) {
       </div>
 
       {/* Modal Add/Edit Induk */}
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editRow ? `Edit Data ${isHutang?'Hutang':'Piutang'}` : `Catat ${isHutang?'Hutang':'Piutang'} Baru`} size="md"
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editRow ? `Edit Data ${isHutang?'Hutang':'Piutang'}` : `Catat ${isHutang?'Hutang':'Piutang'} Baru`} size="lg"
         footer={
           <>
             <button className="btn-secondary" onClick={() => setModalOpen(false)}>Batal</button>
@@ -324,9 +358,9 @@ export default function HutangPiutangPage({ type }) {
           </>
         }
       >
-        <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
           {isSuperAdmin && (
-            <div>
+            <div className="col-span-2">
               <label className="label">Instansi</label>
               <select className="input" value={form.instansi_id} onChange={e => setForm(f => ({...f, instansi_id: e.target.value}))}>
                 <option value="">-- Pilih Instansi --</option>
@@ -334,7 +368,7 @@ export default function HutangPiutangPage({ type }) {
               </select>
             </div>
           )}
-          <div>
+          <div className="col-span-2">
             <label className="label">{pihakLabel} *</label>
             <input type="text" className="input" placeholder="Nama orang atau instansi"
               value={form.nama_pihak} onChange={e => setForm(f => ({...f, nama_pihak: e.target.value}))} required />
@@ -350,6 +384,33 @@ export default function HutangPiutangPage({ type }) {
             <input type="date" className="input" value={form.tanggal} onChange={e => setForm(f => ({...f, tanggal: e.target.value}))} />
           </div>
           <div>
+            <label className="label">Tanggal Hijriyah</label>
+            <input type="text" className="input" placeholder="mis: 1 Syawal 1446"
+              value={form.tanggal_hijriyah} onChange={e => setForm(f => ({...f, tanggal_hijriyah: e.target.value}))} />
+          </div>
+          <div>
+            <label className="label">Bulan Hijriyah *</label>
+            <select className="input" value={form.bulan_hijriyah} onChange={e => setForm(f => ({...f, bulan_hijriyah: e.target.value}))} required>
+              <option value="" disabled>-- Pilih Bulan --</option>
+              {BULAN_HIJRIYAH.map(b => <option key={b} value={b}>{getBulanLabel(b)}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="label">Tahun Hijriyah</label>
+            <input type="text" className="input" placeholder="1446"
+              value={form.tahun_hijriyah} onChange={e => setForm(f => ({...f, tahun_hijriyah: e.target.value}))} />
+          </div>
+          <div>
+            <label className="label">No. Kode</label>
+            <input type="text" className="input" placeholder="Kode transaksi"
+              value={form.kode_transaksi} onChange={e => setForm(f => ({...f, kode_transaksi: e.target.value}))} />
+          </div>
+          <div>
+            <label className="label">No. Bukti</label>
+            <input type="text" className="input" placeholder="No. kwitansi/bukti"
+              value={form.nomor_bukti} onChange={e => setForm(f => ({...f, nomor_bukti: e.target.value}))} />
+          </div>
+          <div className="col-span-2">
             <label className="label">Keterangan / Tujuan</label>
             <input type="text" className="input" placeholder="Untuk keperluan apa..."
               value={form.keterangan} onChange={e => setForm(f => ({...f, keterangan: e.target.value}))} />

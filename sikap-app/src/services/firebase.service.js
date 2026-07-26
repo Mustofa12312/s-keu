@@ -137,10 +137,12 @@ export const transaksiService = {
 
 // ---- HUTANG PIUTANG ----
 export const hutangService = {
-  async getAll({ instansiId, jenis, search, orderDesc = false }) {
+  async getAll({ instansiId, jenis, search, bulanHijriyah, tahunHijriyah, orderDesc = false }) {
     let constraints = [];
     if (instansiId) constraints.push(where('instansi_id', '==', instansiId));
     if (jenis) constraints.push(where('jenis', '==', jenis));
+    if (bulanHijriyah) constraints.push(where('bulan_hijriyah', '==', bulanHijriyah));
+    if (tahunHijriyah) constraints.push(where('tahun_hijriyah', '==', tahunHijriyah));
     
     constraints.push(limit(10000));
 
