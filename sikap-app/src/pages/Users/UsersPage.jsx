@@ -11,7 +11,7 @@ import { auth, app } from '../../lib/firebase'
 import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth'
 import { initializeApp } from 'firebase/app'
 
-const EMPTY = { nama: '', email: '', password: '', role: 'admin_instansi', instansi_id: '', akses_menu: ['/dashboard', '/transaksi', '/buku-kas', '/laporan'] }
+const EMPTY = { nama: '', email: '', password: '', role: 'admin_instansi', instansi_id: '', akses_menu: ['/dashboard', '/transaksi', '/buku-kas', '/laporan', '/hutang', '/piutang', '/buku-kas-hutang', '/laporan-hutang'] }
 
 const ROLES = [
   { value: 'super_admin',    label: 'Super Admin',        badge: 'badge-blue' },
@@ -25,6 +25,10 @@ const MENU_OPTIONS = [
   { value: '/transaksi', label: 'Transaksi' },
   { value: '/buku-kas', label: 'Buku Kas Umum' },
   { value: '/laporan', label: 'Laporan' },
+  { value: '/hutang', label: 'Data Hutang' },
+  { value: '/piutang', label: 'Data Piutang' },
+  { value: '/buku-kas-hutang', label: 'Buku Kas Hutang' },
+  { value: '/laporan-hutang', label: 'Laporan Hutang' },
 ]
 
 export default function UsersPage() {
@@ -70,7 +74,7 @@ export default function UsersPage() {
       password: '', 
       role: item.role, 
       instansi_id: item.instansi_id || '',
-      akses_menu: item.akses_menu || ['/dashboard', '/transaksi', '/buku-kas', '/laporan']
+      akses_menu: item.akses_menu || ['/dashboard', '/transaksi', '/buku-kas', '/laporan', '/hutang', '/piutang', '/buku-kas-hutang', '/laporan-hutang']
     })
     setEditItem(item)
     setModalOpen(true)

@@ -9,10 +9,13 @@ import {
   ScaleIcon,
   ClockIcon,
   ExclamationTriangleIcon,
+  ArrowDownCircleIcon,
+  ArrowUpCircleIcon,
 } from '@heroicons/react/24/outline'
 import {
   AreaChart, Area,
   BarChart, Bar,
+  PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts'
 import StatCard from '../../components/ui/StatCard'
@@ -20,6 +23,9 @@ import { formatRupiah } from '../../utils/formatRupiah'
 import { BULAN_HIJRIYAH, getBulanLabel } from '../../utils/hijriyah'
 import { transaksiService, instansiService, pengaturanService, hutangService } from '../../services/firebase.service'
 import { useAuth } from '../../context/AuthContext'
+
+const COLORS_HUTANG = ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e'] 
+const COLORS_PIUTANG = ['#3b82f6', '#0ea5e9', '#06b6d4', '#14b8a6', '#10b981', '#8b5cf6']
 
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
@@ -120,6 +126,50 @@ export default function DashboardPage() {
     }).filter(d => d.pem > 0 || d.pen > 0)
   }, [summaryData])
 
+  const hutangStats = useMemo(() => {
+    let hutang = 0
+    let piutang = 0
+    let countHutang = 0
+    let countPiutang = 0
+    
+    unpaidDebts.forEach(d => {
+      const sisa = Math.max(0, (d.nominal_total || 0) - (d.nominal_dibayar || 0))
+      if (d.jenis === 'hutang') {
+        hutang += sisa
+        countHutang++
+      } else {
+        piutang += sisa
+        countPiutang++
+      }
+    })
+    
+    return { hutang, piutang, countHutang, countPiutang }
+  }, [unpaidDebts])
+
+  const { hutangPieData, piutangPieData } = useMemo(() => {
+    const hData = {}
+    const pData = {}
+    
+    unpaidDebts.forEach(d => {
+      const sisa = Math.max(0, (d.nominal_total || 0) - (d.nominal_dibayar || 0))
+      if (sisa === 0) return
+      
+      const pihak = d.nama_pihak || 'Lainnya'
+      if (d.jenis === 'hutang') {
+        hData[pihak] = (hData[pihak] || 0) + sisa
+      } else {
+        pData[pihak] = (pData[pihak] || 0) + sisa
+      }
+    })
+    
+    const formatData = (obj) => Object.keys(obj).map(k => ({ name: k, value: obj[k] })).sort((a,b) => b.value - a.value)
+    
+    return {
+      hutangPieData: formatData(hData),
+      piutangPieData: formatData(pData)
+    }
+  }, [unpaidDebts])
+
   const recent = useMemo(() =>
     [...recentData].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 8),
     [recentData]
@@ -165,37 +215,64 @@ export default function DashboardPage() {
 
       {/* Stat cards */}
       {loading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {[1, 2, 3].map(n => (
-            <div key={n} className="card p-5 h-24 animate-pulse bg-slate-100" />
-          ))}
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[1, 2, 3].map(n => (
+              <div key={n} className="card p-5 h-24 animate-pulse bg-slate-100" />
+            ))}
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[4, 5].map(n => (
+              <div key={n} className="card p-5 h-24 animate-pulse bg-slate-100" />
+            ))}
+          </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <StatCard
-            icon={ArrowTrendingUpIcon}
-            iconBg="bg-emerald-50"
-            iconColor="text-emerald-600"
-            label="Total Pemasukan"
-            value={formatRupiah(stats.pemasukan)}
-            sub={`${summaryData.filter(t => t.jenis === 'pemasukan').length} transaksi`}
-          />
-          <StatCard
-            icon={ArrowTrendingDownIcon}
-            iconBg="bg-red-50"
-            iconColor="text-red-500"
-            label="Total Pengeluaran"
-            value={formatRupiah(stats.pengeluaran)}
-            sub={`${summaryData.filter(t => t.jenis === 'pengeluaran').length} transaksi`}
-          />
-          <StatCard
-            icon={ScaleIcon}
-            iconBg={stats.saldo >= 0 ? 'bg-blue-50' : 'bg-amber-50'}
-            iconColor={stats.saldo >= 0 ? 'text-blue-600' : 'text-amber-600'}
-            label="Saldo Akhir"
-            value={formatRupiah(stats.saldo)}
-            sub="Pemasukan – Pengeluaran"
-          />
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <StatCard
+              icon={ArrowTrendingUpIcon}
+              iconBg="bg-emerald-50"
+              iconColor="text-emerald-600"
+              label="Total Pemasukan"
+              value={formatRupiah(stats.pemasukan)}
+              sub={`${summaryData.filter(t => t.jenis === 'pemasukan').length} transaksi`}
+            />
+            <StatCard
+              icon={ArrowTrendingDownIcon}
+              iconBg="bg-red-50"
+              iconColor="text-red-500"
+              label="Total Pengeluaran"
+              value={formatRupiah(stats.pengeluaran)}
+              sub={`${summaryData.filter(t => t.jenis === 'pengeluaran').length} transaksi`}
+            />
+            <StatCard
+              icon={ScaleIcon}
+              iconBg={stats.saldo >= 0 ? 'bg-blue-50' : 'bg-amber-50'}
+              iconColor={stats.saldo >= 0 ? 'text-blue-600' : 'text-amber-600'}
+              label="Saldo Akhir"
+              value={formatRupiah(stats.saldo)}
+              sub="Pemasukan – Pengeluaran"
+            />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <StatCard
+              icon={ArrowDownCircleIcon}
+              iconBg="bg-red-50"
+              iconColor="text-red-500"
+              label="Total Hutang Belum Lunas"
+              value={formatRupiah(hutangStats.hutang)}
+              sub={`${hutangStats.countHutang} tagihan`}
+            />
+            <StatCard
+              icon={ArrowUpCircleIcon}
+              iconBg="bg-blue-50"
+              iconColor="text-blue-500"
+              label="Total Piutang Belum Lunas"
+              value={formatRupiah(hutangStats.piutang)}
+              sub={`${hutangStats.countPiutang} tagihan`}
+            />
+          </div>
         </div>
       )}
 
@@ -258,6 +335,61 @@ export default function DashboardPage() {
               </BarChart>
             )}
           </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Pie Chart Hutang Piutang */}
+      {!loading && (hutangPieData.length > 0 || piutangPieData.length > 0) && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {hutangPieData.length > 0 && (
+            <div className="card p-5">
+              <h3 className="font-semibold text-slate-800 font-display mb-1">Proporsi Hutang Aktif</h3>
+              <p className="text-xs text-slate-400 mb-4">Berdasarkan pihak pemberi pinjaman</p>
+              <ResponsiveContainer width="100%" height={220}>
+                <PieChart>
+                  <Pie
+                    data={hutangPieData}
+                    cx="50%" cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {hutangPieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS_HUTANG[index % COLORS_HUTANG.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+          
+          {piutangPieData.length > 0 && (
+            <div className="card p-5">
+              <h3 className="font-semibold text-slate-800 font-display mb-1">Proporsi Piutang Aktif</h3>
+              <p className="text-xs text-slate-400 mb-4">Berdasarkan pihak peminjam uang</p>
+              <ResponsiveContainer width="100%" height={220}>
+                <PieChart>
+                  <Pie
+                    data={piutangPieData}
+                    cx="50%" cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={2}
+                    dataKey="value"
+                  >
+                    {piutangPieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS_PIUTANG[index % COLORS_PIUTANG.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </div>
       )}
 
