@@ -293,15 +293,11 @@ export function exportRAPBMPDF({ dataPendapatan, dataBelanja, namaInstansi, tahu
   // Kiri (Mengetahui)
   doc.text('Mengetahui ;', margin + 10, ttdY)
   doc.text(`Kepala ${namaInstansi || 'Madrasah'}`, margin + 10, ttdY + 5)
-  doc.setFont('helvetica', 'bold')
-  doc.text(settings?.kepala_instansi || 'MARBIDIN', margin + 10, ttdY + 25)
   doc.setFont('helvetica', 'normal')
   doc.text('_____________________________', margin + 10, ttdY + 26)
   
   // Kanan (Bendahara)
   doc.text('Bendahara', pageW - margin - 50, ttdY + 5, { align: 'center' })
-  doc.setFont('helvetica', 'bold')
-  doc.text(settings?.bendahara_instansi || 'MOH. RUDI', pageW - margin - 50, ttdY + 25, { align: 'center' })
   doc.setFont('helvetica', 'normal')
   doc.text('_____________________________', pageW - margin - 50, ttdY + 26, { align: 'center' })
 
