@@ -1,13 +1,21 @@
 import { useState, useEffect } from 'react'
 import { CheckCircleIcon, DocumentPlusIcon, TrashIcon } from '@heroicons/react/24/outline'
-import { toast } from 'react-hot-toast'
 import { useAuth } from '../../context/AuthContext'
 import { anggaranService } from '../../services/anggaran.service'
 import { pengaturanService } from '../../services/firebase.service'
 import { formatRupiah } from '../../utils/formatRupiah'
-import { toDateInputValue, formatDateID } from '../../utils/dateUtils'
 import Modal from '../../components/ui/Modal'
 import EmptyState from '../../components/ui/EmptyState'
+
+function toDateInputValue(d) {
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0')
+  return `${y}-${m}-${day}`
+}
+function formatDateID(str) {
+  if (!str) return '-'
+  const d = new Date(str)
+  return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+}
 
 export default function RealisasiAnggaranPage() {
   const { instansiId, isSuperAdmin } = useAuth()
@@ -20,6 +28,12 @@ export default function RealisasiAnggaranPage() {
   const [selectedAnggaran, setSelectedAnggaran] = useState(null)
   const [realisasiList, setRealisasiList] = useState([])
   const [loadingRealisasi, setLoadingRealisasi] = useState(false)
+  const [toast, setToast] = useState(null)
+
+  function showToast(msg, type = 'success') {
+    setToast({ msg, type })
+    setTimeout(() => setToast(null), 3000)
+  }
   
   // Form State
   const [formData, setFormData] = useState({
@@ -69,7 +83,7 @@ export default function RealisasiAnggaranPage() {
       setData(combined)
     } catch (error) {
       console.error(error)
-      toast.error('Gagal memuat data')
+      showToast('Gagal memuat data', 'error')
     } finally {
       setLoading(false)
     }
@@ -89,7 +103,7 @@ export default function RealisasiAnggaranPage() {
       const list = await anggaranService.getRealisasi(item.id)
       setRealisasiList(list)
     } catch (error) {
-      toast.error('Gagal memuat riwayat')
+      showToast('Gagal memuat riwayat', 'error')
     } finally {
       setLoadingRealisasi(false)
     }
@@ -99,13 +113,13 @@ export default function RealisasiAnggaranPage() {
     if (!window.confirm('Hapus realisasi ini?')) return
     try {
       await anggaranService.deleteRealisasi(id)
-      toast.success('Dihapus')
+      showToast('Dihapus')
       // Refresh list
       const list = await anggaranService.getRealisasi(selectedAnggaran.id)
       setRealisasiList(list)
       fetchData() // to update parent table numbers
     } catch (error) {
-      toast.error('Gagal menghapus')
+      showToast('Gagal menghapus', 'error')
     }
   }
 
@@ -120,7 +134,7 @@ export default function RealisasiAnggaranPage() {
       }
       
       await anggaranService.createRealisasi(selectedAnggaran.id, payload)
-      toast.success('Realisasi dicatat')
+      showToast('Realisasi dicatat')
       
       // Reset form and refresh list
       setFormData({
@@ -133,7 +147,7 @@ export default function RealisasiAnggaranPage() {
       fetchData()
     } catch (error) {
       console.error(error)
-      toast.error('Gagal menyimpan')
+      showToast('Gagal menyimpan', 'error')
     }
   }
   
@@ -241,16 +255,16 @@ export default function RealisasiAnggaranPage() {
             <h3 className="font-bold text-slate-800 mb-3 border-b border-slate-100 pb-2">Catat Realisasi Baru</h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="form-label">Tanggal</label>
-                <input type="date" className="form-input" required value={formData.tanggal} onChange={e => setFormData({...formData, tanggal: e.target.value})} />
+                <label className="label">Tanggal</label>
+                <input type="date" className="input" required value={formData.tanggal} onChange={e => setFormData({...formData, tanggal: e.target.value})} />
               </div>
               <div>
-                <label className="form-label">Keterangan / Uraian</label>
-                <input type="text" className="form-input" required value={formData.uraian} onChange={e => setFormData({...formData, uraian: e.target.value})} />
+                <label className="label">Keterangan / Uraian</label>
+                <input type="text" className="input" required value={formData.uraian} onChange={e => setFormData({...formData, uraian: e.target.value})} />
               </div>
               <div>
-                <label className="form-label">Nominal Realisasi</label>
-                <input type="number" className="form-input" required min="1" value={formData.nominal} onChange={e => setFormData({...formData, nominal: e.target.value})} />
+                <label className="label">Nominal Realisasi</label>
+                <input type="number" className="input" required min="1" value={formData.nominal} onChange={e => setFormData({...formData, nominal: e.target.value})} />
               </div>
               <div className="pt-2">
                 <button type="submit" className="btn-primary w-full flex justify-center items-center gap-2">
@@ -298,6 +312,13 @@ export default function RealisasiAnggaranPage() {
           </div>
         </div>
       </Modal>
+
+      {/* Toast */}
+      {toast && (
+        <div className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-xl font-medium animate-slide-in z-50 ${toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-emerald-600 text-white'}`}>
+          {toast.type === 'error' ? '✗ ' : '✓ '}{toast.msg}
+        </div>
+      )}
     </div>
   )
 }

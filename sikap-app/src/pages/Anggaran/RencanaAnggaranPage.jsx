@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { PlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
-import { toast } from 'react-hot-toast'
 import { useAuth } from '../../context/AuthContext'
 import { anggaranService } from '../../services/anggaran.service'
 import { pengaturanService } from '../../services/firebase.service'
@@ -15,6 +14,13 @@ export default function RencanaAnggaranPage() {
   const [kategori, setKategori] = useState('pendapatan')
   const [tahunPelajaran, setTahunPelajaran] = useState('')
   
+  const [toast, setToast] = useState(null)
+
+  function showToast(msg, type = 'success') {
+    setToast({ msg, type })
+    setTimeout(() => setToast(null), 3000)
+  }
+
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingData, setEditingData] = useState(null)
   
@@ -54,7 +60,7 @@ export default function RencanaAnggaranPage() {
       setData(res)
     } catch (error) {
       console.error(error)
-      toast.error('Gagal memuat data anggaran')
+      showToast('Gagal memuat data anggaran', 'error')
     } finally {
       setLoading(false)
     }
@@ -92,11 +98,11 @@ export default function RencanaAnggaranPage() {
     if (!window.confirm('Yakin ingin menghapus item anggaran ini? Semua realisasi terkait juga akan dihapus.')) return
     try {
       await anggaranService.deleteRencana(id)
-      toast.success('Berhasil dihapus')
+      showToast('Berhasil dihapus')
       fetchData()
     } catch (error) {
       console.error(error)
-      toast.error('Gagal menghapus')
+      showToast('Gagal menghapus', 'error')
     }
   }
 
@@ -115,16 +121,16 @@ export default function RencanaAnggaranPage() {
       
       if (editingData) {
         await anggaranService.updateRencana(editingData.id, payload)
-        toast.success('Berhasil diperbarui')
+        showToast('Berhasil diperbarui')
       } else {
         await anggaranService.createRencana(payload)
-        toast.success('Berhasil ditambahkan')
+        showToast('Berhasil ditambahkan')
       }
       setIsModalOpen(false)
       fetchData()
     } catch (error) {
       console.error(error)
-      toast.error('Gagal menyimpan')
+      showToast('Gagal menyimpan', 'error')
     }
   }
 
@@ -226,35 +232,35 @@ export default function RencanaAnggaranPage() {
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingData ? 'Edit Anggaran' : 'Tambah Anggaran'}>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="form-label">Kode Anggaran</label>
-            <input type="text" className="form-input" required value={formData.kode} onChange={e => setFormData({...formData, kode: e.target.value})} placeholder="Misal: 04.01" />
+            <label className="label">Kode Anggaran</label>
+            <input type="text" className="input" required value={formData.kode} onChange={e => setFormData({...formData, kode: e.target.value})} placeholder="Misal: 04.01" />
           </div>
           <div>
-            <label className="form-label">Uraian / Nama Kegiatan</label>
-            <input type="text" className="form-input" required value={formData.uraian} onChange={e => setFormData({...formData, uraian: e.target.value})} placeholder="Misal: SPP Murid" />
+            <label className="label">Uraian / Nama Kegiatan</label>
+            <input type="text" className="input" required value={formData.uraian} onChange={e => setFormData({...formData, uraian: e.target.value})} placeholder="Misal: SPP Murid" />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="form-label">Waktu Pelaksanaan</label>
-              <input type="text" className="form-input" value={formData.waktu_pelaksanaan} onChange={e => setFormData({...formData, waktu_pelaksanaan: e.target.value})} placeholder="Misal: Saniyah/Tahunan" />
+              <label className="label">Waktu Pelaksanaan</label>
+              <input type="text" className="input" value={formData.waktu_pelaksanaan} onChange={e => setFormData({...formData, waktu_pelaksanaan: e.target.value})} placeholder="Misal: Saniyah/Tahunan" />
             </div>
             <div>
-              <label className="form-label">Pelaksana</label>
-              <input type="text" className="form-input" value={formData.pelaksana} onChange={e => setFormData({...formData, pelaksana: e.target.value})} placeholder="Misal: Bendahara" />
+              <label className="label">Pelaksana</label>
+              <input type="text" className="input" value={formData.pelaksana} onChange={e => setFormData({...formData, pelaksana: e.target.value})} placeholder="Misal: Bendahara" />
             </div>
           </div>
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="form-label">Volume</label>
-              <input type="number" className="form-input" required min="1" value={formData.volume} onChange={e => setFormData({...formData, volume: e.target.value})} />
+              <label className="label">Volume</label>
+              <input type="number" className="input" required min="1" value={formData.volume} onChange={e => setFormData({...formData, volume: e.target.value})} />
             </div>
             <div>
-              <label className="form-label">Satuan</label>
-              <input type="text" className="form-input" required value={formData.satuan} onChange={e => setFormData({...formData, satuan: e.target.value})} placeholder="Org / Keg" />
+              <label className="label">Satuan</label>
+              <input type="text" className="input" required value={formData.satuan} onChange={e => setFormData({...formData, satuan: e.target.value})} placeholder="Org / Keg" />
             </div>
             <div>
-              <label className="form-label">Harga Satuan</label>
-              <input type="number" className="form-input" required min="0" value={formData.harga_satuan} onChange={e => setFormData({...formData, harga_satuan: e.target.value})} />
+              <label className="label">Harga Satuan</label>
+              <input type="number" className="input" required min="0" value={formData.harga_satuan} onChange={e => setFormData({...formData, harga_satuan: e.target.value})} />
             </div>
           </div>
           <div className="pt-2">
@@ -268,6 +274,13 @@ export default function RencanaAnggaranPage() {
           </div>
         </form>
       </Modal>
+
+      {/* Toast */}
+      {toast && (
+        <div className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-xl font-medium animate-slide-in z-50 ${toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-emerald-600 text-white'}`}>
+          {toast.type === 'error' ? '✗ ' : '✓ '}{toast.msg}
+        </div>
+      )}
     </div>
   )
 }

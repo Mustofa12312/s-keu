@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
 import { PrinterIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
-import { toast } from 'react-hot-toast'
 import { useReactToPrint } from 'react-to-print'
 import * as XLSX from 'xlsx'
 import { useAuth } from '../../context/AuthContext'
@@ -17,6 +16,12 @@ export default function LaporanAnggaranPage() {
   const [instansiList, setInstansiList] = useState([])
   const [selectedInstansi, setSelectedInstansi] = useState('')
   const [namaInstansi, setNamaInstansi] = useState('')
+  const [toast, setToast] = useState(null)
+
+  function showToast(msg, type = 'success') {
+    setToast({ msg, type })
+    setTimeout(() => setToast(null), 3000)
+  }
 
   const printRef = useRef()
 
@@ -88,7 +93,7 @@ export default function LaporanAnggaranPage() {
       setDataBelanja(processData(resBelanja))
     } catch (error) {
       console.error(error)
-      toast.error('Gagal memuat laporan')
+      showToast('Gagal memuat laporan', 'error')
     } finally {
       setLoading(false)
     }
@@ -129,7 +134,7 @@ export default function LaporanAnggaranPage() {
 
       XLSX.writeFile(wb, `Laporan_RAPBM_${namaInstansi}_${tahunPelajaran}.xlsx`)
     } catch (err) {
-      toast.error('Gagal export ke Excel')
+      showToast('Gagal export ke Excel', 'error')
     }
   }
 
@@ -213,9 +218,9 @@ export default function LaporanAnggaranPage() {
       {isSuperAdmin && (
         <div className="card p-4 no-print bg-slate-50 border border-slate-200 flex gap-4 items-end">
           <div className="flex-1 max-w-xs">
-            <label className="form-label">Filter Instansi</label>
+            <label className="label">Filter Instansi</label>
             <select
-              className="form-input"
+              className="input"
               value={selectedInstansi}
               onChange={(e) => setSelectedInstansi(e.target.value)}
             >
@@ -249,6 +254,13 @@ export default function LaporanAnggaranPage() {
               <p className="font-bold border-b border-black pb-1 inline-block min-w-[200px]"></p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div className={`fixed bottom-4 right-4 px-4 py-3 rounded-lg shadow-xl font-medium animate-slide-in z-50 ${toast.type === 'error' ? 'bg-red-500 text-white' : 'bg-emerald-600 text-white'}`}>
+          {toast.type === 'error' ? '✗ ' : '✓ '}{toast.msg}
         </div>
       )}
     </div>
