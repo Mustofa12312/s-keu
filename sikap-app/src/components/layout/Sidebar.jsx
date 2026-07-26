@@ -1,9 +1,10 @@
 // ============================================================
 // src/components/layout/Sidebar.jsx
 // ============================================================
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { hutangService } from '../../services/firebase.service'
 import {
   HomeIcon,
   BanknotesIcon,
@@ -57,10 +58,33 @@ const adminItems = [
 ]
 
 export default function Sidebar({ open, onClose }) {
-  const { profile, logout, isSuperAdmin } = useAuth()
+  const { profile, logout, isSuperAdmin, instansiId } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [openGroup, setOpenGroup] = useState('Utama')
+  const [overdueCount, setOverdueCount] = useState(0)
+
+  useEffect(() => {
+    if (!isSuperAdmin && !instansiId) return
+    let mounted = true
+    const id = isSuperAdmin ? null : instansiId
+    
+    hutangService.getAll({ instansiId: id, status: 'belum_lunas' })
+      .then(data => {
+        if (!mounted) return
+        let count = 0
+        data.forEach(d => {
+          if (d.tanggal_jatuh_tempo) {
+            const diffDays = Math.ceil((new Date(d.tanggal_jatuh_tempo) - new Date()) / (1000 * 60 * 60 * 24))
+            if (diffDays < 0) count++
+          }
+        })
+        setOverdueCount(count)
+      })
+      .catch(console.error)
+
+    return () => { mounted = false }
+  }, [instansiId, isSuperAdmin, location.pathname]) // re-fetch when navigation happens (to keep updated if they pay)
 
   async function handleLogout() {
     await logout()
@@ -162,7 +186,14 @@ export default function Sidebar({ open, onClose }) {
                 >
                   <div className="flex items-center gap-3">
                     <group.icon className={`w-5 h-5 ${isActiveGroup ? 'text-emerald-600' : 'text-slate-400'}`} />
-                    <span>{group.label}</span>
+                    <div className="flex items-center gap-2">
+                      <span>{group.label}</span>
+                      {group.label === 'Hutang Piutang' && overdueCount > 0 && (
+                        <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full animate-pulse shadow-sm shadow-red-200">
+                          {overdueCount}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''} ${isActiveGroup ? 'text-emerald-600' : 'text-slate-400'}`} />
                 </button>

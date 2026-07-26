@@ -8,6 +8,7 @@ import {
   ArrowTrendingDownIcon,
   ScaleIcon,
   ClockIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline'
 import {
   AreaChart, Area,
@@ -17,7 +18,7 @@ import {
 import StatCard from '../../components/ui/StatCard'
 import { formatRupiah } from '../../utils/formatRupiah'
 import { BULAN_HIJRIYAH, getBulanLabel } from '../../utils/hijriyah'
-import { transaksiService, instansiService, pengaturanService } from '../../services/firebase.service'
+import { transaksiService, instansiService, pengaturanService, hutangService } from '../../services/firebase.service'
 import { useAuth } from '../../context/AuthContext'
 
 function CustomTooltip({ active, payload, label }) {
@@ -45,6 +46,7 @@ export default function DashboardPage() {
   const [chartType, setChartType] = useState('area')
   const [summaryData, setSummaryData] = useState([])
   const [recentData, setRecentData] = useState([])
+  const [unpaidDebts, setUnpaidDebts] = useState([])
   const [initialized, setInitialized] = useState(false)
 
   // Update selectedInstansi saat profile selesai dimuat
@@ -89,11 +91,13 @@ export default function DashboardPage() {
     Promise.all([
       transaksiService.getSummary(id, activeTahun),
       transaksiService.getAll({ instansiId: id, tahunHijriyah: activeTahun, limit: 10, orderDesc: true }),
+      hutangService.getAll({ instansiId: id, status: 'belum_lunas' }),
     ])
-      .then(([summary, recent]) => {
+      .then(([summary, recent, unpaid]) => {
         if (!mounted) return
         setSummaryData(summary || [])
         setRecentData(recent || [])
+        setUnpaidDebts(unpaid || [])
       })
       .catch(console.error)
       .finally(() => { if (mounted) setLoading(false) })
@@ -120,6 +124,13 @@ export default function DashboardPage() {
     [...recentData].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 8),
     [recentData]
   )
+
+  const urgentDebts = useMemo(() => {
+    return unpaidDebts
+      .filter(d => d.tanggal_jatuh_tempo)
+      .sort((a, b) => new Date(a.tanggal_jatuh_tempo) - new Date(b.tanggal_jatuh_tempo))
+      .slice(0, 5)
+  }, [unpaidDebts])
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -323,6 +334,57 @@ export default function DashboardPage() {
                 </span>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Peringatan Jatuh Tempo */}
+        <div className="card lg:col-span-2 border-orange-200 bg-orange-50/30">
+          <div className="px-5 py-4 border-b border-orange-100 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ExclamationTriangleIcon className="w-5 h-5 text-orange-500" />
+              <h3 className="font-semibold text-orange-800 font-display">Peringatan Jatuh Tempo</h3>
+            </div>
+          </div>
+          <div className="p-4">
+            {urgentDebts.length === 0 ? (
+              <p className="text-center py-4 text-slate-400 text-sm">Tidak ada tagihan/hutang yang mendekati jatuh tempo.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {urgentDebts.map(d => {
+                  const sisa = Math.max(0, (d.nominal_total || 0) - (d.nominal_dibayar || 0))
+                  const isHutang = d.jenis === 'hutang'
+                  const diffDays = Math.ceil((new Date(d.tanggal_jatuh_tempo) - new Date()) / (1000 * 60 * 60 * 24))
+                  
+                  let bgWarna = 'bg-white border-orange-100'
+                  let textWarna = 'text-orange-600'
+                  let badgeLabel = diffDays < 0 ? 'Terlewat!' : `${diffDays} hari lagi`
+                  
+                  if (diffDays < 0) {
+                    bgWarna = 'bg-red-50 border-red-200'
+                    textWarna = 'text-red-600'
+                  }
+
+                  return (
+                    <div key={d.id} className={`p-3 rounded-xl border ${bgWarna} flex flex-col justify-between`}>
+                      <div>
+                        <div className="flex justify-between items-start mb-2">
+                          <span className={`text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md ${isHutang ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>
+                            {isHutang ? 'HUTANG' : 'PIUTANG'}
+                          </span>
+                          <span className={`text-xs font-bold ${textWarna}`}>{badgeLabel}</span>
+                        </div>
+                        <p className="font-bold text-slate-800 text-sm truncate">{d.nama_pihak}</p>
+                        <p className="text-[11px] text-slate-500">Jatuh Tempo: {d.tanggal_jatuh_tempo}</p>
+                      </div>
+                      <div className="mt-3 pt-2 border-t border-slate-100/50">
+                        <p className="text-xs text-slate-500">Sisa Tagihan:</p>
+                        <p className="font-bold text-slate-800 font-mono text-sm">{formatRupiah(sisa)}</p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>

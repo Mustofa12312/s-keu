@@ -19,6 +19,7 @@ const EMPTY_FORM = {
   tahun_hijriyah: '1446',
   kode_transaksi: '',
   nomor_bukti: '',
+  tanggal_jatuh_tempo: '',
   keterangan: '',
   instansi_id: '',
 }
@@ -107,6 +108,7 @@ export default function HutangPiutangPage({ type }) {
       tahun_hijriyah: row.tahun_hijriyah || '1446',
       kode_transaksi: row.kode_transaksi || '',
       nomor_bukti: row.nomor_bukti || '',
+      tanggal_jatuh_tempo: row.tanggal_jatuh_tempo || '',
       keterangan: row.keterangan || '',
       instansi_id: row.instansi_id || '',
     })
@@ -305,10 +307,35 @@ export default function HutangPiutangPage({ type }) {
                 {rows.map((row, i) => {
                   const sisa = Math.max(0, (row.nominal_total || 0) - (row.nominal_dibayar || 0))
                   const lunas = row.status === 'lunas'
+                  
+                  // Hitung sisa hari jatuh tempo
+                  let tempoWarna = ''
+                  let tempoLabel = ''
+                  if (!lunas && row.tanggal_jatuh_tempo) {
+                    const diffDays = Math.ceil((new Date(row.tanggal_jatuh_tempo) - new Date()) / (1000 * 60 * 60 * 24))
+                    if (diffDays < 0) {
+                      tempoWarna = 'text-red-600 font-bold'
+                      tempoLabel = 'Terlewat!'
+                    } else if (diffDays <= 7) {
+                      tempoWarna = 'text-orange-500 font-bold'
+                      tempoLabel = `${diffDays} hari lagi`
+                    } else {
+                      tempoWarna = 'text-slate-500'
+                      tempoLabel = `Sisa ${diffDays} hari`
+                    }
+                  }
+
                   return (
                     <tr key={row.id}>
                       <td className="text-slate-400">{i + 1}</td>
-                      <td className="whitespace-nowrap">{row.tanggal || '-'}</td>
+                      <td className="whitespace-nowrap">
+                        <p>{row.tanggal || '-'}</p>
+                        {row.tanggal_jatuh_tempo && !lunas && (
+                          <p className={`text-[10px] mt-1 ${tempoWarna}`} title="Jatuh Tempo">
+                            Batas: {row.tanggal_jatuh_tempo} ({tempoLabel})
+                          </p>
+                        )}
+                      </td>
                       <td>
                         <p className="font-semibold text-slate-700">{row.nama_pihak}</p>
                         {row.instansi && <p className="text-[10px] text-slate-400">{row.instansi.nama_instansi}</p>}
@@ -382,6 +409,10 @@ export default function HutangPiutangPage({ type }) {
           <div>
             <label className="label">Tanggal Masehi</label>
             <input type="date" className="input" value={form.tanggal} onChange={e => setForm(f => ({...f, tanggal: e.target.value}))} />
+          </div>
+          <div>
+            <label className="label">Jatuh Tempo (Opsional)</label>
+            <input type="date" className="input" value={form.tanggal_jatuh_tempo} onChange={e => setForm(f => ({...f, tanggal_jatuh_tempo: e.target.value}))} />
           </div>
           <div>
             <label className="label">Tanggal Hijriyah</label>
