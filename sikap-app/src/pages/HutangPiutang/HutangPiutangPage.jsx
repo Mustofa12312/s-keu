@@ -286,7 +286,9 @@ export default function HutangPiutangPage({ type }) {
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           {loading ? (
-            <div className="py-16 text-center text-slate-400 text-sm">Memuat data...</div>
+            <div className="p-5 space-y-4">
+              {[1, 2, 3, 4, 5].map(n => <div key={n} className="h-10 skeleton w-full" />)}
+            </div>
           ) : rows.length === 0 ? (
             <EmptyState title={`Belum ada data ${type}`} description="Klik tombol di atas untuk mulai mencatat." />
           ) : (
