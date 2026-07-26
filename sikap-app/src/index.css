@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply font-sans text-slate-700 bg-slate-50 antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  /* === BUTTONS === */
+  .btn {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  .btn-primary {
+    @apply btn bg-emerald-600 text-white hover:bg-emerald-700 focus:ring-emerald-500 shadow-sm;
+  }
+  .btn-secondary {
+    @apply btn bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 focus:ring-slate-300 shadow-sm;
+  }
+  .btn-danger {
+    @apply btn bg-red-500 text-white hover:bg-red-600 focus:ring-red-400 shadow-sm;
+  }
+  .btn-ghost {
+    @apply btn text-slate-600 hover:bg-slate-100 focus:ring-slate-300;
+  }
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  /* === CARDS === */
+  .card {
+    @apply bg-white rounded-xl border border-slate-100 shadow-card;
+  }
+  .card-md {
+    @apply bg-white rounded-xl border border-slate-100 shadow-card-md;
+  }
+
+  /* === INPUTS === */
+  .input {
+    @apply w-full px-3.5 py-2 rounded-lg border border-slate-200 bg-white text-sm text-slate-700 placeholder-slate-400
+           focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all;
+  }
+  .input-error {
+    @apply border-red-400 focus:ring-red-400;
+  }
+  .label {
+    @apply block text-xs font-medium text-slate-500 mb-1.5 uppercase tracking-wide;
+  }
+
+  /* === BADGE === */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  .badge-green {
+    @apply badge bg-emerald-100 text-emerald-700;
+  }
+  .badge-red {
+    @apply badge bg-red-100 text-red-700;
+  }
+  .badge-blue {
+    @apply badge bg-blue-100 text-blue-700;
+  }
+  .badge-slate {
+    @apply badge bg-slate-100 text-slate-600;
+  }
+  .badge-amber {
+    @apply badge bg-amber-100 text-amber-700;
+  }
+
+  /* === STAT CARD === */
+  .stat-card {
+    @apply card p-5 flex items-start gap-4;
+  }
+  .stat-icon {
+    @apply w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0;
+  }
+
+  /* === TABLE === */
+  .tbl {
+    @apply w-full text-sm text-left border-collapse;
+  }
+  .tbl th {
+    @apply px-3 py-2.5 font-semibold text-xs uppercase tracking-wide text-slate-500 bg-slate-50 border-b border-slate-200 whitespace-nowrap;
+  }
+  .tbl td {
+    @apply px-3 py-2.5 text-slate-700 border-b border-slate-100;
+  }
+  .tbl tr:hover td {
+    @apply bg-slate-50/70;
+  }
+  .tbl tr:last-child td {
+    @apply border-b-0;
+  }
+
+  /* === SIDEBAR === */
+  .sidebar-link {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-all duration-150;
+  }
+  .sidebar-link.active {
+    @apply bg-emerald-600 text-white shadow-sm;
+  }
+  .sidebar-link.active svg {
+    @apply text-white;
+  }
+
+  /* === MODAL === */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in;
+  }
+  .modal-box {
+    @apply bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-slide-in;
+  }
+  .modal-header {
+    @apply flex items-center justify-between px-6 py-4 border-b border-slate-100;
+  }
+  .modal-body {
+    @apply px-6 py-5;
+  }
+  .modal-footer {
+    @apply flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl;
+  }
+
+  /* === PRINT === */
+  @media print {
+    .no-print { display: none !important; }
+    .print-only { display: block !important; }
+    body { background: white !important; }
+  }
+  .print-only { display: none; }
+}
+
+@layer utilities {
+  .text-money { @apply font-mono font-medium; }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #e2e8f0 transparent;
+  }
+}
