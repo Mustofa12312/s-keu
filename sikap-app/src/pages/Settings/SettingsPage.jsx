@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Cog6ToothIcon, ArrowDownTrayIcon, DocumentCheckIcon, ArrowUpTrayIcon, ShieldExclamationIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
-import { pengaturanService, transaksiService, instansiService } from '../../services/firebase.service'
+import { pengaturanService, transaksiService, instansiService, hutangService } from '../../services/firebase.service'
 import * as XLSX from 'xlsx'
 import { formatRupiah } from '../../utils/formatRupiah'
 import { getBulanLabel } from '../../utils/hijriyah'
@@ -69,38 +69,111 @@ export default function SettingsPage() {
   async function handleBackup() {
     setExporting(true)
     try {
-      const data = await transaksiService.getAll({ limit: 100000 })
-      if (data.length === 0) { showToast('Tidak ada transaksi untuk di-backup.', 'error'); return }
+      const [data, dataHutang, dataPembayaran] = await Promise.all([
+        transaksiService.getAll({ limit: 100000 }),
+        hutangService.getAll({}),
+        hutangService.getAllPembayaran()
+      ])
+      
+      if (data.length === 0 && dataHutang.length === 0) { 
+        showToast('Tidak ada data untuk di-backup.', 'error'); 
+        setExporting(false);
+        return 
+      }
 
-      const wsData = [
-        ['BACKUP MASTER DATA TRANSAKSI SIKAP'],
-        ['Tanggal Backup', ':', new Date().toLocaleString()],
-        [],
-        EXPECTED_HEADERS
-      ]
-      data.forEach((t, i) => {
-        wsData.push([
-          i + 1,
-          t.instansi?.nama_instansi || '-',
-          t.tanggal || '',
-          t.tanggal_hijriyah || '',
-          getBulanLabel(t.bulan_hijriyah) || t.bulan_hijriyah || '',
-          t.tahun_hijriyah || '',
-          t.kode_transaksi || '',
-          t.nomor_bukti || '',
-          t.jenis?.toUpperCase() || '',
-          t.uraian || '',
-          t.sumber_dana || '',
-          t.nominal || 0,
-          new Date(t.created_at).toLocaleString()
-        ])
-      })
-
-      const ws = XLSX.utils.aoa_to_sheet(wsData)
       const wb = XLSX.utils.book_new()
-      XLSX.utils.book_append_sheet(wb, ws, 'Master Data')
+
+      // 1. Sheet Transaksi
+      if (data.length > 0) {
+        const wsData = [
+          ['BACKUP MASTER DATA TRANSAKSI SIKAP'],
+          ['Tanggal Backup', ':', new Date().toLocaleString()],
+          [],
+          EXPECTED_HEADERS
+        ]
+        data.forEach((t, i) => {
+          wsData.push([
+            i + 1,
+            t.instansi?.nama_instansi || '-',
+            t.tanggal || '',
+            t.tanggal_hijriyah || '',
+            getBulanLabel(t.bulan_hijriyah) || t.bulan_hijriyah || '',
+            t.tahun_hijriyah || '',
+            t.kode_transaksi || '',
+            t.nomor_bukti || '',
+            t.jenis?.toUpperCase() || '',
+            t.uraian || '',
+            t.sumber_dana || '',
+            t.nominal || 0,
+            new Date(t.created_at).toLocaleString()
+          ])
+        })
+        const ws = XLSX.utils.aoa_to_sheet(wsData)
+        XLSX.utils.book_append_sheet(wb, ws, 'Transaksi')
+      }
+
+      // 2. Sheet Hutang Piutang
+      if (dataHutang.length > 0) {
+        const wsHutangData = [
+          ['BACKUP DATA HUTANG PIUTANG SIKAP'],
+          ['Tanggal Backup', ':', new Date().toLocaleString()],
+          [],
+          ['No', 'Instansi', 'Tanggal (M)', 'Tanggal (H)', 'Bulan (H)', 'Tahun (H)', 'Kode', 'Bukti', 'Jenis', 'Pihak', 'Uraian', 'Status', 'Jatuh Tempo', 'Nominal Total (Rp)', 'Nominal Dibayar (Rp)', 'Sisa (Rp)']
+        ]
+        dataHutang.forEach((h, i) => {
+          const sisa = Math.max(0, (h.nominal_total || 0) - (h.nominal_dibayar || 0))
+          wsHutangData.push([
+            i + 1,
+            h.instansi?.nama_instansi || '-',
+            h.tanggal || '',
+            h.tanggal_hijriyah || '',
+            getBulanLabel(h.bulan_hijriyah) || h.bulan_hijriyah || '',
+            h.tahun_hijriyah || '',
+            h.kode_transaksi || '',
+            h.nomor_bukti || '',
+            h.jenis?.toUpperCase() || '',
+            h.nama_pihak || '',
+            h.uraian || '',
+            h.status?.toUpperCase() || '',
+            h.tanggal_jatuh_tempo || '',
+            h.nominal_total || 0,
+            h.nominal_dibayar || 0,
+            sisa
+          ])
+        })
+        const wsHutang = XLSX.utils.aoa_to_sheet(wsHutangData)
+        XLSX.utils.book_append_sheet(wb, wsHutang, 'Hutang Piutang')
+      }
+
+      // 3. Sheet Pembayaran Cicilan
+      if (dataPembayaran.length > 0) {
+        const wsPembayaranData = [
+          ['BACKUP DATA PEMBAYARAN HUTANG PIUTANG'],
+          ['Tanggal Backup', ':', new Date().toLocaleString()],
+          [],
+          ['No', 'ID Hutang', 'Tanggal', 'Nominal (Rp)', 'Catatan']
+        ]
+        dataPembayaran.forEach((p, i) => {
+          wsPembayaranData.push([
+            i + 1,
+            p.hutang_piutang_id || '',
+            p.tanggal || '',
+            p.nominal || 0,
+            p.catatan || ''
+          ])
+        })
+        const wsPembayaran = XLSX.utils.aoa_to_sheet(wsPembayaranData)
+        XLSX.utils.book_append_sheet(wb, wsPembayaran, 'Pembayaran Cicilan')
+      }
+
+      // Jika kosong semua tapi somehow sampai sini (harusnya tidak terjadi)
+      if (wb.SheetNames.length === 0) {
+        const ws = XLSX.utils.aoa_to_sheet([['Data Kosong']])
+        XLSX.utils.book_append_sheet(wb, ws, 'Data')
+      }
+
       XLSX.writeFile(wb, `Backup_Master_SIKAP_${new Date().toISOString().split('T')[0]}.xlsx`)
-      showToast(`Berhasil mengekspor ${data.length} transaksi!`)
+      showToast(`Berhasil mengekspor data ke Excel!`)
     } catch (e) {
       showToast('Gagal melakukan backup data.', 'error')
     } finally {

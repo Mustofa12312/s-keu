@@ -228,6 +228,12 @@ export const hutangService = {
     return data;
   },
 
+  async getAllPembayaran() {
+    const q = query(collection(db, 'pembayaran_hutang'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(mapDoc);
+  },
+
   async createPembayaran(hutangPiutangId, payload) {
     const docRef = await addDoc(collection(db, 'pembayaran_hutang'), { 
       ...payload, 
