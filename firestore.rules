@@ -52,13 +52,26 @@ service cloud.firestore {
 
     // Transaksi Collection
     match /transaksi/{transaksiId} {
-      // Anyone can read if they have access to the instansi
       allow read: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id);
-      
-      // Super admin can write anything, instansi admin can write to their own instansi
       allow create: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(request.resource.data.instansi_id) && !isViewer();
       allow update: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id) && hasInstansiAccess(request.resource.data.instansi_id) && !isViewer();
       allow delete: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id) && !isViewer();
+    }
+
+    // Hutang Piutang Collection
+    match /hutang_piutang/{hutangId} {
+      allow read: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id);
+      allow create: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(request.resource.data.instansi_id) && !isViewer();
+      allow update: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id) && hasInstansiAccess(request.resource.data.instansi_id) && !isViewer();
+      allow delete: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id) && !isViewer();
+    }
+
+    // Pembayaran Hutang Collection
+    match /pembayaran_hutang/{pembayaranId} {
+      allow read: if isAuthenticated() && isNotBlocked();
+      allow create: if isAuthenticated() && isNotBlocked() && !isViewer();
+      allow update: if isAuthenticated() && isNotBlocked() && !isViewer();
+      allow delete: if isAuthenticated() && isNotBlocked() && !isViewer();
     }
 
     // Pengaturan Collection

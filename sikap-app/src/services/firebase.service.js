@@ -135,6 +135,111 @@ export const transaksiService = {
   },
 }
 
+// ---- HUTANG PIUTANG ----
+export const hutangService = {
+  async getAll({ instansiId, jenis, search, orderDesc = false }) {
+    let constraints = [];
+    if (instansiId) constraints.push(where('instansi_id', '==', instansiId));
+    if (jenis) constraints.push(where('jenis', '==', jenis));
+    
+    constraints.push(limit(10000));
+
+    const q = query(collection(db, 'hutang_piutang'), ...constraints);
+    const snapshot = await getDocs(q);
+    let data = snapshot.docs.map(mapDoc);
+
+    // Sort in JS
+    data.sort((a, b) => {
+      const dateA = a.tanggal || '';
+      const dateB = b.tanggal || '';
+      if (dateA < dateB) return orderDesc ? 1 : -1;
+      if (dateA > dateB) return orderDesc ? -1 : 1;
+      const ca = a.created_at ? a.created_at.toMillis() : 0;
+      const cb = b.created_at ? b.created_at.toMillis() : 0;
+      return orderDesc ? cb - ca : ca - cb;
+    });
+
+    // Populate instansi
+    if (data.length > 0) {
+      const instansiSnap = await getDocs(collection(db, 'instansi'));
+      const instansiMap = {};
+      instansiSnap.forEach(d => { instansiMap[d.id] = mapDoc(d); });
+      data = data.map(t => ({ ...t, instansi: instansiMap[t.instansi_id] }));
+    }
+
+    if (search) {
+      const lowerSearch = search.toLowerCase();
+      data = data.filter(t => 
+        (t.uraian || '').toLowerCase().includes(lowerSearch) || 
+        (t.nama_pihak || '').toLowerCase().includes(lowerSearch)
+      );
+    }
+    return data;
+  },
+
+  async getById(id) {
+    const docRef = doc(db, 'hutang_piutang', id);
+    const snapshot = await getDoc(docRef);
+    if (!snapshot.exists()) throw new Error("Data not found");
+    return mapDoc(snapshot);
+  },
+
+  async create(payload) {
+    const docRef = await addDoc(collection(db, 'hutang_piutang'), { 
+      ...payload, 
+      created_at: serverTimestamp(),
+      updated_at: serverTimestamp() 
+    });
+    const snapshot = await getDoc(docRef);
+    return mapDoc(snapshot);
+  },
+
+  async update(id, payload) {
+    const docRef = doc(db, 'hutang_piutang', id);
+    await updateDoc(docRef, { ...payload, updated_at: serverTimestamp() });
+    const snapshot = await getDoc(docRef);
+    return mapDoc(snapshot);
+  },
+
+  async delete(id) {
+    // Delete payments first (if any)
+    const pSnap = await getDocs(query(collection(db, 'pembayaran_hutang'), where('hutang_piutang_id', '==', id)));
+    const batch = writeBatch(db);
+    pSnap.docs.forEach(d => batch.delete(d.ref));
+    batch.delete(doc(db, 'hutang_piutang', id));
+    await batch.commit();
+  },
+
+  // ---- PEMBAYARAN ----
+  async getPembayaran(hutangPiutangId) {
+    const q = query(collection(db, 'pembayaran_hutang'), where('hutang_piutang_id', '==', hutangPiutangId));
+    const snapshot = await getDocs(q);
+    let data = snapshot.docs.map(mapDoc);
+    data.sort((a, b) => {
+      const dateA = a.tanggal || '';
+      const dateB = b.tanggal || '';
+      if (dateA < dateB) return -1;
+      if (dateA > dateB) return 1;
+      return 0;
+    });
+    return data;
+  },
+
+  async createPembayaran(hutangPiutangId, payload) {
+    const docRef = await addDoc(collection(db, 'pembayaran_hutang'), { 
+      ...payload, 
+      hutang_piutang_id: hutangPiutangId,
+      created_at: serverTimestamp() 
+    });
+    const snapshot = await getDoc(docRef);
+    return mapDoc(snapshot);
+  },
+
+  async deletePembayaran(pembayaranId) {
+    await deleteDoc(doc(db, 'pembayaran_hutang', pembayaranId));
+  }
+}
+
 // ---- PROFILES ----
 export const profileService = {
   async getAll() {

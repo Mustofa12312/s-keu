@@ -16,6 +16,9 @@ import LaporanPage from './pages/Laporan/LaporanPage'
 import InstansiPage from './pages/Instansi/InstansiPage'
 import UsersPage from './pages/Users/UsersPage'
 import SettingsPage from './pages/Settings/SettingsPage'
+import HutangPiutangPage from './pages/HutangPiutang/HutangPiutangPage'
+import BukuKasHutangPiutangPage from './pages/HutangPiutang/BukuKasHutangPiutangPage'
+import LaporanHutangPiutangPage from './pages/HutangPiutang/LaporanHutangPiutangPage'
 
 export default function App() {
   return (
@@ -34,11 +37,18 @@ export default function App() {
             }
           >
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/transaksi" element={<TransaksiPage />} />
-            <Route path="/buku-kas" element={<BukuKasPage />} />
-            <Route path="/laporan" element={<LaporanPage />} />
-            <Route
-              path="/instansi"
+              <Route path="/transaksi" element={<TransaksiPage />} />
+              <Route path="/buku-kas" element={<BukuKasPage />} />
+              <Route path="/laporan" element={<LaporanPage />} />
+              
+              {/* Hutang Piutang */}
+              <Route path="/hutang" element={<HutangPiutangPage type="hutang" />} />
+              <Route path="/piutang" element={<HutangPiutangPage type="piutang" />} />
+              <Route path="/buku-kas-hutang" element={<BukuKasHutangPiutangPage />} />
+              <Route path="/laporan-hutang" element={<LaporanHutangPiutangPage />} />
+
+              <Route 
+                path="/instansi"
               element={
                 <ProtectedRoute adminOnly>
                   <InstansiPage />
