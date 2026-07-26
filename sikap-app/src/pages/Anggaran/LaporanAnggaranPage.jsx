@@ -17,6 +17,7 @@ export default function LaporanAnggaranPage() {
   const [selectedInstansi, setSelectedInstansi] = useState('')
   const [namaInstansi, setNamaInstansi] = useState('')
   const [toast, setToast] = useState(null)
+  const [settings, setSettings] = useState(null)
 
   function showToast(msg, type = 'success') {
     setToast({ msg, type })
@@ -24,8 +25,9 @@ export default function LaporanAnggaranPage() {
   }
 
   useEffect(() => {
-    pengaturanService.getSettings().then(settings => {
-      setTahunPelajaran(settings?.tahun_aktif || '1446')
+    pengaturanService.getSettings().then(res => {
+      setSettings(res)
+      setTahunPelajaran(res?.tahun_aktif || '1446')
     })
     if (isSuperAdmin) {
       instansiService.getAll().then(setInstansiList)
@@ -99,7 +101,7 @@ export default function LaporanAnggaranPage() {
 
   const handleExportPDF = () => {
     try {
-      exportRAPBMPDF({ dataPendapatan, dataBelanja, namaInstansi, tahunPelajaran })
+      exportRAPBMPDF({ dataPendapatan, dataBelanja, namaInstansi, tahunPelajaran, settings })
     } catch (err) {
       console.error(err)
       showToast('Gagal export ke PDF', 'error')
@@ -216,24 +218,6 @@ export default function LaporanAnggaranPage() {
           </button>
         </div>
       </div>
-
-      {isSuperAdmin && (
-        <div className="card p-4 no-print bg-slate-50 border border-slate-200 flex gap-4 items-end">
-          <div className="flex-1 max-w-xs">
-            <label className="label">Filter Instansi</label>
-            <select
-              className="input"
-              value={selectedInstansi}
-              onChange={(e) => setSelectedInstansi(e.target.value)}
-            >
-              <option value="">-- Semua Instansi --</option>
-              {instansiList.map((ins) => (
-                <option key={ins.id} value={ins.id}>{ins.nama}</option>
-              ))}
-            </select>
-          </div>
-        </div>
-      )}
 
       {loading ? (
         <div className="p-5 space-y-4 no-print">
