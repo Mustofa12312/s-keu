@@ -81,5 +81,21 @@ service cloud.firestore {
       // Only super admin can modify
       allow write: if isSuperAdmin();
     }
+
+    // Anggaran Collection
+    match /anggaran/{anggaranId} {
+      allow read: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id);
+      allow create: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(request.resource.data.instansi_id) && !isViewer();
+      allow update: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id) && hasInstansiAccess(request.resource.data.instansi_id) && !isViewer();
+      allow delete: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id) && !isViewer();
+    }
+
+    // Realisasi Anggaran Collection
+    match /realisasi_anggaran/{realisasiId} {
+      allow read: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id);
+      allow create: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(request.resource.data.instansi_id) && !isViewer();
+      allow update: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id) && hasInstansiAccess(request.resource.data.instansi_id) && !isViewer();
+      allow delete: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id) && !isViewer();
+    }
   }
 }

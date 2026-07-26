@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { PrinterIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
-import { useReactToPrint } from 'react-to-print'
 import * as XLSX from 'xlsx'
+import { exportRAPBMPDF } from '../../utils/exportPDF'
 import { useAuth } from '../../context/AuthContext'
 import { anggaranService } from '../../services/anggaran.service'
 import { pengaturanService, instansiService } from '../../services/firebase.service'
@@ -22,8 +22,6 @@ export default function LaporanAnggaranPage() {
     setToast({ msg, type })
     setTimeout(() => setToast(null), 3000)
   }
-
-  const printRef = useRef()
 
   useEffect(() => {
     pengaturanService.getSettings().then(settings => {
@@ -99,10 +97,14 @@ export default function LaporanAnggaranPage() {
     }
   }
 
-  const handlePrint = useReactToPrint({
-    content: () => printRef.current,
-    documentTitle: `Laporan_RAPBM_${tahunPelajaran}`
-  })
+  const handleExportPDF = () => {
+    try {
+      exportRAPBMPDF({ dataPendapatan, dataBelanja, namaInstansi, tahunPelajaran })
+    } catch (err) {
+      console.error(err)
+      showToast('Gagal export ke PDF', 'error')
+    }
+  }
 
   const handleExportExcel = () => {
     try {
@@ -204,7 +206,7 @@ export default function LaporanAnggaranPage() {
           <p className="text-sm text-slate-500 mt-1">Laporan Realisasi Anggaran Pendapatan dan Belanja Madrasah</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={handlePrint} className="btn-secondary flex items-center gap-2">
+          <button onClick={handleExportPDF} className="btn-secondary flex items-center gap-2">
             <PrinterIcon className="w-5 h-5" />
             <span>Cetak PDF</span>
           </button>
@@ -238,7 +240,7 @@ export default function LaporanAnggaranPage() {
           {[1, 2, 3, 4].map(n => <div key={n} className="h-10 skeleton w-full" />)}
         </div>
       ) : (
-        <div className="card p-8 bg-white print:shadow-none print:border-none print:p-0 overflow-x-auto" ref={printRef}>
+        <div className="card p-8 bg-white print:shadow-none print:border-none print:p-0 overflow-x-auto">
           <div className="text-center mb-10">
             <h1 className="text-xl font-bold text-slate-800 uppercase print:text-black">Laporan Realisasi Anggaran</h1>
             <h2 className="text-lg font-bold text-slate-700 uppercase print:text-black">{namaInstansi}</h2>

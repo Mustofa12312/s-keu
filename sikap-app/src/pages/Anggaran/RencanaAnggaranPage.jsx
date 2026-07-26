@@ -294,10 +294,10 @@ export default function RencanaAnggaranPage() {
 
           {/* Datalists for Autocomplete */}
           <datalist id="kode-list">
-            {referensiAnggaran.anggaran.map(item => <option key={item.kode} value={item.kode}>{item.uraian}</option>)}
+            {activeReferensi.map(item => <option key={item.kode} value={item.kode}>{item.uraian}</option>)}
           </datalist>
           <datalist id="uraian-list">
-            {referensiAnggaran.anggaran.map(item => <option key={item.kode} value={item.uraian} />)}
+            {activeReferensi.map(item => <option key={item.kode} value={item.uraian} />)}
           </datalist>
           <datalist id="pelaksana-list">
             {referensiAnggaran.pelaksanaOptions.map(opt => <option key={opt} value={opt} />)}

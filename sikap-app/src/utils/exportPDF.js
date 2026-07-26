@@ -201,3 +201,101 @@ export function exportLaporanPDF({ bulanSummary, summary, instansiNama, jenis, f
 
   doc.save(`Laporan_${jenis}_${tahun}.pdf`)
 }
+
+/**
+ * Export Laporan RAPBM ke PDF — format A4 landscape
+ */
+export function exportRAPBMPDF({ dataPendapatan, dataBelanja, namaInstansi, tahunPelajaran }) {
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
+  const pageW = doc.internal.pageSize.getWidth()
+  const margin = 15
+
+  // Header
+  doc.setFontSize(13)
+  doc.setFont('helvetica', 'bold')
+  doc.text('LAPORAN REALISASI ANGGARAN', pageW / 2, 18, { align: 'center' })
+  doc.setFontSize(11)
+  doc.text(namaInstansi || 'Seluruh Instansi', pageW / 2, 24, { align: 'center' })
+  doc.setFontSize(10)
+  doc.setFont('helvetica', 'normal')
+  doc.text(`Tahun Pelajaran ${tahunPelajaran}`, pageW / 2, 30, { align: 'center' })
+
+  let currentY = 40
+
+  const prepTable = (data, title, totalLabel) => {
+    if (!data || data.length === 0) return
+
+    doc.setFontSize(11)
+    doc.setFont('helvetica', 'bold')
+    doc.setTextColor(0)
+    doc.text(title, margin, currentY)
+    currentY += 4
+
+    const sumAnggaran = data.reduce((a, c) => a + (c.jumlah || 0), 0)
+    const sumRealisasi = data.reduce((a, c) => a + (c.total_realisasi || 0), 0)
+    const sumSisa = sumAnggaran - sumRealisasi
+
+    const rows = data.map(r => [
+      r.kode,
+      r.uraian,
+      r.waktu_pelaksanaan,
+      r.pelaksana,
+      r.volume,
+      r.satuan,
+      formatRupiah(r.harga_satuan),
+      formatRupiah(r.jumlah),
+      formatRupiah(r.total_realisasi),
+      formatRupiah(r.sisa)
+    ])
+
+    autoTable(doc, {
+      startY: currentY,
+      head: [['Kode', 'Uraian', 'Waktu Pelaks.', 'Pelaksana', 'Vol', 'Satuan', 'Harga Satuan', 'Jml Anggaran', 'Terealisasi', 'Sisa']],
+      body: [
+        ...rows,
+        [{ content: totalLabel, colSpan: 7, styles: { halign: 'right', fontStyle: 'bold' } }, 
+         formatRupiah(sumAnggaran), formatRupiah(sumRealisasi), formatRupiah(sumSisa)]
+      ],
+      styles: { fontSize: 8, cellPadding: 2 },
+      headStyles: { fillColor: [5, 150, 105], textColor: 255, fontStyle: 'bold' },
+      columnStyles: {
+        0: { cellWidth: 15, halign: 'center' },
+        1: { cellWidth: 'auto' },
+        2: { cellWidth: 35 },
+        3: { cellWidth: 35 },
+        4: { cellWidth: 10, halign: 'center' },
+        5: { cellWidth: 15 },
+        6: { halign: 'right', cellWidth: 25 },
+        7: { halign: 'right', fontStyle: 'bold', cellWidth: 28 },
+        8: { halign: 'right', textColor: [5, 150, 105], fontStyle: 'bold', cellWidth: 28 },
+        9: { halign: 'right', cellWidth: 25 },
+      },
+      theme: 'grid',
+    })
+
+    currentY = doc.lastAutoTable.finalY + 10
+  }
+
+  prepTable(dataPendapatan, 'A. PENDAPATAN', 'TOTAL PENDAPATAN')
+  prepTable(dataBelanja, 'B. BELANJA', 'TOTAL BELANJA')
+
+  // TTD
+  if (currentY > doc.internal.pageSize.getHeight() - 40) {
+    doc.addPage()
+    currentY = 20
+  }
+
+  const ttdY = currentY + 10
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(10)
+  doc.setTextColor(0)
+  
+  // Kiri (Mengetahui)
+  doc.text('Mengetahui ;', margin + 10, ttdY)
+  doc.text(`Kepala ${namaInstansi || 'Madrasah'}`, margin + 10, ttdY + 25)
+  
+  // Kanan (Bendahara)
+  doc.text('Bendahara', pageW - margin - 40, ttdY + 25, { align: 'center' })
+
+  doc.save(`Laporan_RAPBM_${namaInstansi || 'Semua'}_${tahunPelajaran}.pdf`)
+}
