@@ -85,7 +85,7 @@
 
   /* === STAT CARD === */
   .stat-card {
-    @apply card p-5 flex items-start gap-4;
+    @apply card p-5 flex items-start gap-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-emerald-100;
   }
   .stat-icon {
     @apply w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0;
@@ -110,13 +110,13 @@
 
   /* === SIDEBAR === */
   .sidebar-link {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-300 hover:bg-slate-800 hover:text-white hover:translate-x-1 transition-all duration-300 border border-transparent;
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 hover:translate-x-1 transition-all duration-300 border border-transparent;
   }
   .sidebar-link.active {
-    @apply bg-emerald-500/20 text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.1)] border-emerald-500/20;
+    @apply bg-emerald-600 text-white shadow-md shadow-emerald-200;
   }
   .sidebar-link.active svg {
-    @apply text-emerald-400 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)];
+    @apply text-white;
   }
 
   /* === MODAL === */
@@ -143,6 +143,11 @@
     body { background: white !important; }
   }
   .print-only { display: none; }
+
+  /* === SKELETON === */
+  .skeleton {
+    @apply animate-pulse bg-slate-200 rounded;
+  }
 }
 
 @layer utilities {

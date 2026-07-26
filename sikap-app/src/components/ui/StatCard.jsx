@@ -1,7 +1,20 @@
 // ============================================================
 // src/components/ui/StatCard.jsx
 // ============================================================
-export default function StatCard({ icon: Icon, iconBg, iconColor, label, value, sub, trend }) {
+export default function StatCard({ icon: Icon, iconBg, iconColor, label, value, sub, trend, loading }) {
+  if (loading) {
+    return (
+      <div className="stat-card">
+        <div className="w-11 h-11 rounded-xl skeleton flex-shrink-0" />
+        <div className="flex-1 min-w-0 space-y-2 py-1">
+          <div className="h-3 w-20 skeleton" />
+          <div className="h-6 w-32 skeleton" />
+          <div className="h-3 w-24 skeleton" />
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="stat-card animate-slide-in">
       <div className={`stat-icon ${iconBg}`}>

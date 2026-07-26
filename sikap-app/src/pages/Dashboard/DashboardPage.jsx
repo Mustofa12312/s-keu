@@ -218,12 +218,12 @@ export default function DashboardPage() {
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[1, 2, 3].map(n => (
-              <div key={n} className="card p-5 h-24 animate-pulse bg-slate-100" />
+              <StatCard key={n} loading={true} />
             ))}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {[4, 5].map(n => (
-              <div key={n} className="card p-5 h-24 animate-pulse bg-slate-100" />
+              <StatCard key={n} loading={true} />
             ))}
           </div>
         </div>

@@ -92,7 +92,7 @@ export default function Sidebar({ open, onClose }) {
   }
 
   const sidebarClass = `
-    fixed inset-y-0 left-0 z-40 w-64 bg-slate-900 border-r border-slate-800 flex flex-col
+    fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-100 flex flex-col
     transform transition-transform duration-200 ease-in-out shadow-2xl
     ${open ? 'translate-x-0' : '-translate-x-full'}
     lg:translate-x-0 lg:static lg:z-auto
@@ -110,27 +110,27 @@ export default function Sidebar({ open, onClose }) {
 
       <aside className={sidebarClass}>
         {/* Logo */}
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-800">
-          <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center flex-shrink-0 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+        <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-100">
+          <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center flex-shrink-0 shadow-sm shadow-emerald-200">
             <ShieldCheckIcon className="w-5 h-5 text-white" />
           </div>
           <div>
-            <p className="text-sm font-bold text-white font-display leading-tight">SIKAP</p>
-            <p className="text-[10px] text-slate-400 leading-tight">Darur Rohman</p>
+            <p className="text-sm font-bold text-slate-800 font-display leading-tight">SIKAP</p>
+            <p className="text-[10px] text-slate-500 leading-tight">Darur Rohman</p>
           </div>
         </div>
 
         {/* Profile mini */}
-        <div className="p-4 border-b border-slate-800 bg-slate-900/50">
+        <div className="p-4 border-b border-slate-100 bg-slate-50/50">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center flex-shrink-0 border border-emerald-500/20">
-              <span className="text-sm font-bold text-emerald-400">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 border border-emerald-200">
+              <span className="text-sm font-bold text-emerald-700">
                 {profile?.nama?.[0]?.toUpperCase() || 'U'}
               </span>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold text-white truncate">{profile?.nama || 'User'}</p>
-              <p className="text-xs text-slate-400 truncate capitalize">{profile?.role?.replace('_', ' ') || '-'}</p>
+              <p className="text-sm font-bold text-slate-800 truncate">{profile?.nama || 'User'}</p>
+              <p className="text-xs text-slate-500 truncate capitalize">{profile?.role?.replace('_', ' ') || '-'}</p>
             </div>
           </div>
           
@@ -182,20 +182,20 @@ export default function Sidebar({ open, onClose }) {
                 <button
                   onClick={() => setOpenGroup(isOpen && !isActiveGroup ? '' : group.label)}
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 
-                    ${isActiveGroup ? 'bg-emerald-500/10 text-emerald-400 shadow-[inset_4px_0_0_rgba(16,185,129,1)]' : 'text-slate-300 hover:bg-slate-800 hover:text-white hover:translate-x-1'}`}
+                    ${isActiveGroup ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 hover:translate-x-1'}`}
                 >
                   <div className="flex items-center gap-3">
-                    <group.icon className={`w-5 h-5 ${isActiveGroup ? 'text-emerald-400 drop-shadow-[0_0_5px_rgba(16,185,129,0.5)]' : 'text-slate-500'}`} />
+                    <group.icon className={`w-5 h-5 ${isActiveGroup ? 'text-emerald-600' : 'text-slate-400'}`} />
                     <div className="flex items-center gap-2">
                       <span>{group.label}</span>
                       {group.label === 'Hutang Piutang' && overdueCount > 0 && (
-                        <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full animate-pulse shadow-sm shadow-red-500/50">
+                        <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full animate-pulse shadow-sm shadow-red-200">
                           {overdueCount}
                         </span>
                       )}
                     </div>
                   </div>
-                  <ChevronDownIcon className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''} ${isActiveGroup ? 'text-emerald-400' : 'text-slate-500'}`} />
+                  <ChevronDownIcon className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''} ${isActiveGroup ? 'text-emerald-600' : 'text-slate-400'}`} />
                 </button>
                 
                 {isOpen && (
@@ -204,7 +204,7 @@ export default function Sidebar({ open, onClose }) {
                       <NavLink
                         key={item.to}
                         to={item.to}
-                        className={({ isActive }) => `flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${isActive ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]' : 'text-slate-400 hover:bg-slate-800 hover:text-white hover:translate-x-1 border border-transparent'}`}
+                        className={({ isActive }) => `flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${isActive ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700 hover:translate-x-1 border border-transparent'}`}
                         onClick={onClose}
                       >
                         <item.icon className="w-4 h-4" />
@@ -219,7 +219,7 @@ export default function Sidebar({ open, onClose }) {
 
           {isSuperAdmin && (
             <>
-              <p className="px-3 py-1.5 mt-4 text-[10px] font-bold uppercase tracking-widest text-slate-500">Administrasi</p>
+              <p className="px-3 py-1.5 mt-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Administrasi</p>
               {adminItems.map(({ to, label, icon: Icon }) => (
                 <NavLink
                   key={to}
@@ -238,10 +238,10 @@ export default function Sidebar({ open, onClose }) {
         </nav>
 
         {/* Logout */}
-        <div className="px-3 pb-4 pt-3 border-t border-slate-800">
+        <div className="px-3 pb-4 pt-3 border-t border-slate-100">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:translate-x-1 transition-all duration-300"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 hover:translate-x-1 transition-all duration-300"
           >
             <ArrowRightOnRectangleIcon style={{ width: '18px', height: '18px' }} />
             <span>Keluar</span>
