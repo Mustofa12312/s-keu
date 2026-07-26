@@ -1,7 +1,8 @@
 // ============================================================
 // src/components/layout/Sidebar.jsx
 // ============================================================
-import { NavLink, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import {
   HomeIcon,
@@ -13,13 +14,40 @@ import {
   ArrowRightOnRectangleIcon,
   ShieldCheckIcon,
   Cog6ToothIcon,
+  ChevronDownIcon,
+  ArrowsRightLeftIcon,
+  ArrowDownCircleIcon,
+  ArrowUpCircleIcon,
+  WalletIcon,
+  ClipboardDocumentCheckIcon
 } from '@heroicons/react/24/outline'
 
-const navItems = [
-  { to: '/dashboard',  label: 'Dashboard',   icon: HomeIcon },
-  { to: '/transaksi',  label: 'Transaksi',   icon: BanknotesIcon },
-  { to: '/buku-kas',   label: 'Buku Kas Umum', icon: BookOpenIcon },
-  { to: '/laporan',    label: 'Laporan',     icon: DocumentChartBarIcon },
+const menuGroups = [
+  {
+    label: 'Utama',
+    items: [
+      { to: '/dashboard', label: 'Dashboard', icon: HomeIcon },
+    ]
+  },
+  {
+    label: 'Transaksi Kas',
+    icon: BanknotesIcon,
+    items: [
+      { to: '/transaksi',  label: 'Masuk & Keluar',   icon: ArrowsRightLeftIcon },
+      { to: '/buku-kas',   label: 'Buku Kas',         icon: BookOpenIcon },
+      { to: '/laporan',    label: 'Laporan Kas',      icon: DocumentChartBarIcon },
+    ]
+  },
+  {
+    label: 'Hutang Piutang',
+    icon: WalletIcon,
+    items: [
+      { to: '/hutang',           label: 'Data Hutang',       icon: ArrowDownCircleIcon },
+      { to: '/piutang',          label: 'Data Piutang',      icon: ArrowUpCircleIcon },
+      { to: '/buku-kas-hutang',  label: 'Buku Kas Hutang',   icon: BookOpenIcon },
+      { to: '/laporan-hutang',   label: 'Laporan Hutang',    icon: ClipboardDocumentCheckIcon },
+    ]
+  }
 ]
 
 const adminItems = [
@@ -31,6 +59,8 @@ const adminItems = [
 export default function Sidebar({ open, onClose }) {
   const { profile, logout, isSuperAdmin } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const [openGroup, setOpenGroup] = useState('Utama')
 
   async function handleLogout() {
     await logout()
@@ -96,23 +126,65 @@ export default function Sidebar({ open, onClose }) {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-0.5">
-          <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-400">Menu Utama</p>
-          {navItems
-            .filter(item => isSuperAdmin || !profile?.akses_menu || profile.akses_menu.includes(item.to))
-            .map(({ to, label, icon: Icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                `sidebar-link ${isActive ? 'active' : ''}`
-              }
-              onClick={onClose}
-            >
-              <Icon className="w-4.5 h-4.5 flex-shrink-0" style={{ width: '18px', height: '18px' }} />
-              <span>{label}</span>
-            </NavLink>
-          ))}
+        <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
+          {menuGroups.map((group, idx) => {
+            if (group.label === 'Utama') {
+              return group.items.map(item => {
+                const canAccess = isSuperAdmin || !profile?.akses_menu || profile.akses_menu.includes(item.to);
+                if (!canAccess) return null;
+                return (
+                  <NavLink
+                    key={item.to}
+                    to={item.to}
+                    className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+                    onClick={onClose}
+                  >
+                    <item.icon className="w-5 h-5 flex-shrink-0" />
+                    <span>{item.label}</span>
+                  </NavLink>
+                )
+              });
+            }
+
+            // Accordion Groups
+            const isActiveGroup = group.items.some(i => location.pathname.startsWith(i.to));
+            const isOpen = openGroup === group.label || isActiveGroup;
+
+            const visibleItems = group.items.filter(item => isSuperAdmin || !profile?.akses_menu || profile.akses_menu.includes(item.to));
+            if (visibleItems.length === 0) return null;
+
+            return (
+              <div key={idx} className="space-y-0.5">
+                <button
+                  onClick={() => setOpenGroup(isOpen && !isActiveGroup ? '' : group.label)}
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 
+                    ${isActiveGroup ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800'}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <group.icon className={`w-5 h-5 ${isActiveGroup ? 'text-emerald-600' : 'text-slate-400'}`} />
+                    <span>{group.label}</span>
+                  </div>
+                  <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''} ${isActiveGroup ? 'text-emerald-600' : 'text-slate-400'}`} />
+                </button>
+                
+                {isOpen && (
+                  <div className="pl-11 pr-2 py-1 space-y-0.5 animate-slide-in">
+                    {visibleItems.map(item => (
+                      <NavLink
+                        key={item.to}
+                        to={item.to}
+                        className={({ isActive }) => `flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${isActive ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'}`}
+                        onClick={onClose}
+                      >
+                        <item.icon className="w-4 h-4" />
+                        <span>{item.label}</span>
+                      </NavLink>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
 
           {isSuperAdmin && (
             <>

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
-import '../../core/supabase_client.dart';
+import '../../core/firebase_client.dart';
 import '../../shared/widgets/app_widgets.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -28,13 +28,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() { _loading = true; _error = null; });
     try {
-      await supabase.auth.signInWithPassword(
+      await FirebaseClient.auth.signInWithEmailAndPassword(
         email: _emailCtrl.text.trim(),
         password: _passCtrl.text,
       );
       if (mounted) context.go(AppStrings.routeDashboard);
-    } on AuthException catch (e) {
-      setState(() => _error = _translateError(e.message));
+    } on FirebaseAuthException catch (e) {
+      setState(() => _error = _translateError(e.message ?? ''));
     } catch (e) {
       setState(() => _error = 'Terjadi kesalahan. Coba lagi.');
     } finally {
@@ -231,7 +231,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     children: const [
                       Icon(Icons.lock_rounded, size: 14, color: AppColors.emerald500),
                       SizedBox(width: 6),
-                      Text('Diproteksi oleh Supabase Auth', style: TextStyle(color: AppColors.dark400, fontSize: 12)),
+                      Text('Diproteksi oleh Firebase Auth', style: TextStyle(color: AppColors.dark400, fontSize: 12)),
                     ],
                   ),
                 ],

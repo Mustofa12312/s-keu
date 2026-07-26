@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
-import '../../core/supabase_client.dart';
+import '../../core/firebase_client.dart';
 import '../../providers/app_providers.dart';
 import '../../shared/widgets/app_widgets.dart';
 
@@ -119,8 +119,8 @@ class ProfileScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   _InfoTile(icon: Icons.info_outline_rounded, label: 'Versi', value: '1.0.0'),
-                  _InfoTile(icon: Icons.cloud_rounded, label: 'Backend', value: 'Supabase Cloud'),
-                  _InfoTile(icon: Icons.security_rounded, label: 'Keamanan', value: 'Row Level Security (RLS)', isLast: true),
+                  _InfoTile(icon: Icons.cloud_rounded, label: 'Backend', value: 'Firebase Cloud'),
+                  _InfoTile(icon: Icons.security_rounded, label: 'Keamanan', value: 'Security Rules', isLast: true),
                 ],
               ),
             ).animate(delay: 200.ms).fadeIn(duration: 400.ms),
@@ -163,7 +163,7 @@ class ProfileScreen extends ConsumerWidget {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-              await supabase.auth.signOut();
+              await FirebaseClient.auth.signOut();
               if (context.mounted) context.go(AppStrings.routeLogin);
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),

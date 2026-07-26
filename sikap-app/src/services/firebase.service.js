@@ -38,21 +38,38 @@ export const instansiService = {
 
 // ---- TRANSAKSI ----
 export const transaksiService = {
-  async getAll({ instansiId, bulanHijriyah, tahunHijriyah, search, tglMulai, tglAkhir, limitCount = 100000, orderDesc = false }) {
+  async getAll({ instansiId, bulanHijriyah, tahunHijriyah, search, tglMulai, tglAkhir, limitCount = 10000, orderDesc = false }) {
     let constraints = [];
     if (instansiId) constraints.push(where('instansi_id', '==', instansiId));
     if (bulanHijriyah) constraints.push(where('bulan_hijriyah', '==', bulanHijriyah));
     if (tahunHijriyah) constraints.push(where('tahun_hijriyah', '==', tahunHijriyah));
-    if (tglMulai) constraints.push(where('tanggal', '>=', tglMulai));
-    if (tglAkhir) constraints.push(where('tanggal', '<=', tglAkhir));
     
-    constraints.push(orderBy('tanggal', orderDesc ? 'desc' : 'asc'));
     constraints.push(limit(limitCount));
 
     const q = query(collection(db, 'transaksi'), ...constraints);
     const snapshot = await getDocs(q);
     
     let data = snapshot.docs.map(mapDoc);
+
+    // Filter range in JS to avoid composite index requirement
+    if (tglMulai) {
+      data = data.filter(t => t.tanggal && t.tanggal >= tglMulai);
+    }
+    if (tglAkhir) {
+      data = data.filter(t => t.tanggal && t.tanggal <= tglAkhir);
+    }
+
+    // Sort in JS to avoid composite index requirement
+    data.sort((a, b) => {
+      const dateA = a.tanggal || '';
+      const dateB = b.tanggal || '';
+      if (dateA < dateB) return orderDesc ? 1 : -1;
+      if (dateA > dateB) return orderDesc ? -1 : 1;
+      // if same date, sort by created_at
+      const ca = a.created_at ? a.created_at.toMillis() : 0;
+      const cb = b.created_at ? b.created_at.toMillis() : 0;
+      return orderDesc ? cb - ca : ca - cb;
+    });
 
     // Fetch instansi to populate (since Firestore doesn't have joins)
     if (data.length > 0) {
@@ -134,7 +151,7 @@ export const profileService = {
     return data;
   },
   async create(authUser, payload) {
-    const docRef = doc(db, 'profiles', authUser.id);
+    const docRef = doc(db, 'profiles', authUser.uid);
     await setDoc(docRef, { ...payload, email: authUser.email, created_at: serverTimestamp() });
     const snapshot = await getDoc(docRef);
     return mapDoc(snapshot);

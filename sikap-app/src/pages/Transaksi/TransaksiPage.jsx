@@ -266,7 +266,7 @@ export default function TransaksiPage() {
             uraian:           uraianBersih,
             sumber_dana:      sumberDana?.toString() || null,
             nominal:          nominalBersih,
-            created_by:       user?.id
+            created_by:       user?.uid
           }
 
           // Cek duplikasi
@@ -400,7 +400,7 @@ export default function TransaksiPage() {
         ...form,
         nominal: parseInt(form.nominal) || 0,
         instansi_id: finalInstansiId,
-        created_by: user?.id,
+        created_by: user?.uid,
       }
       if (editRow) await transaksiService.update(editRow.id, payload)
       else await transaksiService.create(payload)
@@ -753,6 +753,11 @@ export default function TransaksiPage() {
             <label className="label">Nominal (Rp)</label>
             <input type="number" className="input" placeholder="0" min="0"
               value={form.nominal} onChange={e => setForm(f => ({...f, nominal: e.target.value}))} />
+            {form.nominal && (
+              <p className="text-xs text-emerald-600 font-semibold mt-1.5 ml-1">
+                {formatRupiah(Number(form.nominal))}
+              </p>
+            )}
           </div>
           <div>
             <label className="label">Tanggal Masehi</label>

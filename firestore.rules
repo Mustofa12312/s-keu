@@ -1,0 +1,72 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserData() {
+      return get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data;
+    }
+    
+    function isSuperAdmin() {
+      return isAuthenticated() && getUserData().role == 'super_admin';
+    }
+    
+    function isInstansiAdmin() {
+      return isAuthenticated() && getUserData().role == 'admin_instansi';
+    }
+    
+    function isViewer() {
+      return isAuthenticated() && getUserData().role == 'viewer';
+    }
+    
+    function hasInstansiAccess(instansiId) {
+      return isSuperAdmin() || (getUserData().instansi_id == instansiId);
+    }
+    
+    function isNotBlocked() {
+      return isAuthenticated() && getUserData().role != 'blocked';
+    }
+
+    // Profiles Collection
+    match /profiles/{userId} {
+      allow read: if isAuthenticated() && isNotBlocked();
+      // Allow user creation when they don't have a profile yet (temp allow creation)
+      allow create: if isAuthenticated();
+      // Allow updates if it's their own profile or by super admin
+      allow update: if isAuthenticated() && isNotBlocked() && (request.auth.uid == userId || isSuperAdmin());
+      allow delete: if isSuperAdmin();
+    }
+
+    // Instansi Collection
+    match /instansi/{instansiId} {
+      // Everyone who is authenticated and not blocked can read
+      allow read: if isAuthenticated() && isNotBlocked();
+      // Only super admin can modify instansi
+      allow write: if isSuperAdmin();
+    }
+
+    // Transaksi Collection
+    match /transaksi/{transaksiId} {
+      // Anyone can read if they have access to the instansi
+      allow read: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id);
+      
+      // Super admin can write anything, instansi admin can write to their own instansi
+      allow create: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(request.resource.data.instansi_id) && !isViewer();
+      allow update: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id) && hasInstansiAccess(request.resource.data.instansi_id) && !isViewer();
+      allow delete: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id) && !isViewer();
+    }
+
+    // Pengaturan Collection
+    match /pengaturan/{docId} {
+      // Everyone can read
+      allow read: if isAuthenticated() && isNotBlocked();
+      // Only super admin can modify
+      allow write: if isSuperAdmin();
+    }
+  }
+}
