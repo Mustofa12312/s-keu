@@ -249,13 +249,6 @@ export default function LaporanAnggaranPage() {
 
           {renderTable(dataPendapatan, 'A. Pendapatan', 'Total Pendapatan')}
           {renderTable(dataBelanja, 'B. Belanja', 'Total Belanja')}
-
-          <div className="mt-8 flex justify-end print-only">
-            <div className="text-center w-64">
-              <p className="mb-20">Kepala Madrasah / Bendahara,</p>
-              <p className="font-bold border-b border-black pb-1 inline-block min-w-[200px]"></p>
-            </div>
-          </div>
         </div>
       )}
 
