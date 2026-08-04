@@ -19,7 +19,15 @@ class DashboardScreen extends ConsumerWidget {
     final dashboardAsync = ref.watch(dashboardProvider);
 
     return Scaffold(
-      body: CustomScrollView(
+      body: RefreshIndicator(
+        color: AppColors.emerald400,
+        backgroundColor: AppColors.dark800,
+        onRefresh: () async {
+          ref.invalidate(dashboardProvider);
+          ref.invalidate(profileProvider);
+          await ref.read(dashboardProvider.future).catchError((_) {});
+        },
+        child: CustomScrollView(
         slivers: [
           // ── Flexible App Bar ──
           SliverAppBar(
@@ -123,7 +131,9 @@ class DashboardScreen extends ConsumerWidget {
                     title: 'Saldo Akhir',
                     amount: data.saldo,
                     icon: Icons.account_balance_wallet_rounded,
-                    gradient: AppColors.balanceGradient,
+                    gradient: data.saldo < 0 
+                        ? AppColors.expenseGradient 
+                        : AppColors.balanceGradient,
                     index: 2,
                   ),
 
@@ -133,6 +143,22 @@ class DashboardScreen extends ConsumerWidget {
                   if (data.chartData.isNotEmpty) ...[
                     SectionHeader(title: 'Grafik Transaksi Bulanan'),
                     const SizedBox(height: 12),
+                    // Chart Legend
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(width: 12, height: 12,
+                          decoration: BoxDecoration(color: AppColors.emerald500, borderRadius: BorderRadius.circular(2))),
+                        const SizedBox(width: 6),
+                        const Text('Pemasukan', style: TextStyle(color: AppColors.dark400, fontSize: 11)),
+                        const SizedBox(width: 20),
+                        Container(width: 12, height: 12,
+                          decoration: BoxDecoration(color: AppColors.error, borderRadius: BorderRadius.circular(2))),
+                        const SizedBox(width: 6),
+                        const Text('Pengeluaran', style: TextStyle(color: AppColors.dark400, fontSize: 11)),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
                     GlassCard(
                       padding: const EdgeInsets.all(16),
                       child: SizedBox(
@@ -154,6 +180,7 @@ class DashboardScreen extends ConsumerWidget {
                     const EmptyState(message: 'Belum ada transaksi', icon: Icons.receipt_long_rounded)
                   else
                     ...data.recentTransaksi.asMap().entries.map((entry) {
+                      if (entry.value is! TransaksiModel) return const SizedBox.shrink();
                       final t = entry.value as TransaksiModel;
                       return _RecentTransaksiCard(transaksi: t, index: entry.key);
                     }),
@@ -164,6 +191,7 @@ class DashboardScreen extends ConsumerWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }

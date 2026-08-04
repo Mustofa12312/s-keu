@@ -106,7 +106,8 @@ class ExportUtils {
                 if (t.isPemasukan) runSaldo += t.nominal;
                 else runSaldo -= t.nominal;
                 return [
-                  t.tanggal ?? '', t.tanggalHijriyah ?? '', t.kodeTransaksi ?? '', t.nomorBukti ?? '',
+                  t.tanggal != null ? FormatUtils.date(t.tanggal!) : '', 
+                  t.tanggalHijriyah ?? '', t.kodeTransaksi ?? '', t.nomorBukti ?? '',
                   t.uraian, t.sumberDana ?? '',
                   t.isPemasukan ? FormatUtils.rupiah(t.nominal).replaceAll('Rp', '').trim() : '',
                   t.isPengeluaran ? FormatUtils.rupiah(t.nominal).replaceAll('Rp', '').trim() : '',
@@ -215,7 +216,7 @@ class ExportUtils {
       if (t.isPemasukan) saldo += t.nominal;
       else saldo -= t.nominal;
       sheet.appendRow([
-        TextCellValue(t.tanggal ?? ''),
+        TextCellValue(t.tanggal != null ? FormatUtils.date(t.tanggal!) : ''),
         TextCellValue(t.tanggalHijriyah ?? ''),
         TextCellValue(t.kodeTransaksi ?? ''),
         TextCellValue(t.nomorBukti ?? ''),

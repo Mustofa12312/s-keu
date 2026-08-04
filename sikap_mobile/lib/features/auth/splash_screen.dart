@@ -63,7 +63,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
                     gradient: AppColors.primaryGradient,
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.emerald500.withOpacity(0.3 + _pulseCtrl.value * 0.2),
+                        color: AppColors.emerald500.withValues(alpha: 0.3 + _pulseCtrl.value * 0.2),
                         blurRadius: 30 + _pulseCtrl.value * 20,
                         spreadRadius: 5 + _pulseCtrl.value * 5,
                       ),
