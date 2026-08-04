@@ -242,6 +242,7 @@ class _BukuKasScreenState extends ConsumerState<BukuKasScreen> {
                     .where((t) => t.isPengeluaran)
                     .fold(0, (s, t) => s + t.nominal);
                 final saldo = totalPem - totalPen;
+                final saldoColor = saldo < 0 ? AppColors.error : AppColors.info;
 
                 return Column(
                   children: [
@@ -265,7 +266,7 @@ class _BukuKasScreenState extends ConsumerState<BukuKasScreen> {
                           _SummaryChip(
                               label: 'Saldo',
                               value: saldo,
-                              color: AppColors.info),
+                              color: saldoColor),
                         ],
                       ),
                     ),
