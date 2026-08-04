@@ -146,7 +146,7 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
                   backgroundColor: AppColors.dark800,
                   onRefresh: () async {
                     ref.invalidate(transaksiListProvider);
-                    await ref.read(transaksiListProvider.future).catchError((_) {});
+                    await ref.read(transaksiListProvider.future);
                   },
                   child: ListView.separated(
                     padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),

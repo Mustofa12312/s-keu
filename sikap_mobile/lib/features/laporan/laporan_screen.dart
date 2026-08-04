@@ -84,9 +84,16 @@ class LaporanScreen extends ConsumerWidget {
               ),
               error: (e, _) =>
                   EmptyState(message: 'Gagal memuat', subtitle: e.toString()),
-              data: (data) => ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
+              data: (data) => RefreshIndicator(
+                color: AppColors.emerald400,
+                backgroundColor: AppColors.dark800,
+                onRefresh: () async {
+                  ref.invalidate(laporanProvider);
+                  await ref.read(laporanProvider.future);
+                },
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
                   // ── Ringkasan Keuangan ──
                   SectionHeader(
                       title: 'Ringkasan Keuangan',
@@ -119,7 +126,7 @@ class LaporanScreen extends ConsumerWidget {
                     label: 'Saldo Akhir',
                     value: data.saldo,
                     icon: Icons.account_balance_wallet_rounded,
-                    color: AppColors.info,
+                    color: data.saldo < 0 ? AppColors.error : AppColors.info,
                     index: 2,
                     fullWidth: true,
                   ),
@@ -295,11 +302,11 @@ class LaporanScreen extends ConsumerWidget {
                     ).animate(delay: 400.ms).fadeIn(duration: 400.ms),
                   ],
 
-                  const SizedBox(height: 80),
                 ],
               ),
             ),
           ),
+        ),
         ],
       ),
     );

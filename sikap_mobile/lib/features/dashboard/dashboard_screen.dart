@@ -25,7 +25,7 @@ class DashboardScreen extends ConsumerWidget {
         onRefresh: () async {
           ref.invalidate(dashboardProvider);
           ref.invalidate(profileProvider);
-          await ref.read(dashboardProvider.future).catchError((_) {});
+          await ref.read(dashboardProvider.future);
         },
         child: CustomScrollView(
         slivers: [
