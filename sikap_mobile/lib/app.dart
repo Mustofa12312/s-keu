@@ -33,7 +33,7 @@ class _AppShell extends StatelessWidget {
       body: child,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: Colors.white.withOpacity(0.08))),
+          border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
         ),
         child: BottomNavigationBar(
           currentIndex: currentIndex,

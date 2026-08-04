@@ -181,7 +181,7 @@ class _BukuKasScreenState extends ConsumerState<BukuKasScreen> {
                             foregroundColor: AppColors.emerald400,
                             side: BorderSide(
                                 color:
-                                    AppColors.emerald500.withOpacity(0.5)),
+                                    AppColors.emerald500.withValues(alpha: 0.5)),
                             padding:
                                 const EdgeInsets.symmetric(vertical: 12),
                           ),
@@ -249,7 +249,7 @@ class _BukuKasScreenState extends ConsumerState<BukuKasScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 10),
-                      color: AppColors.dark800.withOpacity(0.5),
+                      color: AppColors.dark800.withValues(alpha: 0.5),
                       child: Row(
                         children: [
                           _SummaryChip(
@@ -306,14 +306,14 @@ class _SummaryChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Column(
           children: [
             Text(label,
-                style: TextStyle(fontSize: 10, color: color.withOpacity(0.8))),
+                style: TextStyle(fontSize: 10, color: color.withValues(alpha: 0.8))),
             const SizedBox(height: 2),
             Text(FormatUtils.rupiahCompact(value),
                 style: TextStyle(
@@ -354,7 +354,7 @@ class _BKUTable extends StatelessWidget {
                 color: AppColors.dark800,
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(12)),
-                border: Border.all(color: AppColors.dark600.withOpacity(0.5)),
+                border: Border.all(color: AppColors.dark600.withValues(alpha: 0.5)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -377,7 +377,7 @@ class _BKUTable extends StatelessWidget {
             // Table Header
             Container(
               width: 820,
-              color: AppColors.emerald800.withOpacity(0.4),
+              color: AppColors.emerald800.withValues(alpha: 0.4),
               child: Row(
                   children: _headers
                       .map((h) => _HeaderCell(text: h.label, flex: h.flex))
@@ -391,7 +391,7 @@ class _BKUTable extends StatelessWidget {
                 color: AppColors.dark800,
                 borderRadius:
                     const BorderRadius.vertical(bottom: Radius.circular(12)),
-                border: Border.all(color: AppColors.dark600.withOpacity(0.5)),
+                border: Border.all(color: AppColors.dark600.withValues(alpha: 0.5)),
               ),
               child: Column(
                 children: transaksiList.map((t) {
@@ -460,7 +460,7 @@ class _BKURow extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
           border: Border(
-              top: BorderSide(color: AppColors.dark700.withOpacity(0.4)))),
+              top: BorderSide(color: AppColors.dark700.withValues(alpha: 0.4)))),
       child: Row(
         children: [
           _Cell(transaksi.tanggal ?? '', 1),

@@ -43,10 +43,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   String _translateError(String msg) {
-    if (msg.contains('Invalid login')) return 'Email atau password salah.';
-    if (msg.contains('Email not confirmed')) return 'Email belum dikonfirmasi.';
-    if (msg.contains('rate limit')) return 'Terlalu banyak percobaan. Tunggu sebentar.';
-    return msg;
+    if (msg.contains('user-not-found') || msg.contains('wrong-password') || 
+        msg.contains('invalid-credential') || msg.contains('INVALID_LOGIN_CREDENTIALS')) {
+      return 'Email atau password salah.';
+    }
+    if (msg.contains('user-disabled')) return 'Akun dinonaktifkan.';
+    if (msg.contains('too-many-requests')) return 'Terlalu banyak percobaan. Coba lagi nanti.';
+    if (msg.contains('network-request-failed')) return 'Tidak ada koneksi internet.';
+    return 'Terjadi kesalahan. Coba lagi.';
   }
 
   @override
@@ -91,7 +95,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           decoration: BoxDecoration(
             gradient: AppColors.primaryGradient,
             borderRadius: BorderRadius.circular(22),
-            boxShadow: [BoxShadow(color: AppColors.emerald500.withOpacity(0.4), blurRadius: 20, offset: const Offset(0, 8))],
+            boxShadow: [BoxShadow(color: AppColors.emerald500.withValues(alpha: 0.4), blurRadius: 20, offset: const Offset(0, 8))],
           ),
           child: const Center(
             child: Text('SK', style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: -1)),
@@ -119,10 +123,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.dark800.withOpacity(0.9),
+        color: AppColors.dark800.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.dark600.withOpacity(0.5)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 30, offset: const Offset(0, 10))],
+        border: Border.all(color: AppColors.dark600.withValues(alpha: 0.5)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.3), blurRadius: 30, offset: const Offset(0, 10))],
       ),
       child: Form(
         key: _formKey,
@@ -194,9 +198,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.error.withOpacity(0.1),
+                  color: AppColors.error.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.error.withOpacity(0.3)),
+                  border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [

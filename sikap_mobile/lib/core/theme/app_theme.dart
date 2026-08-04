@@ -44,7 +44,7 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: AppColors.dark700.withOpacity(0.5)),
+          side: BorderSide(color: AppColors.dark700.withValues(alpha: 0.5)),
         ),
         margin: EdgeInsets.zero,
       ),
@@ -75,7 +75,7 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.dark700.withOpacity(0.6),
+        fillColor: AppColors.dark700.withValues(alpha: 0.6),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: AppColors.dark600),
@@ -111,7 +111,7 @@ class AppTheme {
         unselectedLabelStyle: GoogleFonts.inter(fontSize: 11),
       ),
       dividerTheme: DividerThemeData(
-        color: AppColors.dark700.withOpacity(0.5),
+        color: AppColors.dark700.withValues(alpha: 0.5),
         thickness: 1,
       ),
       chipTheme: ChipThemeData(

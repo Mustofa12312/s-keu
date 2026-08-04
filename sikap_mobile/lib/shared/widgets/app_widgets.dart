@@ -31,7 +31,7 @@ class StatCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: gradient.colors.first.withOpacity(0.3),
+            color: gradient.colors.first.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -46,12 +46,12 @@ class StatCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, color: Colors.white, size: 20),
               ),
-              Icon(Icons.arrow_upward_rounded, color: Colors.white.withOpacity(0.6), size: 16),
+              Icon(Icons.arrow_upward_rounded, color: Colors.white.withValues(alpha: 0.6), size: 16),
             ],
           ),
           const SizedBox(height: 16),
@@ -102,18 +102,18 @@ class GlassCard extends StatelessWidget {
         padding: padding ?? const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isDark
-              ? AppColors.dark800.withOpacity(0.8)
-              : Colors.white.withOpacity(0.9),
+              ? AppColors.dark800.withValues(alpha: 0.8)
+              : Colors.white.withValues(alpha: 0.9),
           borderRadius: BorderRadius.circular(borderRadius ?? 16),
           border: Border.all(
             color: isDark
-                ? AppColors.dark600.withOpacity(0.5)
+                ? AppColors.dark600.withValues(alpha: 0.5)
                 : AppColors.dark200,
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.3 : 0.06),
+              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.06),
               blurRadius: 16,
               offset: const Offset(0, 4),
             ),
@@ -191,10 +191,10 @@ class EmptyState extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: AppColors.emerald500.withOpacity(0.1),
+              color: AppColors.emerald500.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(icon, size: 48, color: AppColors.emerald500.withOpacity(0.7)),
+            child: Icon(icon, size: 48, color: AppColors.emerald500.withValues(alpha: 0.7)),
           ),
           const SizedBox(height: 16),
           Text(message, style: Theme.of(context).textTheme.titleSmall),
@@ -237,7 +237,7 @@ class ShimmerCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(borderRadius),
       ),
     ).animate(onPlay: (c) => c.repeat())
-      .shimmer(duration: 1200.ms, color: AppColors.dark600.withOpacity(0.6));
+      .shimmer(duration: 1200.ms, color: AppColors.dark600.withValues(alpha: 0.6));
   }
 }
 
@@ -256,8 +256,8 @@ class JenisBadge extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: isPemasukan
-            ? AppColors.emerald500.withOpacity(0.15)
-            : AppColors.error.withOpacity(0.15),
+            ? AppColors.emerald500.withValues(alpha: 0.15)
+            : AppColors.error.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
@@ -298,7 +298,7 @@ class SikapAppBar extends StatelessWidget implements PreferredSizeWidget {
         preferredSize: const Size.fromHeight(1),
         child: Container(
           height: 1,
-          color: AppColors.dark700.withOpacity(0.5),
+          color: AppColors.dark700.withValues(alpha: 0.5),
         ),
       ),
     );

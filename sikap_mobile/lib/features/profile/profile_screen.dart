@@ -42,7 +42,7 @@ class ProfileScreen extends ConsumerWidget {
                     decoration: BoxDecoration(
                       gradient: AppColors.primaryGradient,
                       shape: BoxShape.circle,
-                      boxShadow: [BoxShadow(color: AppColors.emerald500.withOpacity(0.4), blurRadius: 16, offset: const Offset(0, 6))],
+                      boxShadow: [BoxShadow(color: AppColors.emerald500.withValues(alpha: 0.4), blurRadius: 16, offset: const Offset(0, 6))],
                     ),
                     child: Center(
                       child: Text(
@@ -193,7 +193,7 @@ class _InfoTile extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppColors.emerald500.withOpacity(0.1),
+                  color: AppColors.emerald500.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(icon, size: 18, color: AppColors.emerald400),
@@ -212,7 +212,7 @@ class _InfoTile extends StatelessWidget {
             ],
           ),
         ),
-        if (!isLast) Divider(height: 1, color: AppColors.dark700.withOpacity(0.4), indent: 16, endIndent: 16),
+        if (!isLast) Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
       ],
     );
   }

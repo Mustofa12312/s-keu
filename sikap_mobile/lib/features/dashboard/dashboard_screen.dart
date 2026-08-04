@@ -44,9 +44,9 @@ class DashboardScreen extends ConsumerWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: AppColors.emerald600.withOpacity(0.2),
+                              color: AppColors.emerald600.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: AppColors.emerald600.withOpacity(0.4)),
+                              border: Border.all(color: AppColors.emerald600.withValues(alpha: 0.4)),
                             ),
                             child: Text(
                               profile?.roleLabel ?? '-',
@@ -182,7 +182,8 @@ class _TransaksiBarChart extends StatelessWidget {
     final maxVal = chartData.fold<int>(0, (prev, e) {
       final pem = (e['pem'] as int? ?? 0);
       final pen = (e['pen'] as int? ?? 0);
-      return prev < pem ? (prev < pen ? pen : prev) : (prev < pen ? pen : prev);
+      final localMax = pem > pen ? pem : pen;
+      return prev > localMax ? prev : localMax;
     });
 
     return BarChart(
@@ -191,7 +192,7 @@ class _TransaksiBarChart extends StatelessWidget {
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
-          getDrawingHorizontalLine: (_) => FlLine(color: AppColors.dark700.withOpacity(0.4), strokeWidth: 1),
+          getDrawingHorizontalLine: (_) => FlLine(color: AppColors.dark700.withValues(alpha: 0.4), strokeWidth: 1),
         ),
         borderData: FlBorderData(show: false),
         titlesData: FlTitlesData(
@@ -287,8 +288,8 @@ class _RecentTransaksiCard extends StatelessWidget {
               width: 44, height: 44,
               decoration: BoxDecoration(
                 color: isPem
-                    ? AppColors.emerald500.withOpacity(0.15)
-                    : AppColors.error.withOpacity(0.15),
+                    ? AppColors.emerald500.withValues(alpha: 0.15)
+                    : AppColors.error.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(

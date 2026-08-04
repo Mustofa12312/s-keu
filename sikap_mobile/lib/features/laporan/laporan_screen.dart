@@ -211,7 +211,7 @@ class LaporanScreen extends ConsumerWidget {
                           // Header
                           Container(
                             decoration: BoxDecoration(
-                              color: AppColors.emerald800.withOpacity(0.4),
+                              color: AppColors.emerald800.withValues(alpha: 0.4),
                               borderRadius: const BorderRadius.vertical(
                                   top: Radius.circular(16)),
                             ),
@@ -255,9 +255,9 @@ class LaporanScreen extends ConsumerWidget {
                                 border: Border(
                                     top: BorderSide(
                                         color: AppColors.dark700
-                                            .withOpacity(0.4))),
+                                            .withValues(alpha: 0.4))),
                                 color: i.isOdd
-                                    ? AppColors.dark700.withOpacity(0.2)
+                                    ? AppColors.dark700.withValues(alpha: 0.2)
                                     : Colors.transparent,
                               ),
                               padding: const EdgeInsets.symmetric(
@@ -331,7 +331,7 @@ class _InfoCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-                color: color.withOpacity(0.15),
+                color: color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12)),
             child: Icon(icon, color: color, size: 22),
           ),

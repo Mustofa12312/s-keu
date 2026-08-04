@@ -240,7 +240,7 @@ class _TransaksiCard extends StatelessWidget {
           Container(
             width: 44, height: 44,
             decoration: BoxDecoration(
-              color: isPem ? AppColors.emerald500.withOpacity(0.15) : AppColors.error.withOpacity(0.15),
+              color: isPem ? AppColors.emerald500.withValues(alpha: 0.15) : AppColors.error.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
