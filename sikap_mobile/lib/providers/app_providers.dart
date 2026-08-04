@@ -115,8 +115,8 @@ final dashboardProvider = FutureProvider<DashboardSummary>((ref) async {
     final jenis = row['jenis'] as String;
     final bulan = row['bulan_hijriyah'] as String? ?? '';
 
-    if (jenis == 'pemasukan') totalPem += nominal;
-    else totalPen += nominal;
+    if (jenis == 'pemasukan') { totalPem += nominal; }
+    else { totalPen += nominal; }
 
     byBulan.putIfAbsent(bulan, () => {'pem': 0, 'pen': 0});
     byBulan[bulan]![jenis == 'pemasukan' ? 'pem' : 'pen'] =
@@ -171,8 +171,8 @@ final laporanProvider = FutureProvider<DashboardSummary>((ref) async {
     final jenis = row['jenis'] as String;
     final bulan = row['bulan_hijriyah'] as String? ?? '';
 
-    if (jenis == 'pemasukan') totalPem += nominal;
-    else totalPen += nominal;
+    if (jenis == 'pemasukan') { totalPem += nominal; }
+    else { totalPen += nominal; }
 
     byBulan.putIfAbsent(bulan, () => {'pem': 0, 'pen': 0});
     byBulan[bulan]![jenis == 'pemasukan' ? 'pem' : 'pen'] =

@@ -411,6 +411,7 @@ class _TransaksiFormState extends ConsumerState<_TransaksiForm> {
   String  _jenis      = 'pemasukan';
   String? _tanggal;
   String? _bulanHijr;
+  String  _tahunHijr  = '1446';
   bool    _loading    = false;
 
   @override
@@ -426,6 +427,7 @@ class _TransaksiFormState extends ConsumerState<_TransaksiForm> {
       _jenis            = e.jenis;
       _tanggal          = e.tanggal;
       _bulanHijr        = e.bulanHijriyah;
+      _tahunHijr        = e.tahunHijriyah ?? '1446';
     } else {
       _tanggal = FormatUtils.nowDateISO();
     }
@@ -447,7 +449,7 @@ class _TransaksiFormState extends ConsumerState<_TransaksiForm> {
         'instansi_id':    profile?.instansiId,
         'tanggal':        _tanggal,
         'bulan_hijriyah': _bulanHijr,
-        'tahun_hijriyah': '1446',
+        'tahun_hijriyah': _tahunHijr,
         'kode_transaksi': _kodCtrl.text.trim().isEmpty  ? null : _kodCtrl.text.trim(),
         'nomor_bukti':    _buktiCtrl.text.trim().isEmpty ? null : _buktiCtrl.text.trim(),
         'uraian':         _uraianCtrl.text.trim(),
@@ -555,6 +557,47 @@ class _TransaksiFormState extends ConsumerState<_TransaksiForm> {
                         maxLines: 2,
                       ),
                       const SizedBox(height: 14),
+                      _label('Tanggal *'),
+                      const SizedBox(height: 6),
+                      GestureDetector(
+                        onTap: () async {
+                          final now = DateTime.now();
+                          final initial = _tanggal != null
+                              ? DateTime.tryParse(_tanggal!) ?? now
+                              : now;
+                          final picked = await showDatePicker(
+                            context: context,
+                            initialDate: initial,
+                            firstDate: DateTime(2020),
+                            lastDate: DateTime(2030),
+                          );
+                          if (picked != null) {
+                            setState(() => _tanggal = picked.toIso8601String().split('T').first);
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          decoration: BoxDecoration(
+                            color: AppColors.dark700.withValues(alpha: 0.6),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: AppColors.dark600),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.calendar_today_rounded, color: AppColors.dark400, size: 18),
+                              const SizedBox(width: 10),
+                              Text(
+                                _tanggal ?? 'Pilih tanggal',
+                                style: TextStyle(
+                                  color: _tanggal != null ? Colors.white : AppColors.dark400,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 14),
                       _label('Nominal *'),
                       const SizedBox(height: 6),
                       TextFormField(
@@ -596,18 +639,37 @@ class _TransaksiFormState extends ConsumerState<_TransaksiForm> {
                         style: const TextStyle(color: Colors.white),
                         decoration: const InputDecoration(hintText: 'Opsional')),
                       const SizedBox(height: 14),
-                      _label('Bulan Hijriyah'),
-                      const SizedBox(height: 6),
-                      DropdownButtonFormField<String>(
-                        value: _bulanHijr,
-                        dropdownColor: AppColors.dark700,
-                        style: const TextStyle(color: Colors.white),
-                        decoration: const InputDecoration(hintText: 'Pilih bulan'),
-                        items: [
-                          const DropdownMenuItem(value: null, child: Text('-- Pilih --')),
-                          ...AppStrings.bulanHijriyah.map((b) => DropdownMenuItem(value: b, child: Text(b))),
+                      Row(
+                        children: [
+                          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            _label('Bulan Hijriyah'),
+                            const SizedBox(height: 6),
+                            DropdownButtonFormField<String>(
+                              value: _bulanHijr,
+                              dropdownColor: AppColors.dark700,
+                              style: const TextStyle(color: Colors.white),
+                              decoration: const InputDecoration(hintText: 'Pilih bulan', isDense: true),
+                              items: [
+                                const DropdownMenuItem(value: null, child: Text('-- Pilih --')),
+                                ...AppStrings.bulanHijriyah.map((b) => DropdownMenuItem(value: b, child: Text(b))),
+                              ],
+                              onChanged: (v) => setState(() => _bulanHijr = v),
+                            ),
+                          ])),
+                          const SizedBox(width: 12),
+                          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            _label('Tahun H'),
+                            const SizedBox(height: 6),
+                            TextFormField(
+                              key: ValueKey(_jenis),
+                              initialValue: _tahunHijr,
+                              style: const TextStyle(color: Colors.white),
+                              keyboardType: TextInputType.number,
+                              decoration: const InputDecoration(hintText: '1446', isDense: true),
+                              onChanged: (v) => setState(() => _tahunHijr = v.isEmpty ? '1446' : v),
+                            ),
+                          ])),
                         ],
-                        onChanged: (v) => setState(() => _bulanHijr = v),
                       ),
                       const SizedBox(height: 28),
                       PrimaryButton(label: widget.existing == null ? 'Simpan Transaksi' : 'Update Transaksi',

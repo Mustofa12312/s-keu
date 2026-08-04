@@ -395,10 +395,11 @@ class _BKUTable extends StatelessWidget {
               ),
               child: Column(
                 children: transaksiList.map((t) {
-                  if (t.isPemasukan)
+                  if (t.isPemasukan) {
                     runSaldo += t.nominal;
-                  else
+                  } else {
                     runSaldo -= t.nominal;
+                  }
                   return _BKURow(transaksi: t, runSaldo: runSaldo);
                 }).toList(),
               ),
