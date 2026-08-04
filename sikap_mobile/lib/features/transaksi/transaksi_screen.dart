@@ -56,9 +56,11 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
       await TransaksiRepository().delete(id);
       ref.invalidate(transaksiListProvider);
       ref.invalidate(dashboardProvider);
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Transaksi dihapus'), backgroundColor: AppColors.error),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Transaksi dihapus'), backgroundColor: AppColors.error),
+        );
+      }
     }
   }
 
@@ -132,11 +134,13 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
               error: (e, _) => EmptyState(message: 'Gagal memuat', subtitle: e.toString(), icon: Icons.error_outline),
               data: (list) {
                 final items = list as List<TransaksiModel>;
-                if (items.isEmpty) return const EmptyState(
-                  message: 'Belum ada transaksi',
-                  subtitle: 'Tap tombol + untuk menambah transaksi',
-                  icon: Icons.receipt_long_rounded,
-                );
+                if (items.isEmpty) {
+                  return const EmptyState(
+                    message: 'Belum ada transaksi',
+                    subtitle: 'Tap tombol + untuk menambah transaksi',
+                    icon: Icons.receipt_long_rounded,
+                  );
+                }
                 return ListView.separated(
                   padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
                   itemCount: items.length,
