@@ -193,7 +193,7 @@ export const transaksiService = {
     });
   },
 
-  async restore(id, _user = null) {
+  async restore(id) {
     // Restore Soft Delete
     const docRef = doc(db, 'transaksi', id);
     await updateDoc(docRef, { 

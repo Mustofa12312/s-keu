@@ -205,7 +205,7 @@ export function exportLaporanPDF({ bulanSummary, summary, instansiNama, jenis, f
 /**
  * Export Laporan RAPBM ke PDF — format A4 landscape
  */
-export function exportRAPBMPDF({ dataPendapatan, dataBelanja, namaInstansi, tahunPelajaran, _settings }) {
+export function exportRAPBMPDF({ dataPendapatan, dataBelanja, namaInstansi, tahunPelajaran }) {
   const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' })
   const pageW = doc.internal.pageSize.getWidth()
   const margin = 15

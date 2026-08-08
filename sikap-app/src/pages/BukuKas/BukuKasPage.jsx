@@ -29,11 +29,12 @@ function BKUPrintLayout({ transaksi, instansi, bulan, tahun, settings }) {
   const totalPen = transaksi.filter(r => r.jenis === 'pengeluaran').reduce((s, r) => s + r.nominal, 0)
   const saldoAkhir = totalPem - totalPen
 
+  const transaksiWithSaldo = []
   let currentSaldo = 0
-  const transaksiWithSaldo = transaksi.map(row => {
+  for (const row of transaksi) {
     currentSaldo += row.jenis === 'pemasukan' ? row.nominal : -row.nominal
-    return { ...row, runSaldo: currentSaldo }
-  })
+    transaksiWithSaldo.push({ ...row, runSaldo: currentSaldo })
+  }
 
   return (
     <div style={{ fontFamily: 'Times New Roman, serif', fontSize: '11pt', padding: '14mm 18mm', color: '#000', background: '#fff' }}>
@@ -195,7 +196,7 @@ export default function BukuKasPage() {
     finally { setLoading(false) }
   }
 
-  useEffect(() => { loadBKU() }, [selectedBulan, selectedInstansi, tahun, instansiId, isSuperAdmin])
+  useEffect(() => { loadBKU() }, [selectedBulan, selectedInstansi, tahun, instansiId, isSuperAdmin]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleExportPDF() {
     exportBKUPDF({ transaksi, instansi: instansiObj, bulan: selectedBulan, tahun, settings })

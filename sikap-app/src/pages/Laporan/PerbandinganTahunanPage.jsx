@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { ChartBarIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon, ArrowsRightLeftIcon } from '@heroicons/react/24/outline'
 import { transaksiService, instansiService, pengaturanService } from '../../services/firebase.service'
 import { useAuth } from '../../context/AuthContext'
@@ -112,12 +112,11 @@ export default function PerbandinganTahunanPage() {
     if (jenisData === 'keluar') return 'Total Pengeluaran'
     return 'Total Saldo'
   }
-  const getIconData = () => {
-    if (jenisData === 'masuk') return ArrowTrendingUpIcon
-    if (jenisData === 'keluar') return ArrowTrendingDownIcon
-    return ArrowsRightLeftIcon
+  const renderIcon = (className) => {
+    if (jenisData === 'masuk') return <ArrowTrendingUpIcon className={className} />
+    if (jenisData === 'keluar') return <ArrowTrendingDownIcon className={className} />
+    return <ArrowsRightLeftIcon className={className} />
   }
-  const IconData = useMemo(() => getIconData(), [jenisData])
 
   return (
     <div className="space-y-6 pb-20">
@@ -212,7 +211,7 @@ export default function PerbandinganTahunanPage() {
             <div className={`card p-5 border-l-4 ${summary.diff >= 0 ? 'border-l-emerald-500 bg-emerald-50/50' : 'border-l-red-500 bg-red-50/50'}`}>
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Pertumbuhan (Growth)</p>
               <div className="flex items-center gap-2">
-                <IconData className={`w-6 h-6 ${summary.diff >= 0 ? 'text-emerald-600' : 'text-red-500'}`} />
+                {renderIcon(`w-6 h-6 ${summary.diff >= 0 ? 'text-emerald-600' : 'text-red-500'}`)}
                 <p className={`text-xl font-bold text-money ${summary.diff >= 0 ? 'text-emerald-700' : 'text-red-700'}`}>
                   {summary.diff > 0 ? '+' : ''}{summary.percent.toFixed(2)}%
                 </p>
