@@ -3,14 +3,14 @@
 // CRUD Transaksi dengan tabel kolom BKU sesuai format Excel asli
 // ============================================================
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { PlusIcon, PencilIcon, TrashIcon, MagnifyingGlassIcon, FunnelIcon, ArrowDownTrayIcon, ArrowUpTrayIcon, CheckCircleIcon, ShieldExclamationIcon, XCircleIcon, PrinterIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, PencilIcon, TrashIcon, MagnifyingGlassIcon, FunnelIcon, ArrowDownTrayIcon, ArrowUpTrayIcon, CheckCircleIcon, ShieldExclamationIcon, XCircleIcon, PrinterIcon, ArrowUturnLeftIcon } from '@heroicons/react/24/outline'
 import Modal from '../../components/ui/Modal'
 import EmptyState from '../../components/ui/EmptyState'
 import KuitansiLayout from '../../components/pdf/KuitansiLayout'
 import { usePrint } from '../../hooks/usePrint'
 import { formatRupiah } from '../../utils/formatRupiah'
 import { BULAN_HIJRIYAH, getBulanLabel, BULAN_HIJRIYAH_LABEL } from '../../utils/hijriyah'
-import { transaksiService, instansiService, pengaturanService } from '../../services/firebase.service'
+import { transaksiService, instansiService, pengaturanService, kategoriService, activityLogService } from '../../services/firebase.service'
 import { useAuth } from '../../context/AuthContext'
 import * as XLSX from 'xlsx'
 
@@ -26,6 +26,7 @@ const EMPTY_FORM = {
   jenis: 'pemasukan',
   nominal: '',
   instansi_id: '',
+  kategori_id: '',
 }
 
 export default function TransaksiPage() {
@@ -44,6 +45,9 @@ export default function TransaksiPage() {
   const [filterInstansi, setFilterInstansi] = useState(instansiId || '')
   const [currentPage, setCurrentPage] = useState(1)
   const pageSize = 50
+  
+  const [kategoriList, setKategoriList] = useState([])
+  const [showTrash, setShowTrash] = useState(false)
 
   // Backup & Import states
   const [exporting, setExporting] = useState(false)
@@ -317,6 +321,7 @@ export default function TransaksiPage() {
 
   useEffect(() => {
     instansiService.getAll().then(setInstansiList).catch(console.error)
+    kategoriService.getAll().then(setKategoriList).catch(console.error)
     
     pengaturanService.getSettings().then(s => {
       setSettings(s)
@@ -334,6 +339,7 @@ export default function TransaksiPage() {
         bulanHijriyah: filterBulan || null,
         tahunHijriyah: filterTahun || null,
         search: search || null,
+        includeDeleted: showTrash
       })
       // hitung saldo berjalan
       let saldo = 0
@@ -347,7 +353,7 @@ export default function TransaksiPage() {
     finally { setLoading(false) }
   }
 
-  useEffect(() => { load() }, [filterBulan, filterTahun, filterInstansi, instansiId, isSuperAdmin])
+  useEffect(() => { load() }, [filterBulan, filterTahun, filterInstansi, instansiId, isSuperAdmin, showTrash])
 
   function handleSearch(e) {
     e.preventDefault()
@@ -377,6 +383,7 @@ export default function TransaksiPage() {
       jenis: row.jenis || 'pemasukan',
       nominal: String(row.nominal || ''),
       instansi_id: row.instansi_id || '',
+      kategori_id: row.kategori_id || '',
     })
     setEditRow(row)
     setModalOpen(true)
@@ -385,6 +392,13 @@ export default function TransaksiPage() {
   async function handleSave() {
     if (!form.uraian || !form.nominal || !form.bulan_hijriyah) {
       alert('Uraian, nominal, dan bulan hijriyah harus diisi')
+      return
+    }
+
+    // Validasi Tutup Buku
+    const lockKey = `${form.tahun_hijriyah}-${form.bulan_hijriyah}`
+    if (settings?.tutup_buku?.includes(lockKey)) {
+      alert(`Transaksi untuk bulan ${getBulanLabel(form.bulan_hijriyah)} tahun ${form.tahun_hijriyah}H sudah DITUTUP. Anda tidak dapat menambah atau mengubah data pada bulan ini.`)
       return
     }
     
@@ -396,14 +410,27 @@ export default function TransaksiPage() {
 
     setSaving(true)
     try {
+      const kategoriName = kategoriList.find(k => k.id === form.kategori_id)?.nama_kategori || null
       const payload = {
         ...form,
         nominal: parseInt(form.nominal) || 0,
         instansi_id: finalInstansiId,
+        kategori_nama: kategoriName,
         created_by: user?.uid,
       }
-      if (editRow) await transaksiService.update(editRow.id, payload)
-      else await transaksiService.create(payload)
+      if (editRow) {
+        await transaksiService.update(editRow.id, payload)
+        await activityLogService.create({
+          user, action: 'UPDATE', target_type: 'transaksi', target_id: editRow.id,
+          details: `Mengubah transaksi ${payload.uraian} (${formatRupiah(payload.nominal)})`
+        })
+      } else {
+        const result = await transaksiService.create(payload)
+        await activityLogService.create({
+          user, action: 'CREATE', target_type: 'transaksi', target_id: result.id,
+          details: `Menambah transaksi ${payload.uraian} (${formatRupiah(payload.nominal)})`
+        })
+      }
       setModalOpen(false)
       load()
     } catch(e) { alert('Gagal menyimpan: ' + e.message) }
@@ -412,11 +439,44 @@ export default function TransaksiPage() {
 
   async function handleDelete() {
     if (!deleteId) return
+    const targetRow = rows.find(r => r.id === deleteId)
+    if (targetRow) {
+      const lockKey = `${targetRow.tahun_hijriyah}-${targetRow.bulan_hijriyah}`
+      if (settings?.tutup_buku?.includes(lockKey)) {
+        alert(`Transaksi untuk bulan ${getBulanLabel(targetRow.bulan_hijriyah)} tahun ${targetRow.tahun_hijriyah}H sudah DITUTUP. Anda tidak dapat menghapus data pada bulan ini.`)
+        setDeleteId(null)
+        return
+      }
+    }
+
     try {
-      await transaksiService.delete(deleteId)
+      await transaksiService.delete(deleteId, user)
+      if (targetRow) {
+        await activityLogService.create({
+          user, action: 'DELETE', target_type: 'transaksi', target_id: deleteId,
+          details: `Menghapus transaksi ${targetRow.uraian} (${formatRupiah(targetRow.nominal)})`
+        })
+      }
       setDeleteId(null)
       load()
     } catch(e) { alert('Gagal hapus: ' + e.message) }
+  }
+
+  async function handleRestore(row) {
+    if (!window.confirm('Pulihkan transaksi ini dari tempat sampah?')) return
+    const lockKey = `${row.tahun_hijriyah}-${row.bulan_hijriyah}`
+    if (settings?.tutup_buku?.includes(lockKey)) {
+      alert(`Transaksi untuk bulan ${getBulanLabel(row.bulan_hijriyah)} tahun ${row.tahun_hijriyah}H sudah DITUTUP. Anda tidak dapat memulihkan data pada bulan ini.`)
+      return
+    }
+    try {
+      await transaksiService.restore(row.id, user)
+      await activityLogService.create({
+        user, action: 'RESTORE', target_type: 'transaksi', target_id: row.id,
+        details: `Memulihkan transaksi ${row.uraian} (${formatRupiah(row.nominal)})`
+      })
+      load()
+    } catch(e) { alert('Gagal memulihkan: ' + e.message) }
   }
 
   const summary = useMemo(() => {
@@ -502,6 +562,16 @@ export default function TransaksiPage() {
             </button>
           )}
           {!isViewer && (
+            <button
+              onClick={() => setShowTrash(!showTrash)}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-lg border text-xs font-semibold transition ${showTrash ? 'bg-slate-700 text-white border-slate-700' : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'}`}
+              title="Lihat data yang dihapus (Trash)"
+            >
+              <TrashIcon className="w-3.5 h-3.5" />
+              {showTrash ? 'Tutup Sampah' : 'Lihat Sampah'}
+            </button>
+          )}
+          {!isViewer && !showTrash && (
             <button id="btn-tambah-transaksi" className="btn-primary" onClick={openAdd}>
               <PlusIcon className="w-4 h-4" /> Tambah
             </button>
@@ -624,7 +694,7 @@ export default function TransaksiPage() {
                   <th className="text-right">Penerimaan</th>
                   <th className="text-right">Pengeluaran</th>
                   <th className="text-right">Saldo</th>
-                  {!isViewer && <th className="w-20">Aksi</th>}
+                  {!isViewer && <th className="w-24 text-center">Aksi</th>}
                 </tr>
               </thead>
               <tbody>
@@ -636,7 +706,14 @@ export default function TransaksiPage() {
                     <td className="text-slate-500">{row.kode_transaksi || '-'}</td>
                     <td className="text-slate-500">{row.nomor_bukti || '-'}</td>
                     <td className="max-w-xs">
-                      <p className="truncate font-medium">{row.uraian}</p>
+                      <p className="truncate font-medium flex items-center gap-2">
+                        {row.uraian}
+                        {row.kategori_nama && (
+                          <span className="badge badge-slate text-[10px] uppercase tracking-wider hidden sm:inline-block">
+                            {row.kategori_nama}
+                          </span>
+                        )}
+                      </p>
                       {row.instansi && <p className="text-[10px] text-slate-400">{row.instansi.nama_instansi}</p>}
                     </td>
                     <td className="text-slate-500 whitespace-nowrap">{row.sumber_dana || '-'}</td>
@@ -651,29 +728,42 @@ export default function TransaksiPage() {
                     </td>
                     {!isViewer && (
                       <td>
-                        <div className="flex gap-1">
-                          <button
-                            onClick={() => { setPrintTarget(row); setShowKuitansiModal(true) }}
-                            className="p-1.5 rounded hover:bg-slate-100 text-slate-500 transition"
-                            title="Cetak Kuitansi"
-                          >
-                            <PrinterIcon className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => openEdit(row)}
-                            className="p-1.5 rounded hover:bg-blue-50 text-blue-500 transition"
-                            title="Edit"
-                          >
-                            <PencilIcon className="w-3.5 h-3.5" />
-                          </button>
-                          {isSuperAdmin && (
+                        <div className="flex gap-1 justify-center">
+                          {showTrash ? (
                             <button
-                              onClick={() => setDeleteId(row.id)}
-                              className="p-1.5 rounded hover:bg-red-50 text-red-400 transition"
-                              title="Hapus Khusus Super Admin"
+                              onClick={() => handleRestore(row)}
+                              className="p-1.5 rounded hover:bg-emerald-50 text-emerald-500 transition flex items-center gap-1"
+                              title="Pulihkan Transaksi"
                             >
-                              <TrashIcon className="w-3.5 h-3.5" />
+                              <ArrowUturnLeftIcon className="w-3.5 h-3.5" />
+                              <span className="text-[10px] font-semibold">Pulihkan</span>
                             </button>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => { setPrintTarget(row); setShowKuitansiModal(true) }}
+                                className="p-1.5 rounded hover:bg-slate-100 text-slate-500 transition"
+                                title="Cetak Kuitansi"
+                              >
+                                <PrinterIcon className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => openEdit(row)}
+                                className="p-1.5 rounded hover:bg-blue-50 text-blue-500 transition"
+                                title="Edit"
+                              >
+                                <PencilIcon className="w-3.5 h-3.5" />
+                              </button>
+                              {isSuperAdmin && (
+                                <button
+                                  onClick={() => setDeleteId(row.id)}
+                                  className="p-1.5 rounded hover:bg-red-50 text-red-400 transition"
+                                  title="Hapus Transaksi (Soft Delete)"
+                                >
+                                  <TrashIcon className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </>
                           )}
                         </div>
                       </td>
@@ -792,6 +882,15 @@ export default function TransaksiPage() {
             <label className="label">No. Bukti</label>
             <input type="text" className="input" placeholder="No. kwitansi/bukti"
               value={form.nomor_bukti} onChange={e => setForm(f => ({...f, nomor_bukti: e.target.value}))} />
+          </div>
+          <div>
+            <label className="label">Kategori</label>
+            <select className="input" value={form.kategori_id} onChange={e => setForm(f => ({...f, kategori_id: e.target.value}))}>
+              <option value="">-- Pilih Kategori --</option>
+              {kategoriList.filter(k => k.jenis === form.jenis).map(k => (
+                <option key={k.id} value={k.id}>{k.nama_kategori}</option>
+              ))}
+            </select>
           </div>
           <div className="col-span-2">
             <label className="label">Uraian *</label>

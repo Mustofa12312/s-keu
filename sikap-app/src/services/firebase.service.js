@@ -4,6 +4,59 @@ import { db } from '../lib/firebase';
 // Helper to extract id from doc
 const mapDoc = (docSnap) => ({ id: docSnap.id, ...docSnap.data() });
 
+// ---- KATEGORI TRANSAKSI ----
+export const kategoriService = {
+  async getAll() {
+    const q = query(collection(db, 'kategori_transaksi'), orderBy('nama_kategori'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(mapDoc);
+  },
+  async getByJenis(jenis) {
+    const q = query(collection(db, 'kategori_transaksi'), where('jenis', '==', jenis), orderBy('nama_kategori'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(mapDoc);
+  },
+  async create(payload) {
+    const docRef = await addDoc(collection(db, 'kategori_transaksi'), { ...payload, created_at: serverTimestamp() });
+    const snapshot = await getDoc(docRef);
+    return mapDoc(snapshot);
+  },
+  async update(id, payload) {
+    const docRef = doc(db, 'kategori_transaksi', id);
+    await updateDoc(docRef, payload);
+    const snapshot = await getDoc(docRef);
+    return mapDoc(snapshot);
+  },
+  async delete(id) {
+    await deleteDoc(doc(db, 'kategori_transaksi', id));
+  }
+}
+
+// ---- ACTIVITY LOGS ----
+export const activityLogService = {
+  async getAll({ limitCount = 200 } = {}) {
+    const q = query(collection(db, 'activity_logs'), orderBy('created_at', 'desc'), limit(limitCount));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(mapDoc);
+  },
+  async create({ user, action, target_type, target_id, details }) {
+    if (!user) return;
+    try {
+      await addDoc(collection(db, 'activity_logs'), {
+        user_id: user.uid,
+        user_name: user.nama || user.email || 'Unknown',
+        action,           // e.g., 'CREATE', 'UPDATE', 'DELETE', 'RESTORE'
+        target_type,      // e.g., 'transaksi'
+        target_id,
+        details,          // text description
+        created_at: serverTimestamp()
+      });
+    } catch (e) {
+      console.error('Failed to write activity log:', e);
+    }
+  }
+}
+
 // ---- INSTANSI ----
 export const instansiService = {
   async getAll() {
@@ -38,7 +91,7 @@ export const instansiService = {
 
 // ---- TRANSAKSI ----
 export const transaksiService = {
-  async getAll({ instansiId, bulanHijriyah, tahunHijriyah, search, tglMulai, tglAkhir, limitCount = 10000, orderDesc = false }) {
+  async getAll({ instansiId, bulanHijriyah, tahunHijriyah, search, tglMulai, tglAkhir, includeDeleted = false, limitCount = 10000, orderDesc = false }) {
     let constraints = [];
     if (instansiId) constraints.push(where('instansi_id', '==', instansiId));
     if (bulanHijriyah) constraints.push(where('bulan_hijriyah', '==', bulanHijriyah));
@@ -50,6 +103,13 @@ export const transaksiService = {
     const snapshot = await getDocs(q);
     
     let data = snapshot.docs.map(mapDoc);
+
+    // Filter soft deletes if not explicitly requested
+    if (!includeDeleted) {
+      data = data.filter(t => !t.deleted_at);
+    } else {
+      data = data.filter(t => t.deleted_at); // If includeDeleted is true, we only want the trash
+    }
 
     // Filter range in JS to avoid composite index requirement
     if (tglMulai) {
@@ -117,7 +177,33 @@ export const transaksiService = {
     return mapDoc(snapshot);
   },
 
-  async delete(id) {
+  async getById(id) {
+    const docRef = doc(db, 'transaksi', id);
+    const snapshot = await getDoc(docRef);
+    if (!snapshot.exists()) return null;
+    return mapDoc(snapshot);
+  },
+
+  async delete(id, user = null) {
+    // Soft Delete
+    const docRef = doc(db, 'transaksi', id);
+    await updateDoc(docRef, { 
+      deleted_at: serverTimestamp(),
+      deleted_by: user ? user.uid : null 
+    });
+  },
+
+  async restore(id, user = null) {
+    // Restore Soft Delete
+    const docRef = doc(db, 'transaksi', id);
+    await updateDoc(docRef, { 
+      deleted_at: null,
+      deleted_by: null,
+      updated_at: serverTimestamp()
+    });
+  },
+
+  async hardDelete(id) {
     await deleteDoc(doc(db, 'transaksi', id));
   },
 
@@ -128,10 +214,19 @@ export const transaksiService = {
     
     const q = query(collection(db, 'transaksi'), ...constraints);
     const snapshot = await getDocs(q);
+    
     return snapshot.docs.map(d => {
       const data = d.data();
-      return { jenis: data.jenis, nominal: data.nominal, bulan_hijriyah: data.bulan_hijriyah };
-    });
+      // Only include non-deleted in summary
+      if (data.deleted_at) return null;
+      return { 
+        jenis: data.jenis, 
+        nominal: data.nominal, 
+        bulan_hijriyah: data.bulan_hijriyah,
+        kategori_id: data.kategori_id,
+        kategori_nama: data.kategori_nama
+      };
+    }).filter(Boolean);
   },
 }
 

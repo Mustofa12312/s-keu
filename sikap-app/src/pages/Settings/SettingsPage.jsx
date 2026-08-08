@@ -3,13 +3,13 @@ import { Cog6ToothIcon, ArrowDownTrayIcon, DocumentCheckIcon, ArrowUpTrayIcon, S
 import { pengaturanService, transaksiService, instansiService, hutangService } from '../../services/firebase.service'
 import * as XLSX from 'xlsx'
 import { formatRupiah } from '../../utils/formatRupiah'
-import { getBulanLabel } from '../../utils/hijriyah'
+import { getBulanLabel, BULAN_HIJRIYAH } from '../../utils/hijriyah'
 
 const EXPECTED_HEADERS = ['No', 'Instansi', 'Tanggal (M)', 'Tanggal (H)', 'Bulan (H)', 'Tahun (H)', 'Kode', 'Bukti', 'Jenis', 'Uraian', 'Sumber Dana', 'Nominal (Rp)', 'Dibuat Pada']
 
 export default function SettingsPage() {
   const [form, setForm] = useState({
-    nama_yayasan: '', alamat_yayasan: '', ketua_yayasan: '', bendahara_pusat: '', tahun_aktif: ''
+    nama_yayasan: '', alamat_yayasan: '', ketua_yayasan: '', bendahara_pusat: '', tahun_aktif: '', tutup_buku: []
   })
   const [loading, setLoading]           = useState(true)
   const [saving, setSaving]             = useState(false)
@@ -41,7 +41,8 @@ export default function SettingsPage() {
           alamat_yayasan:  data.alamat_yayasan || '',
           ketua_yayasan:   data.ketua_yayasan  || '',
           bendahara_pusat: data.bendahara_pusat|| '',
-          tahun_aktif:     data.tahun_aktif    || ''
+          tahun_aktif:     data.tahun_aktif    || '',
+          tutup_buku:      data.tutup_buku     || []
         })
       }
     } catch (e) {
@@ -54,7 +55,7 @@ export default function SettingsPage() {
   useEffect(() => { loadSettings() }, [])
 
   async function handleSave(e) {
-    e.preventDefault()
+    if (e) e.preventDefault()
     setSaving(true)
     try {
       await pengaturanService.updateSettings(form)
@@ -384,6 +385,46 @@ export default function SettingsPage() {
               </button>
             </div>
           </form>
+
+          {/* Tutup Buku */}
+          <div className="card p-6 mt-6">
+            <h3 className="font-semibold text-slate-800 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
+              <ShieldExclamationIcon className="w-5 h-5 text-amber-500" />
+              Tutup Buku (Lock Data)
+            </h3>
+            <p className="text-sm text-slate-500 mb-4">
+              Kunci bulan pembukuan untuk tahun aktif (<strong>{form.tahun_aktif || '-'}H</strong>). Transaksi pada bulan yang ditutup tidak akan bisa ditambah, diedit, atau dihapus.
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+              {BULAN_HIJRIYAH.map(b => {
+                const lockKey = `${form.tahun_aktif}-${b}`
+                const isLocked = form.tutup_buku.includes(lockKey)
+                return (
+                  <label key={b} className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition ${isLocked ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}`}>
+                    <input
+                      type="checkbox"
+                      className="rounded border-slate-300 text-amber-500 focus:ring-amber-500"
+                      checked={isLocked}
+                      onChange={(e) => {
+                        const newTutup = e.target.checked
+                          ? [...form.tutup_buku, lockKey]
+                          : form.tutup_buku.filter(k => k !== lockKey)
+                        setForm({ ...form, tutup_buku: newTutup })
+                      }}
+                    />
+                    <span className={`text-sm font-medium ${isLocked ? 'text-amber-800' : 'text-slate-600'}`}>
+                      {getBulanLabel(b)}
+                    </span>
+                  </label>
+                )
+              })}
+            </div>
+            <div className="pt-4 mt-2 flex justify-end">
+              <button type="button" onClick={() => handleSave()} className="btn-primary bg-amber-600 hover:bg-amber-700" disabled={saving}>
+                {saving ? 'Menyimpan...' : 'Simpan Tutup Buku'}
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Kanan: Backup & Import */}

@@ -23,7 +23,9 @@ import {
   ClipboardDocumentCheckIcon,
   ChartPieIcon,
   DocumentCheckIcon,
-  ChartBarSquareIcon
+  ChartBarSquareIcon,
+  TagIcon,
+  ClockIcon
 } from '@heroicons/react/24/outline'
 
 const menuGroups = [
@@ -64,8 +66,10 @@ const menuGroups = [
 ]
 
 const adminItems = [
+  { to: '/kategori',  label: 'Kategori Transaksi', icon: TagIcon },
   { to: '/instansi',  label: 'Instansi',   icon: BuildingOffice2Icon },
   { to: '/users',     label: 'Pengguna',   icon: UsersIcon },
+  { to: '/log-aktivitas', label: 'Log Aktivitas', icon: ClockIcon },
   { to: '/pengaturan',label: 'Pengaturan', icon: Cog6ToothIcon },
 ]
 

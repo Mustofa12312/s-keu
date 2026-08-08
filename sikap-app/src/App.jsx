@@ -19,6 +19,8 @@ import SettingsPage from './pages/Settings/SettingsPage'
 import HutangPiutangPage from './pages/HutangPiutang/HutangPiutangPage'
 import BukuKasHutangPiutangPage from './pages/HutangPiutang/BukuKasHutangPiutangPage'
 import LaporanHutangPiutangPage from './pages/HutangPiutang/LaporanHutangPiutangPage'
+import KategoriPage from './pages/Kategori/KategoriPage'
+import ActivityLogPage from './pages/LogAktivitas/ActivityLogPage'
 
 import RencanaAnggaranPage from './pages/Anggaran/RencanaAnggaranPage'
 import RealisasiAnggaranPage from './pages/Anggaran/RealisasiAnggaranPage'
@@ -69,6 +71,22 @@ export default function App() {
               element={
                 <ProtectedRoute adminOnly>
                   <UsersPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/kategori"
+              element={
+                <ProtectedRoute adminOnly>
+                  <KategoriPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/log-aktivitas"
+              element={
+                <ProtectedRoute adminOnly>
+                  <ActivityLogPage />
                 </ProtectedRoute>
               }
             />

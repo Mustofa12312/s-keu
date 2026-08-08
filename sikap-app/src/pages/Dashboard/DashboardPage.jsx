@@ -26,6 +26,7 @@ import { useAuth } from '../../context/AuthContext'
 
 const COLORS_HUTANG = ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e'] 
 const COLORS_PIUTANG = ['#3b82f6', '#0ea5e9', '#06b6d4', '#14b8a6', '#10b981', '#8b5cf6']
+const COLORS_KATEGORI = ['#f43f5e', '#ec4899', '#d946ef', '#a855f7', '#8b5cf6', '#6366f1', '#3b82f6', '#0ea5e9', '#06b6d4']
 
 function CustomTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
@@ -169,6 +170,17 @@ export default function DashboardPage() {
       piutangPieData: formatData(pData)
     }
   }, [unpaidDebts])
+
+  const kategoriPieData = useMemo(() => {
+    const data = {}
+    summaryData.forEach(t => {
+      if (t.jenis === 'pengeluaran' && t.nominal) {
+        const kat = t.kategori_nama || 'Lainnya'
+        data[kat] = (data[kat] || 0) + t.nominal
+      }
+    })
+    return Object.keys(data).map(k => ({ name: k, value: data[k] })).sort((a,b) => b.value - a.value)
+  }, [summaryData])
 
   const recent = useMemo(() =>
     [...recentData].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 8),
@@ -390,6 +402,32 @@ export default function DashboardPage() {
               </ResponsiveContainer>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Pie Chart Kategori Pengeluaran */}
+      {!loading && kategoriPieData.length > 0 && (
+        <div className="card p-5">
+          <h3 className="font-semibold text-slate-800 font-display mb-1">Proporsi Pengeluaran per Kategori</h3>
+          <p className="text-xs text-slate-400 mb-4">Total pengeluaran berdasarkan kategori untuk tahun {tahun}H</p>
+          <ResponsiveContainer width="100%" height={260}>
+            <PieChart>
+              <Pie
+                data={kategoriPieData}
+                cx="50%" cy="50%"
+                innerRadius={70}
+                outerRadius={100}
+                paddingAngle={2}
+                dataKey="value"
+              >
+                {kategoriPieData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS_KATEGORI[index % COLORS_KATEGORI.length]} />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip />} />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+            </PieChart>
+          </ResponsiveContainer>
         </div>
       )}
 
