@@ -289,16 +289,11 @@ export default function TransaksiPage() {
           }
 
           try {
-            const { error } = await supabase.from('transaksi').insert(payload)
-            if (error) {
-              failed++
-              errors.push(`"${uraianBersih}": ${error.message}`)
-            } else {
-              success++
-            }
-          } catch {
+            await transaksiService.create(payload)
+            success++
+          } catch (err) {
             failed++
-            errors.push(`"${uraianBersih}": Error tidak terduga.`)
+            errors.push(`"${uraianBersih}": ${err.message || 'Error tidak terduga.'}`)
           }
         }
 

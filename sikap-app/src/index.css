@@ -111,14 +111,20 @@
 
   /* === STAT CARD === */
   .stat-card {
-    @apply card p-5 flex items-start gap-4 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-glass-md border hover:border-brand-200/50 relative overflow-hidden group;
+    @apply card p-5 flex items-start gap-4 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-glass-md border hover:border-brand-200/50 relative overflow-hidden;
   }
   .stat-card::after {
     content: '';
-    @apply absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100 pointer-events-none;
+    @apply absolute inset-0 bg-gradient-to-br from-white/40 to-transparent opacity-0 transition-opacity duration-500 pointer-events-none;
+  }
+  .stat-card:hover::after {
+    @apply opacity-100;
   }
   .stat-icon {
-    @apply w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3;
+    @apply w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm transition-transform duration-500;
+  }
+  .stat-card:hover .stat-icon {
+    @apply scale-110 rotate-3;
   }
 
   /* === TABLE === */

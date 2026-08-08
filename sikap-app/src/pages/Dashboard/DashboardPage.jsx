@@ -244,8 +244,8 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <StatCard
               icon={ArrowTrendingUpIcon}
-              iconBg="bg-emerald-50"
-              iconColor="text-emerald-600"
+              iconBg="bg-brand-50"
+              iconColor="text-brand-600"
               label="Total Pemasukan"
               value={formatRupiah(stats.pemasukan)}
               sub={`${summaryData.filter(t => t.jenis === 'pemasukan').length} transaksi`}
@@ -299,13 +299,13 @@ export default function DashboardPage() {
             <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg text-xs font-medium">
               <button
                 onClick={() => setChartType('area')}
-                className={`px-3 py-1.5 rounded-md transition ${chartType === 'area' ? 'bg-white shadow text-emerald-700' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`px-3 py-1.5 rounded-md transition ${chartType === 'area' ? 'bg-white shadow-sm text-brand-700' : 'text-slate-500 hover:text-slate-700'}`}
               >
                 Area
               </button>
               <button
                 onClick={() => setChartType('bar')}
-                className={`px-3 py-1.5 rounded-md transition ${chartType === 'bar' ? 'bg-white shadow text-emerald-700' : 'text-slate-500 hover:text-slate-700'}`}
+                className={`px-3 py-1.5 rounded-md transition ${chartType === 'bar' ? 'bg-white shadow-sm text-brand-700' : 'text-slate-500 hover:text-slate-700'}`}
               >
                 Batang
               </button>
@@ -317,22 +317,22 @@ export default function DashboardPage() {
               <AreaChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="gradPem" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#10b981" stopOpacity={0.02} />
+                    <stop offset="5%" stopColor="#14b8a6" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#14b8a6" stopOpacity={0.02} />
                   </linearGradient>
                   <linearGradient id="gradPen" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f87171" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#f87171" stopOpacity={0.02} />
+                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0.02} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false}
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }} axisLine={false} tickLine={false} dy={10} />
+                <YAxis tick={{ fontSize: 10, fill: '#64748b', fontWeight: 600 }} axisLine={false} tickLine={false} dx={-10}
                   tickFormatter={v => v >= 1e6 ? `${(v / 1e6).toFixed(0)}jt` : v >= 1e3 ? `${(v / 1e3).toFixed(0)}rb` : v} />
-                <Tooltip content={<CustomTooltip />} />
-                <Legend wrapperStyle={{ fontSize: 11, paddingTop: '12px' }} />
-                <Area type="monotone" dataKey="pem" name="Pemasukan" stroke="#10b981" strokeWidth={2.5} fill="url(#gradPem)" dot={{ r: 4, fill: '#10b981' }} activeDot={{ r: 6 }} />
-                <Area type="monotone" dataKey="pen" name="Pengeluaran" stroke="#f87171" strokeWidth={2.5} fill="url(#gradPen)" dot={{ r: 4, fill: '#f87171' }} activeDot={{ r: 6 }} />
+                <Tooltip content={<CustomTooltip />} cursor={{ stroke: '#e2e8f0', strokeWidth: 2, strokeDasharray: '5 5' }} />
+                <Legend wrapperStyle={{ fontSize: 11, paddingTop: '12px', fontWeight: 600 }} />
+                <Area type="monotone" dataKey="pem" name="Pemasukan" stroke="#14b8a6" strokeWidth={3} fill="url(#gradPem)" dot={{ r: 4, fill: '#14b8a6', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 7, strokeWidth: 0, fill: '#0d9488' }} />
+                <Area type="monotone" dataKey="pen" name="Pengeluaran" stroke="#ef4444" strokeWidth={3} fill="url(#gradPen)" dot={{ r: 4, fill: '#ef4444', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 7, strokeWidth: 0, fill: '#dc2626' }} />
               </AreaChart>
             ) : (
               <BarChart data={chartData} barGap={4} barCategoryGap="30%" margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
@@ -463,9 +463,9 @@ export default function DashboardPage() {
                   return (
                     <tr key={bulan}>
                       <td className="font-medium">{getBulanLabel(bulan)}</td>
-                      <td className="text-right text-emerald-600 text-money">{formatRupiah(pem)}</td>
+                      <td className="text-right text-brand-600 text-money">{formatRupiah(pem)}</td>
                       <td className="text-right text-red-500 text-money">{formatRupiah(pen)}</td>
-                      <td className={`text-right text-money font-semibold ${pem - pen >= 0 ? 'text-blue-600' : 'text-amber-600'}`}>{formatRupiah(pem - pen)}</td>
+                      <td className={`text-right text-money font-bold ${pem - pen >= 0 ? 'text-primary-600' : 'text-amber-600'}`}>{formatRupiah(pem - pen)}</td>
                     </tr>
                   )
                 })}
@@ -488,18 +488,18 @@ export default function DashboardPage() {
               <p className="text-center py-8 text-slate-400 text-sm">Belum ada transaksi</p>
             )}
             {recent.map(t => (
-              <div key={t.id} className="flex items-center gap-3 px-5 py-3 hover:bg-slate-50/70 transition">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${t.jenis === 'pemasukan' ? 'bg-emerald-100' : 'bg-red-100'}`}>
+              <div key={t.id} className="flex items-center gap-3 px-5 py-3.5 hover:bg-slate-50/70 transition-colors">
+                <div className={`w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm ${t.jenis === 'pemasukan' ? 'bg-brand-50 text-brand-600 border border-brand-100' : 'bg-red-50 text-red-500 border border-red-100'}`}>
                   {t.jenis === 'pemasukan'
-                    ? <ArrowTrendingUpIcon className="w-4 h-4 text-emerald-600" />
-                    : <ArrowTrendingDownIcon className="w-4 h-4 text-red-500" />
+                    ? <ArrowTrendingUpIcon className="w-4.5 h-4.5" />
+                    : <ArrowTrendingDownIcon className="w-4.5 h-4.5" />
                   }
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-700 truncate">{t.uraian || '-'}</p>
-                  <p className="text-xs text-slate-400">{t.tanggal || ''} · {getBulanLabel(t.bulan_hijriyah)}</p>
+                  <p className="text-sm font-bold text-slate-800 truncate">{t.uraian || '-'}</p>
+                  <p className="text-[11px] font-medium text-slate-400 mt-0.5">{t.tanggal || ''} · {getBulanLabel(t.bulan_hijriyah)}</p>
                 </div>
-                <span className={`text-sm font-semibold text-money flex-shrink-0 ${t.jenis === 'pemasukan' ? 'text-emerald-600' : 'text-red-500'}`}>
+                <span className={`text-sm font-bold text-money flex-shrink-0 ${t.jenis === 'pemasukan' ? 'text-brand-600' : 'text-red-500'}`}>
                   {t.jenis === 'pemasukan' ? '+' : '-'}{formatRupiah(t.nominal)}
                 </span>
               </div>

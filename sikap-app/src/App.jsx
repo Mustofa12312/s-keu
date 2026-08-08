@@ -13,6 +13,7 @@ import DashboardPage from './pages/Dashboard/DashboardPage'
 import TransaksiPage from './pages/Transaksi/TransaksiPage'
 import BukuKasPage from './pages/BukuKas/BukuKasPage'
 import LaporanPage from './pages/Laporan/LaporanPage'
+import PerbandinganTahunanPage from './pages/Laporan/PerbandinganTahunanPage'
 import InstansiPage from './pages/Instansi/InstansiPage'
 import UsersPage from './pages/Users/UsersPage'
 import SettingsPage from './pages/Settings/SettingsPage'
@@ -46,6 +47,7 @@ export default function App() {
               <Route path="/transaksi" element={<TransaksiPage />} />
               <Route path="/buku-kas" element={<BukuKasPage />} />
               <Route path="/laporan" element={<LaporanPage />} />
+              <Route path="/perbandingan-tahunan" element={<PerbandinganTahunanPage />} />
               
               {/* Hutang Piutang */}
               <Route path="/hutang" element={<HutangPiutangPage type="hutang" />} />

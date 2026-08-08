@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Cog6ToothIcon, ArrowDownTrayIcon, DocumentCheckIcon, ArrowUpTrayIcon, ShieldExclamationIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
+import { Cog6ToothIcon, ArrowDownTrayIcon, DocumentCheckIcon, DocumentTextIcon, ArrowUpTrayIcon, ShieldExclamationIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import { pengaturanService, transaksiService, instansiService, hutangService } from '../../services/firebase.service'
 import * as XLSX from 'xlsx'
 import { formatRupiah } from '../../utils/formatRupiah'
@@ -341,12 +341,18 @@ export default function SettingsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Kiri: Form */}
         <div className="lg:col-span-2">
-          <form onSubmit={handleSave} className="card p-6 space-y-5">
-            <h3 className="font-semibold text-slate-800 border-b border-slate-100 pb-3 flex items-center gap-2">
-              <DocumentCheckIcon className="w-5 h-5 text-emerald-500" />
-              Identitas & Kop Laporan
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form onSubmit={handleSave} className="card p-7">
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-50 to-brand-100 border border-brand-200/50 flex items-center justify-center flex-shrink-0 shadow-sm">
+                <DocumentTextIcon className="w-5 h-5 text-brand-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-800 text-base">Identitas & Kop Laporan</h3>
+                <p className="text-[11px] text-slate-500 mt-0.5">Atur informasi yayasan yang akan tampil pada cetakan BKU.</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-4 mb-6">
               <div className="md:col-span-2">
                 <label className="label">Nama Induk Yayasan</label>
                 <input required className="input" placeholder="Contoh: Pondok Pesantren Darur Rohman"
@@ -372,26 +378,41 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <h3 className="font-semibold text-slate-800 border-b border-slate-100 pb-3 pt-4">Preferensi Sistem</h3>
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 pt-6">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 border border-slate-300/50 flex items-center justify-center flex-shrink-0 shadow-sm">
+                <Cog6ToothIcon className="w-5 h-5 text-slate-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-800 text-base">Preferensi Sistem</h3>
+                <p className="text-[11px] text-slate-500 mt-0.5">Pengaturan standar tahun buku.</p>
+              </div>
+            </div>
             <div className="w-full md:w-1/2">
               <label className="label">Tahun Pembukuan Aktif (Hijriyah)</label>
-              <input required type="text" className="input font-mono" placeholder="1446"
+              <input required type="text" className="input font-mono text-lg" placeholder="1446"
                 value={form.tahun_aktif} onChange={e => setForm({ ...form, tahun_aktif: e.target.value })} />
-              <p className="text-[10px] text-slate-400 mt-1">Tahun ini akan otomatis terpilih di menu Laporan & BKU.</p>
+              <p className="text-[10px] text-slate-400 mt-1">Tahun ini otomatis terpilih di menu Laporan & BKU.</p>
             </div>
-            <div className="pt-4 flex justify-end">
+            <div className="pt-6 mt-4 border-t border-slate-100 flex justify-end">
               <button type="submit" className="btn-primary" disabled={saving}>
+                <CheckCircleIcon className="w-5 h-5" />
                 {saving ? 'Menyimpan...' : 'Simpan Pengaturan'}
               </button>
             </div>
           </form>
 
           {/* Tutup Buku */}
-          <div className="card p-6 mt-6">
-            <h3 className="font-semibold text-slate-800 border-b border-slate-100 pb-3 mb-4 flex items-center gap-2">
-              <ShieldExclamationIcon className="w-5 h-5 text-amber-500" />
-              Tutup Buku (Lock Data)
-            </h3>
+          <div className="card p-7 mt-6 border-amber-200/50 shadow-amber-900/5 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl" />
+            <div className="flex items-center gap-3 mb-4 pb-4 border-b border-amber-100/50">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-50 to-amber-100 border border-amber-200 flex items-center justify-center flex-shrink-0 shadow-sm">
+                <ShieldExclamationIcon className="w-5 h-5 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-800 text-base">Tutup Buku (Lock Data)</h3>
+                <p className="text-[11px] text-amber-600/80 font-medium mt-0.5">Amankan data dari perubahan tidak disengaja.</p>
+              </div>
+            </div>
             <p className="text-sm text-slate-500 mb-4">
               Kunci bulan pembukuan untuk tahun aktif (<strong>{form.tahun_aktif || '-'}H</strong>). Transaksi pada bulan yang ditutup tidak akan bisa ditambah, diedit, atau dihapus.
             </p>
@@ -400,10 +421,13 @@ export default function SettingsPage() {
                 const lockKey = `${form.tahun_aktif}-${b}`
                 const isLocked = form.tutup_buku.includes(lockKey)
                 return (
-                  <label key={b} className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition ${isLocked ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200 hover:bg-slate-100'}`}>
+                  <label key={b} className={`relative flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all duration-300 select-none overflow-hidden ${isLocked ? 'bg-gradient-to-br from-amber-500 to-amber-600 border-amber-500 text-white shadow-md shadow-amber-500/20 scale-[1.02]' : 'bg-white border-slate-200 hover:border-amber-300 hover:bg-amber-50/50'}`}>
+                    <span className={`text-sm font-bold z-10 ${isLocked ? 'text-white' : 'text-slate-600'}`}>
+                      {getBulanLabel(b)}
+                    </span>
                     <input
                       type="checkbox"
-                      className="rounded border-slate-300 text-amber-500 focus:ring-amber-500"
+                      className="sr-only"
                       checked={isLocked}
                       onChange={(e) => {
                         const newTutup = e.target.checked
@@ -412,47 +436,49 @@ export default function SettingsPage() {
                         setForm({ ...form, tutup_buku: newTutup })
                       }}
                     />
-                    <span className={`text-sm font-medium ${isLocked ? 'text-amber-800' : 'text-slate-600'}`}>
-                      {getBulanLabel(b)}
-                    </span>
+                    <div className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors z-10 ${isLocked ? 'bg-white/20' : 'bg-slate-100'}`}>
+                      {isLocked && <CheckCircleIcon className="w-4 h-4 text-white" />}
+                    </div>
                   </label>
                 )
               })}
             </div>
-            <div className="pt-4 mt-2 flex justify-end">
-              <button type="button" onClick={() => handleSave()} className="btn-primary bg-amber-600 hover:bg-amber-700" disabled={saving}>
-                {saving ? 'Menyimpan...' : 'Simpan Tutup Buku'}
+            <div className="pt-5 mt-5 flex justify-end border-t border-amber-100/50">
+              <button type="button" onClick={() => handleSave()} className="btn bg-gradient-to-r from-amber-600 to-amber-500 text-white shadow-md hover:shadow-amber-500/30 border border-amber-400/30 hover:-translate-y-0.5" disabled={saving}>
+                {saving ? 'Menyimpan...' : 'Simpan Kunci Bulan'}
               </button>
             </div>
           </div>
         </div>
 
         {/* Kanan: Backup & Import */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           {/* Backup */}
-          <div className="card p-6 border-amber-200 bg-amber-50">
-            <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-4 border border-amber-200">
-              <ArrowDownTrayIcon className="w-6 h-6 text-amber-600" />
+          <div className="card p-7 border-amber-200/60 bg-gradient-to-b from-amber-50/50 to-orange-50/30 relative overflow-hidden group">
+            <div className="absolute -right-10 -top-10 w-40 h-40 bg-amber-400/10 rounded-full blur-3xl transition-transform duration-700 group-hover:scale-150" />
+            <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-amber-50 rounded-2xl flex items-center justify-center mb-5 border border-amber-200/60 shadow-sm relative z-10">
+              <ArrowDownTrayIcon className="w-5 h-5 text-amber-600" />
             </div>
-            <h3 className="font-bold text-amber-900 mb-2">Backup Master Data</h3>
-            <p className="text-xs text-amber-700 leading-relaxed mb-4">
-              Ekspor <strong>seluruh data transaksi dari semua instansi</strong> ke satu file Excel. Disarankan setiap akhir bulan sebagai arsip darurat.
+            <h3 className="font-bold text-slate-800 mb-2 relative z-10">Backup Master Data</h3>
+            <p className="text-[11.5px] text-slate-600 leading-relaxed mb-6 relative z-10">
+              Ekspor <strong className="text-amber-700">seluruh data transaksi</strong> ke file Excel. Sangat disarankan untuk dilakukan secara berkala.
             </p>
             <button onClick={handleBackup} disabled={exporting}
-              className="w-full py-2.5 px-4 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2 shadow-sm shadow-amber-200 disabled:opacity-70">
+              className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-500/20 disabled:opacity-70 hover:-translate-y-0.5 relative z-10">
               <ArrowDownTrayIcon className="w-4 h-4" />
               {exporting ? 'Memproses...' : 'Download Master Excel'}
             </button>
           </div>
 
           {/* Import */}
-          <div className="card p-6 border-blue-200 bg-blue-50">
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4 border border-blue-200">
-              <ArrowUpTrayIcon className="w-6 h-6 text-blue-600" />
+          <div className="card p-7 border-primary-200/60 bg-gradient-to-b from-primary-50/50 to-blue-50/30 relative overflow-hidden group">
+            <div className="absolute -right-10 -top-10 w-40 h-40 bg-primary-400/10 rounded-full blur-3xl transition-transform duration-700 group-hover:scale-150" />
+            <div className="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-50 rounded-2xl flex items-center justify-center mb-5 border border-primary-200/60 shadow-sm relative z-10">
+              <ArrowUpTrayIcon className="w-5 h-5 text-primary-600" />
             </div>
-            <h3 className="font-bold text-blue-900 mb-1">Import dari Backup</h3>
-            <p className="text-xs text-blue-700 leading-relaxed mb-4">
-              Pulihkan data dari file backup Excel. Data lama <strong>tidak dihapus</strong> — data dari file akan <strong>ditambahkan</strong> ke database.
+            <h3 className="font-bold text-slate-800 mb-2 relative z-10">Import dari Backup</h3>
+            <p className="text-[11.5px] text-slate-600 leading-relaxed mb-6 relative z-10">
+              Pulihkan data dari file Excel. Data tidak menimpa, tapi akan <strong className="text-primary-700">ditambahkan</strong>.
             </p>
 
             <input ref={fileInputRef} type="file" accept=".xlsx,.xls" className="hidden" onChange={handleFileChange} />
@@ -460,7 +486,7 @@ export default function SettingsPage() {
             <button
               onClick={() => { setImportResult(null); setShowPreview(false); fileInputRef.current?.click() }}
               disabled={importing}
-              className="w-full py-2.5 px-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-semibold transition flex items-center justify-center gap-2 shadow-sm shadow-blue-200 disabled:opacity-70"
+              className="w-full py-2.5 px-4 bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 text-white rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 shadow-md shadow-primary-500/20 disabled:opacity-70 hover:-translate-y-0.5 relative z-10"
             >
               <ArrowUpTrayIcon className="w-4 h-4" />
               {importing ? 'Sedang Mengimpor...' : 'Pilih File Backup (.xlsx)'}

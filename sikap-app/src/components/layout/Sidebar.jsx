@@ -25,7 +25,8 @@ import {
   DocumentCheckIcon,
   ChartBarSquareIcon,
   TagIcon,
-  ClockIcon
+  ClockIcon,
+  ChartBarIcon
 } from '@heroicons/react/24/outline'
 
 const menuGroups = [
@@ -42,6 +43,7 @@ const menuGroups = [
       { to: '/transaksi',  label: 'Masuk & Keluar',   icon: ArrowsRightLeftIcon },
       { to: '/buku-kas',   label: 'Buku Kas',         icon: BookOpenIcon },
       { to: '/laporan',    label: 'Laporan Kas',      icon: DocumentChartBarIcon },
+      { to: '/perbandingan-tahunan', label: 'Perbandingan Tahunan', icon: ChartBarIcon },
     ]
   },
   {
@@ -126,44 +128,16 @@ export default function Sidebar({ open, onClose }) {
 
       <aside className={sidebarClass}>
         {/* Logo */}
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-slate-100">
-          <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center flex-shrink-0 shadow-sm shadow-emerald-200">
+        <div className="flex items-center gap-3 px-6 py-6 border-b border-white/50">
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-brand-500/30 border border-brand-400/30">
             <ShieldCheckIcon className="w-5 h-5 text-white" />
           </div>
           <div>
-            <p className="text-sm font-bold text-slate-800 font-display leading-tight">SIKAP</p>
-            <p className="text-[10px] text-slate-500 leading-tight">Darur Rohman</p>
+            <p className="text-base font-bold text-slate-800 font-display leading-tight tracking-tight">SIKAP</p>
+            <p className="text-[10px] text-slate-500 font-medium uppercase tracking-widest mt-0.5">Darur Rohman</p>
           </div>
         </div>
 
-        {/* Profile mini */}
-        <div className="p-5 border-b border-white/50 bg-white/30">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-brand-100 to-brand-50 flex items-center justify-center flex-shrink-0 border border-brand-200/50 shadow-sm">
-              <span className="text-base font-bold text-brand-700">
-                {profile?.nama?.[0]?.toUpperCase() || 'U'}
-              </span>
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold text-slate-800 truncate">{profile?.nama || 'User'}</p>
-              <p className="text-[11px] font-medium text-slate-500 truncate capitalize">{profile?.role?.replace('_', ' ') || '-'}</p>
-            </div>
-          </div>
-          
-          {profile?.instansi ? (
-            <div className="px-3 py-2.5 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 shadow-lg shadow-brand-500/20 text-center border border-brand-400/30">
-              <p className="text-[9px] text-brand-100 uppercase tracking-widest font-bold mb-0.5">Mengelola Instansi</p>
-              <p className="text-sm font-bold text-white truncate drop-shadow-sm">
-                {profile.instansi.nama_instansi}
-              </p>
-            </div>
-          ) : isSuperAdmin ? (
-            <div className="px-3 py-2.5 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg shadow-primary-500/20 text-center border border-primary-400/30">
-              <p className="text-[9px] text-primary-100 uppercase tracking-widest font-bold mb-0.5">Akses Penuh</p>
-              <p className="text-sm font-bold text-white truncate drop-shadow-sm">Semua Instansi</p>
-            </div>
-          ) : null}
-        </div>
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
@@ -198,10 +172,10 @@ export default function Sidebar({ open, onClose }) {
                 <button
                   onClick={() => setOpenGroup(isOpen && !isActiveGroup ? '' : group.label)}
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 
-                    ${isActiveGroup ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 hover:translate-x-1'}`}
+                    ${isActiveGroup ? 'bg-brand-50 text-brand-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-800 hover:translate-x-1'}`}
                 >
                   <div className="flex items-center gap-3">
-                    <group.icon className={`w-5 h-5 ${isActiveGroup ? 'text-emerald-600' : 'text-slate-400'}`} />
+                    <group.icon className={`w-5 h-5 ${isActiveGroup ? 'text-brand-600' : 'text-slate-400'}`} />
                     <div className="flex items-center gap-2">
                       <span>{group.label}</span>
                       {group.label === 'Hutang Piutang' && overdueCount > 0 && (
@@ -211,20 +185,26 @@ export default function Sidebar({ open, onClose }) {
                       )}
                     </div>
                   </div>
-                  <ChevronDownIcon className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''} ${isActiveGroup ? 'text-emerald-600' : 'text-slate-400'}`} />
+                  <ChevronDownIcon className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''} ${isActiveGroup ? 'text-brand-600' : 'text-slate-400'}`} />
                 </button>
                 
                 {isOpen && (
-                  <div className="pl-11 pr-2 py-1 space-y-1 animate-slide-in">
+                  <div className="pl-9 pr-2 py-1.5 space-y-1 animate-slide-in">
                     {visibleItems.map(item => (
                       <NavLink
                         key={item.to}
                         to={item.to}
-                        className={({ isActive }) => `flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-300 ${isActive ? 'bg-emerald-600 text-white shadow-md shadow-emerald-200' : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700 hover:translate-x-1 border border-transparent'}`}
+                        className={({ isActive }) => `flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${isActive ? 'bg-white shadow-sm text-brand-700 ring-1 ring-slate-100/50' : 'text-slate-500 hover:bg-white/60 hover:text-slate-800 hover:shadow-sm'}`}
                         onClick={onClose}
                       >
-                        <item.icon className="w-4 h-4" />
-                        <span>{item.label}</span>
+                        {({ isActive }) => (
+                          <>
+                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors ${isActive ? 'bg-brand-50 text-brand-600' : 'bg-slate-100/50 text-slate-400'}`}>
+                              <item.icon className="w-4 h-4" />
+                            </div>
+                            <span>{item.label}</span>
+                          </>
+                        )}
                       </NavLink>
                     ))}
                   </div>
@@ -253,13 +233,25 @@ export default function Sidebar({ open, onClose }) {
           )}
         </nav>
 
-        {/* Logout */}
-        <div className="px-3 pb-4 pt-3 border-t border-slate-100">
+        <div className="p-4 border-t border-white/60 bg-white/40 backdrop-blur-md mt-auto">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center flex-shrink-0 shadow-md shadow-brand-500/20 border border-brand-400/30">
+              <span className="text-sm font-bold text-white">
+                {profile?.nama?.[0]?.toUpperCase() || 'U'}
+              </span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-bold text-slate-800 truncate">{profile?.nama || 'User'}</p>
+              <p className="text-[10px] font-medium text-slate-500 truncate capitalize">
+                {profile?.instansi ? profile.instansi.nama_instansi : (isSuperAdmin ? 'Akses Penuh' : (profile?.role?.replace('_', ' ') || '-'))}
+              </p>
+            </div>
+          </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-red-500 hover:bg-red-50 hover:text-red-600 hover:translate-x-1 transition-all duration-300"
+            className="flex items-center justify-center gap-2 w-full px-3 py-2 mt-4 rounded-xl text-xs font-bold text-red-600 bg-red-50 hover:bg-red-500 hover:text-white hover:shadow-md hover:shadow-red-500/20 transition-all duration-300"
           >
-            <ArrowRightOnRectangleIcon style={{ width: '18px', height: '18px' }} />
+            <ArrowRightOnRectangleIcon className="w-4 h-4" />
             <span>Keluar</span>
           </button>
         </div>

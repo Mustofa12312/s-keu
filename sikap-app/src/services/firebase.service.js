@@ -1,4 +1,4 @@
-import { collection, doc, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit, serverTimestamp, writeBatch } from 'firebase/firestore';
+import { collection, doc, getDocs, getDoc, setDoc, addDoc, updateDoc, deleteDoc, query, where, orderBy, limit, serverTimestamp, writeBatch, getAggregateFromServer, sum } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 
 // Helper to extract id from doc
@@ -228,6 +228,52 @@ export const transaksiService = {
       };
     }).filter(Boolean);
   },
+
+  async getAggregatedMonthlyData(instansiId, tahun) {
+    const bulanKeys = [
+      'muharram', 'shafar', 'rabiul_awal', 'rabiul_tsani',
+      'jumadil_ula', 'jumadil_tsani', 'rajab', 'sya\'ban',
+      'ramadhan', 'syawal', 'dzulqa\'dah', 'dzulhijjah'
+    ];
+    
+    const promises = [];
+    
+    for (const bulan of bulanKeys) {
+      let qMasukConstraints = [where('tahun_hijriyah', '==', tahun), where('bulan_hijriyah', '==', bulan), where('jenis', '==', 'masuk')];
+      let qKeluarConstraints = [where('tahun_hijriyah', '==', tahun), where('bulan_hijriyah', '==', bulan), where('jenis', '==', 'keluar')];
+      
+      if (instansiId) {
+        qMasukConstraints.push(where('instansi_id', '==', instansiId));
+        qKeluarConstraints.push(where('instansi_id', '==', instansiId));
+      }
+      
+      const qMasuk = query(collection(db, 'transaksi'), ...qMasukConstraints);
+      promises.push(getAggregateFromServer(qMasuk, { total: sum('nominal') }));
+      
+      const qKeluar = query(collection(db, 'transaksi'), ...qKeluarConstraints);
+      promises.push(getAggregateFromServer(qKeluar, { total: sum('nominal') }));
+    }
+    
+    const results = await Promise.all(promises);
+    const monthlyData = {};
+    
+    for (let i = 0; i < bulanKeys.length; i++) {
+      const bulan = bulanKeys[i];
+      const resMasuk = results[i * 2];
+      const resKeluar = results[i * 2 + 1];
+      
+      const totalMasuk = resMasuk.data().total || 0;
+      const totalKeluar = resKeluar.data().total || 0;
+      
+      monthlyData[bulan] = {
+        masuk: totalMasuk,
+        keluar: totalKeluar,
+        saldo: totalMasuk - totalKeluar
+      };
+    }
+    
+    return monthlyData;
+  }
 }
 
 // ---- HUTANG PIUTANG ----
