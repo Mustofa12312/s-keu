@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { PrinterIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 import * as XLSX from 'xlsx'
 import { exportRAPBMPDF } from '../../utils/exportPDF'
@@ -40,25 +40,6 @@ export default function LaporanAnggaranPage() {
     }
   }, [instansiId, isSuperAdmin, selectedInstansi])
 
-  useEffect(() => {
-    if (!tahunPelajaran) return
-    const id = isSuperAdmin ? selectedInstansi : instansiId
-    
-    // Set Nama Instansi for header
-    if (id) {
-      if (isSuperAdmin) {
-        const ins = instansiList.find(i => i.id === id)
-        setNamaInstansi(ins ? ins.nama : 'Semua Instansi')
-      } else {
-        instansiService.getById(id).then(res => setNamaInstansi(res.nama)).catch(() => setNamaInstansi('Instansi'))
-      }
-    } else {
-      setNamaInstansi('Seluruh Instansi')
-    }
-
-    fetchData(id)
-  }, [tahunPelajaran, selectedInstansi, instansiId, isSuperAdmin, instansiList]) // eslint-disable-line
-
   const fetchData = async (id) => {
     setLoading(true)
     try {
@@ -99,6 +80,25 @@ export default function LaporanAnggaranPage() {
     }
   }
 
+  useEffect(() => {
+    if (!tahunPelajaran) return
+    const id = isSuperAdmin ? selectedInstansi : instansiId
+    
+    // Set Nama Instansi for header
+    if (id) {
+      if (isSuperAdmin) {
+        const ins = instansiList.find(i => i.id === id)
+        setNamaInstansi(ins ? ins.nama : 'Semua Instansi')
+      } else {
+        instansiService.getById(id).then(res => setNamaInstansi(res.nama)).catch(() => setNamaInstansi('Instansi'))
+      }
+    } else {
+      setNamaInstansi('Seluruh Instansi')
+    }
+
+    fetchData(id)
+  }, [tahunPelajaran, selectedInstansi, instansiId, isSuperAdmin, instansiList]) // eslint-disable-line
+
   const handleExportPDF = () => {
     try {
       exportRAPBMPDF({ dataPendapatan, dataBelanja, namaInstansi, tahunPelajaran, settings })
@@ -138,6 +138,7 @@ export default function LaporanAnggaranPage() {
 
       XLSX.writeFile(wb, `Laporan_RAPBM_${namaInstansi}_${tahunPelajaran}.xlsx`)
     } catch (err) {
+      console.error(err)
       showToast('Gagal export ke Excel', 'error')
     }
   }

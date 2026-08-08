@@ -1,6 +1,5 @@
 import { forwardRef } from 'react'
 import { formatRupiah } from '../../utils/formatRupiah'
-import { getBulanLabel } from '../../utils/hijriyah'
 
 // Fungsi Helper Terbilang (Rupiah)
 function terbilang(angka) {

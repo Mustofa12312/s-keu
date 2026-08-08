@@ -48,13 +48,6 @@ export default function RealisasiAnggaranPage() {
     })
   }, [])
 
-  useEffect(() => {
-    if (!tahunPelajaran) return
-    if (!isSuperAdmin && !instansiId) return
-    
-    fetchData()
-  }, [tahunPelajaran, kategori, instansiId, isSuperAdmin])
-
   const fetchData = async () => {
     setLoading(true)
     try {
@@ -89,6 +82,12 @@ export default function RealisasiAnggaranPage() {
     }
   }
 
+  useEffect(() => {
+    if (!tahunPelajaran) return
+    if (!isSuperAdmin && !instansiId) return
+    
+    fetchData()
+  }, [tahunPelajaran, kategori, instansiId, isSuperAdmin]) // eslint-disable-line
   const openRealisasi = async (item) => {
     setSelectedAnggaran(item)
     setFormData({
@@ -103,6 +102,7 @@ export default function RealisasiAnggaranPage() {
       const list = await anggaranService.getRealisasi(item.id)
       setRealisasiList(list)
     } catch (error) {
+      console.error(error)
       showToast('Gagal memuat riwayat', 'error')
     } finally {
       setLoadingRealisasi(false)
@@ -119,6 +119,7 @@ export default function RealisasiAnggaranPage() {
       setRealisasiList(list)
       fetchData() // to update parent table numbers
     } catch (error) {
+      console.error(error)
       showToast('Gagal menghapus', 'error')
     }
   }
@@ -284,7 +285,7 @@ export default function RealisasiAnggaranPage() {
               ) : realisasiList.length === 0 ? (
                 <EmptyState title="Belum ada riwayat" description="Data realisasi yang Anda masukkan akan muncul di sini." />
               ) : (
-                realisasiList.map((r, i) => (
+                realisasiList.map((r) => (
                   <div key={r.id} className="bg-white p-3 rounded-lg border border-slate-100 shadow-sm flex justify-between items-center group">
                     <div>
                       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{formatDateID(r.tanggal)}</p>

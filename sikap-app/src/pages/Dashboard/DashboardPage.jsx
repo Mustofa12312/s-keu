@@ -45,7 +45,7 @@ function CustomTooltip({ active, payload, label }) {
 }
 
 export default function DashboardPage() {
-  const { isSuperAdmin, instansiId, profile } = useAuth()
+  const { isSuperAdmin, instansiId } = useAuth()
   const [instansiList, setInstansiList] = useState([])
   const [selectedInstansi, setSelectedInstansi] = useState('')
   const [tahun, setTahun] = useState('')

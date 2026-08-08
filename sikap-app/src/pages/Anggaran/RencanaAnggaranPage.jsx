@@ -43,13 +43,6 @@ export default function RencanaAnggaranPage() {
     })
   }, [])
 
-  useEffect(() => {
-    if (!tahunPelajaran) return
-    if (!isSuperAdmin && !instansiId) return
-    
-    fetchData()
-  }, [tahunPelajaran, kategori, instansiId, isSuperAdmin])
-
   const fetchData = async () => {
     setLoading(true)
     try {
@@ -61,11 +54,18 @@ export default function RencanaAnggaranPage() {
       setData(res)
     } catch (error) {
       console.error(error)
-      showToast('Gagal memuat data anggaran', 'error')
+      showToast('Gagal memuat data', 'error')
     } finally {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (!tahunPelajaran) return
+    if (!isSuperAdmin && !instansiId) return
+    
+    fetchData()
+  }, [tahunPelajaran, kategori, instansiId, isSuperAdmin]) // eslint-disable-line
 
   const activeReferensi = referensiAnggaran.anggaran.filter(item => 
     kategori === 'pendapatan' ? item.kode.startsWith('04') : item.kode.startsWith('05')

@@ -56,7 +56,7 @@ export default function LoginPage() {
               <ShieldCheckIcon className="w-10 h-10 text-white" />
             </div>
             <div>
-              <p className="text-white font-bold text-xl font-display">SIKAP</p>
+              <p className="text-white font-bold text-xl font-display">S-KEU</p>
               <p className="text-emerald-200 text-xs">Darur Rohman</p>
             </div>
           </div>
