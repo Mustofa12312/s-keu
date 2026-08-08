@@ -36,7 +36,7 @@ class LaporanScreen extends ConsumerWidget {
                   Expanded(
                     flex: 2,
                     child: DropdownButtonFormField<String>(
-                      value: filter.instansiId,
+                      initialValue: filter.instansiId,
                       dropdownColor: AppColors.dark700,
                       decoration: const InputDecoration(
                           labelText: 'Instansi', isDense: true),
@@ -135,7 +135,7 @@ class LaporanScreen extends ConsumerWidget {
 
                   // ── Pie Chart ──
                   if (data.totalPemasukan > 0 || data.totalPengeluaran > 0) ...[
-                    SectionHeader(title: 'Distribusi Keuangan'),
+                    const SectionHeader(title: 'Distribusi Keuangan'),
                     const SizedBox(height: 12),
                     GlassCard(
                       padding: const EdgeInsets.all(20),
@@ -209,7 +209,7 @@ class LaporanScreen extends ConsumerWidget {
 
                   // ── Tabel per Bulan ──
                   if (data.chartData.isNotEmpty) ...[
-                    SectionHeader(title: 'Rekap Per Bulan'),
+                    const SectionHeader(title: 'Rekap Per Bulan'),
                     const SizedBox(height: 12),
                     GlassCard(
                       padding: EdgeInsets.zero,
@@ -224,8 +224,8 @@ class LaporanScreen extends ConsumerWidget {
                             ),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 16, vertical: 10),
-                            child: Row(
-                              children: const [
+                            child: const Row(
+                              children: [
                                 Expanded(
                                     flex: 2,
                                     child: Text('Bulan',

@@ -104,16 +104,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
         const SizedBox(height: 20),
 
-        Text(
+        const Text(
           AppStrings.appFullName,
-          style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 1),
+          style: TextStyle(fontSize: 26, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 1),
         ).animate(delay: 100.ms).fadeIn().slideY(begin: 0.3),
 
         const SizedBox(height: 6),
 
-        Text(
+        const Text(
           AppStrings.appTagline,
-          style: const TextStyle(color: AppColors.dark400, fontSize: 13),
+          style: TextStyle(color: AppColors.dark400, fontSize: 13),
         ).animate(delay: 200.ms).fadeIn(),
       ],
     );
@@ -225,14 +225,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             const SizedBox(height: 20),
 
             // Footer
-            Center(
+            const Center(
               child: Column(
                 children: [
-                  const Divider(color: AppColors.dark700),
-                  const SizedBox(height: 12),
+                  Divider(color: AppColors.dark700),
+                  SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
+                    children: [
                       Icon(Icons.lock_rounded, size: 14, color: AppColors.emerald500),
                       SizedBox(width: 6),
                       Text('Diproteksi oleh Firebase Auth', style: TextStyle(color: AppColors.dark400, fontSize: 12)),

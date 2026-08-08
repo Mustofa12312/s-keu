@@ -94,7 +94,7 @@ class ProfileScreen extends ConsumerWidget {
             const SizedBox(height: 20),
 
             // ── Detail Info ──
-            SectionHeader(title: 'Informasi Akun'),
+            const SectionHeader(title: 'Informasi Akun'),
             const SizedBox(height: 12),
             GlassCard(
               padding: EdgeInsets.zero,
@@ -112,9 +112,9 @@ class ProfileScreen extends ConsumerWidget {
             const SizedBox(height: 20),
 
             // ── App Info ──
-            SectionHeader(title: 'Aplikasi'),
+            const SectionHeader(title: 'Aplikasi'),
             const SizedBox(height: 12),
-            GlassCard(
+            const GlassCard(
               padding: EdgeInsets.zero,
               child: Column(
                 children: [
@@ -140,9 +140,9 @@ class ProfileScreen extends ConsumerWidget {
             ).animate(delay: 300.ms).fadeIn(duration: 400.ms),
 
             const SizedBox(height: 8),
-            Center(
+            const Center(
               child: Text('SIKAP Darur Rohman · ${AppStrings.pondokName}',
-                style: const TextStyle(color: AppColors.dark500, fontSize: 11),
+                style: TextStyle(color: AppColors.dark500, fontSize: 11),
                 textAlign: TextAlign.center),
             ),
             const SizedBox(height: 30),

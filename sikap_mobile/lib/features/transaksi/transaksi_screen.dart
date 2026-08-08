@@ -345,7 +345,7 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
           const Text('Bulan Hijriyah', style: TextStyle(color: AppColors.dark300, fontSize: 13)),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: _bulan,
+            initialValue: _bulan,
             dropdownColor: AppColors.dark700,
             decoration: const InputDecoration(hintText: 'Semua Bulan'),
             items: [
@@ -359,7 +359,7 @@ class _FilterSheetState extends ConsumerState<_FilterSheet> {
             const Text('Instansi', style: TextStyle(color: AppColors.dark300, fontSize: 13)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              value: _instansiId,
+              initialValue: _instansiId,
               dropdownColor: AppColors.dark700,
               decoration: const InputDecoration(hintText: 'Semua Instansi'),
               items: [
@@ -478,9 +478,11 @@ class _TransaksiFormState extends ConsumerState<_TransaksiForm> {
       widget.onSaved();
       if (mounted) Navigator.pop(context);
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e'), backgroundColor: AppColors.error),
       );
+      }
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -657,7 +659,7 @@ class _TransaksiFormState extends ConsumerState<_TransaksiForm> {
                             _label('Bulan Hijriyah'),
                             const SizedBox(height: 6),
                             DropdownButtonFormField<String>(
-                              value: _bulanHijr,
+                              initialValue: _bulanHijr,
                               dropdownColor: AppColors.dark700,
                               style: const TextStyle(color: Colors.white),
                               decoration: const InputDecoration(hintText: 'Pilih bulan', isDense: true),

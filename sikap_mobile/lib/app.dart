@@ -89,7 +89,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             AppStrings.routeBukuKas,   AppStrings.routeLaporan,
             AppStrings.routeProfile,
           ].indexWhere((r) => loc.startsWith(r));
-          return _AppShell(child: child, currentIndex: idx < 0 ? 0 : idx, state: state);
+          return _AppShell(currentIndex: idx < 0 ? 0 : idx, state: state, child: child);
         },
         routes: [
           GoRoute(path: AppStrings.routeDashboard, builder: (_, __) => const DashboardScreen()),

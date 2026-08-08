@@ -65,12 +65,18 @@ class TransaksiRepository {
         
         // Handle FieldValue / Timestamp
         DateTime? dtA;
-        if (caA is Timestamp) dtA = caA.toDate();
-        else if (caA is String) dtA = DateTime.tryParse(caA);
+        if (caA is Timestamp) {
+          dtA = caA.toDate();
+        } else if (caA is String) {
+          dtA = DateTime.tryParse(caA);
+        }
         
         DateTime? dtB;
-        if (caB is Timestamp) dtB = caB.toDate();
-        else if (caB is String) dtB = DateTime.tryParse(caB);
+        if (caB is Timestamp) {
+          dtB = caB.toDate();
+        } else if (caB is String) {
+          dtB = DateTime.tryParse(caB);
+        }
         
         if (dtA != null && dtB != null) {
           return orderDesc ? dtB.compareTo(dtA) : dtA.compareTo(dtB);

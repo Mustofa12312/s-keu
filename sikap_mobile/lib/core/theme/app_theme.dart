@@ -8,19 +8,17 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      colorScheme: ColorScheme.dark(
+      colorScheme: const ColorScheme.dark(
         primary: AppColors.emerald500,
         primaryContainer: AppColors.emerald800,
         secondary: AppColors.emerald400,
         secondaryContainer: AppColors.emerald700,
         surface: AppColors.dark800,
         surfaceContainerHighest: AppColors.dark700,
-        background: AppColors.dark900,
         error: AppColors.error,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
         onSurface: Colors.white,
-        onBackground: Colors.white,
       ),
       scaffoldBackgroundColor: AppColors.dark900,
       textTheme: _buildTextTheme(isDark: true),
@@ -78,11 +76,11 @@ class AppTheme {
         fillColor: AppColors.dark700.withValues(alpha: 0.6),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.dark600),
+          borderSide: const BorderSide(color: AppColors.dark600),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.dark600),
+          borderSide: const BorderSide(color: AppColors.dark600),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -144,12 +142,11 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      colorScheme: ColorScheme.light(
+      colorScheme: const ColorScheme.light(
         primary: AppColors.emerald600,
         primaryContainer: AppColors.emerald100,
         secondary: AppColors.emerald500,
         surface: Colors.white,
-        background: AppColors.dark50,
         error: AppColors.error,
       ),
       scaffoldBackgroundColor: AppColors.dark100,
@@ -168,7 +165,7 @@ class AppTheme {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: AppColors.dark200),
+          side: const BorderSide(color: AppColors.dark200),
         ),
         margin: EdgeInsets.zero,
       ),
@@ -187,11 +184,11 @@ class AppTheme {
         fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.dark200),
+          borderSide: const BorderSide(color: AppColors.dark200),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.dark200),
+          borderSide: const BorderSide(color: AppColors.dark200),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),

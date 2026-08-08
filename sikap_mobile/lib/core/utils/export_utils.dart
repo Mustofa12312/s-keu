@@ -103,8 +103,11 @@ class ExportUtils {
             data: [
               ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
               ...transaksi.map((t) {
-                if (t.isPemasukan) runSaldo += t.nominal;
-                else runSaldo -= t.nominal;
+                if (t.isPemasukan) {
+                  runSaldo += t.nominal;
+                } else {
+                  runSaldo -= t.nominal;
+                }
                 return [
                   t.tanggal != null ? FormatUtils.date(t.tanggal!) : '', 
                   t.tanggalHijriyah ?? '', t.kodeTransaksi ?? '', t.nomorBukti ?? '',
@@ -208,13 +211,16 @@ class ExportUtils {
       TextCellValue('Tanggal (Masehi)'), TextCellValue('Tanggal (Hijriyah)'), TextCellValue('No. Kode'), TextCellValue('No. Bukti'),
       TextCellValue('URAIAN'), TextCellValue('SUMBER DANA'), TextCellValue('Penerimaan (Rp)'), TextCellValue('Pengeluaran (Rp)'), TextCellValue('Saldo (Rp)')
     ]);
-    sheet.appendRow([IntCellValue(1), IntCellValue(2), IntCellValue(3), IntCellValue(4), IntCellValue(5), IntCellValue(6), IntCellValue(7), IntCellValue(8), IntCellValue(9)]);
+    sheet.appendRow([const IntCellValue(1), const IntCellValue(2), const IntCellValue(3), const IntCellValue(4), const IntCellValue(5), const IntCellValue(6), const IntCellValue(7), const IntCellValue(8), const IntCellValue(9)]);
 
     // Data Rows
     int saldo = 0;
     for (final t in transaksi) {
-      if (t.isPemasukan) saldo += t.nominal;
-      else saldo -= t.nominal;
+      if (t.isPemasukan) {
+        saldo += t.nominal;
+      } else {
+        saldo -= t.nominal;
+      }
       sheet.appendRow([
         TextCellValue(t.tanggal != null ? FormatUtils.date(t.tanggal!) : ''),
         TextCellValue(t.tanggalHijriyah ?? ''),

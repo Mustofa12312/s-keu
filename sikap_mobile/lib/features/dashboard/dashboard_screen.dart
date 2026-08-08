@@ -141,7 +141,7 @@ class DashboardScreen extends ConsumerWidget {
 
                   // ── Chart ──
                   if (data.chartData.isNotEmpty) ...[
-                    SectionHeader(title: 'Grafik Transaksi Bulanan'),
+                    const SectionHeader(title: 'Grafik Transaksi Bulanan'),
                     const SizedBox(height: 12),
                     // Chart Legend
                     Row(

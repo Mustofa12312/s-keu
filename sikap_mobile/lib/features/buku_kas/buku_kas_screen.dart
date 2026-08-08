@@ -59,10 +59,11 @@ class _BukuKasScreenState extends ConsumerState<BukuKasScreen> {
             transaksi: list, instansi: instansi, bulan: bulan, tahun: tahun);
       }
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             content: Text('Gagal export: $e'),
             backgroundColor: AppColors.error));
+      }
     } finally {
       if (mounted) setState(() => _exporting = false);
     }
@@ -102,7 +103,7 @@ class _BukuKasScreenState extends ConsumerState<BukuKasScreen> {
               children: [
                 if (profile?.isSuperAdmin == true)
                   DropdownButtonFormField<String>(
-                    value: instansiId,
+                    initialValue: instansiId,
                     dropdownColor: AppColors.dark700,
                     decoration: const InputDecoration(
                         labelText: 'Instansi', isDense: true),
@@ -123,7 +124,7 @@ class _BukuKasScreenState extends ConsumerState<BukuKasScreen> {
                     Expanded(
                       flex: 2,
                       child: DropdownButtonFormField<String>(
-                        value: bulan,
+                        initialValue: bulan,
                         dropdownColor: AppColors.dark700,
                         decoration: const InputDecoration(
                             labelText: 'Bulan', isDense: true),

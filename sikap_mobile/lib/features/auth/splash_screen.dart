@@ -86,9 +86,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
               const SizedBox(height: 28),
 
               // App Name
-              Text(
+              const Text(
                 AppStrings.appName,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 42,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
@@ -98,7 +98,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
 
               const SizedBox(height: 8),
 
-              Text(
+              const Text(
                 AppStrings.appTagline,
                 style: TextStyle(
                   fontSize: 13,
@@ -110,9 +110,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
 
               const SizedBox(height: 12),
 
-              Text(
+              const Text(
                 AppStrings.pondokName,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   color: AppColors.emerald400,
                   fontWeight: FontWeight.w500,
@@ -123,7 +123,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
               const SizedBox(height: 60),
 
               // Loading indicator
-              SizedBox(
+              const SizedBox(
                 width: 36,
                 height: 36,
                 child: CircularProgressIndicator(
