@@ -25,10 +25,15 @@ const tdS = {
 
 // ─── BKU Print Layout ───────────────────────────────────────
 function BKUPrintLayout({ transaksi, instansi, bulan, tahun, settings }) {
-  let runSaldo = 0
   const totalPem = transaksi.filter(r => r.jenis === 'pemasukan').reduce((s, r) => s + r.nominal, 0)
   const totalPen = transaksi.filter(r => r.jenis === 'pengeluaran').reduce((s, r) => s + r.nominal, 0)
   const saldoAkhir = totalPem - totalPen
+
+  let currentSaldo = 0
+  const transaksiWithSaldo = transaksi.map(row => {
+    currentSaldo += row.jenis === 'pemasukan' ? row.nominal : -row.nominal
+    return { ...row, runSaldo: currentSaldo }
+  })
 
   return (
     <div style={{ fontFamily: 'Times New Roman, serif', fontSize: '11pt', padding: '14mm 18mm', color: '#000', background: '#fff' }}>
@@ -78,9 +83,7 @@ function BKUPrintLayout({ transaksi, instansi, bulan, tahun, settings }) {
           {transaksi.length === 0 && (
             <tr><td colSpan={9} style={{ ...tdS, textAlign: 'center', padding: '16px' }}>Belum ada transaksi bulan ini</td></tr>
           )}
-          {transaksi.map(row => {
-            if (row.jenis === 'pemasukan') runSaldo += row.nominal
-            else runSaldo -= row.nominal
+          {transaksiWithSaldo.map(row => {
             return (
               <tr key={row.id}>
                 <td style={tdS}>{row.tanggal || ''}</td>
@@ -91,7 +94,7 @@ function BKUPrintLayout({ transaksi, instansi, bulan, tahun, settings }) {
                 <td style={tdS}>{row.sumber_dana || ''}</td>
                 <td style={{ ...tdS, textAlign: 'right' }}>{row.jenis === 'pemasukan' ? formatRupiah(row.nominal) : ''}</td>
                 <td style={{ ...tdS, textAlign: 'right' }}>{row.jenis === 'pengeluaran' ? formatRupiah(row.nominal) : ''}</td>
-                <td style={{ ...tdS, textAlign: 'right' }}>{formatRupiah(runSaldo)}</td>
+                <td style={{ ...tdS, textAlign: 'right' }}>{formatRupiah(row.runSaldo)}</td>
               </tr>
             )
           })}

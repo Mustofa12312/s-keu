@@ -18,7 +18,7 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     if (oobCode) {
-      verifyPasswordResetCode(auth, oobCode).catch(e => {
+      verifyPasswordResetCode(auth, oobCode).catch(() => {
         setMessage({ text: 'Link reset tidak valid atau sudah kadaluarsa.', type: 'error' })
       })
     } else {

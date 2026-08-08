@@ -69,10 +69,6 @@ export default function LaporanPage() {
     }).catch(console.error)
   }, [isSuperAdmin, instansiId])
 
-  useEffect(() => {
-    jenis === 'rekap' ? loadRekap() : loadTransaksi()
-  }, [jenis, filterBulan, selectedInstansi, tahun, tglMulai, tglAkhir, instansiId, isSuperAdmin])
-
   async function loadTransaksi() {
     setLoading(true)
     try {
@@ -106,6 +102,10 @@ export default function LaporanPage() {
     finally { setLoading(false) }
   }
 
+  useEffect(() => {
+    jenis === 'rekap' ? loadRekap() : loadTransaksi()
+  }, [jenis, filterBulan, selectedInstansi, tahun, tglMulai, tglAkhir, instansiId, isSuperAdmin]) // eslint-disable-line
+
   // ─── Computed values ──────────────────────────────────────
   const summary = useMemo(() => {
     const pem = transaksi.filter(t => t.jenis === 'pemasukan').reduce((s, t) => s + t.nominal, 0)
@@ -132,7 +132,7 @@ export default function LaporanPage() {
         map[k].count++
       })
       return Object.entries(map).sort(([a],[b]) => a.localeCompare(b))
-        .map(([k,v]) => ({ ...v, saldo: v.pem - v.pen }))
+        .map(([,v]) => ({ ...v, saldo: v.pem - v.pen }))
     }
     return BULAN_HIJRIYAH.map(b => {
       const rows = transaksi.filter(t => t.bulan_hijriyah === b)

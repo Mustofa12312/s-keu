@@ -164,16 +164,15 @@ export default function InstansiPage() {
           }
 
           try {
-            const { error } = await supabase.from('instansi').insert({
+            await instansiService.create({
               nama_instansi: namaBersih,
               kode_instansi: kodeBersih,
               alamat:        alamat?.toString().trim() || null,
               aktif:         aktifValue,
             })
-            if (error) { errors.push(`"${namaBersih}": ${error.message}`); }
-            else success++
-          } catch {
-            errors.push(`"${namaBersih}": Error tidak terduga.`)
+            success++
+          } catch (error) {
+            errors.push(`"${namaBersih}": Error tidak terduga - ${error.message}`)
           }
         }
 

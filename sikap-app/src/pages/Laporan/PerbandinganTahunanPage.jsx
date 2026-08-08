@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { ChartBarIcon, ArrowTrendingUpIcon, ArrowTrendingDownIcon, ArrowsRightLeftIcon } from '@heroicons/react/24/outline'
 import { transaksiService, instansiService, pengaturanService } from '../../services/firebase.service'
 import { useAuth } from '../../context/AuthContext'
@@ -17,10 +17,7 @@ export default function PerbandinganTahunanPage() {
   const [tahun2, setTahun2] = useState('')
   const [jenisData, setJenisData] = useState('saldo') // 'saldo', 'masuk', 'keluar'
   
-  const [loading, setLoading] = useState(false)
-  const [dataTahun1, setDataTahun1] = useState({})
-  const [dataTahun2, setDataTahun2] = useState({})
-  
+  const [loading, setLoading] = useState(false)  
   const [chartData, setChartData] = useState([])
   const [summary, setSummary] = useState({ t1: 0, t2: 0, diff: 0, percent: 0 })
 
@@ -65,8 +62,6 @@ export default function PerbandinganTahunanPage() {
           transaksiService.getAggregatedMonthlyData(targetInstansi, tahun2)
         ])
         
-        setDataTahun1(resTahun1)
-        setDataTahun2(resTahun2)
         
         // Transform for Recharts
         let t1Total = 0
@@ -122,7 +117,7 @@ export default function PerbandinganTahunanPage() {
     if (jenisData === 'keluar') return ArrowTrendingDownIcon
     return ArrowsRightLeftIcon
   }
-  const IconData = getIconData()
+  const IconData = useMemo(() => getIconData(), [jenisData])
 
   return (
     <div className="space-y-6 pb-20">

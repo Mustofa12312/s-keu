@@ -2,7 +2,7 @@
 // src/pages/HutangPiutang/HutangPiutangPage.jsx
 // ============================================================
 import { useState, useEffect, useMemo } from 'react'
-import { PlusIcon, PencilIcon, TrashIcon, MagnifyingGlassIcon, DocumentTextIcon, CheckCircleIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, PencilIcon, TrashIcon, MagnifyingGlassIcon, DocumentTextIcon } from '@heroicons/react/24/outline'
 import Modal from '../../components/ui/Modal'
 import EmptyState from '../../components/ui/EmptyState'
 import { formatRupiah } from '../../utils/formatRupiah'
@@ -30,9 +30,7 @@ export default function HutangPiutangPage({ type }) {
   const pageTitle = isHutang ? 'Data Hutang' : 'Data Piutang'
   const pihakLabel = isHutang ? 'Pemberi Hutang (Kreditur)' : 'Peminjam (Debitur)'
   const btnColor = isHutang ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'
-  const badgeColor = isHutang ? 'badge-red' : 'badge-blue'
-
-  const { isSuperAdmin, isViewer, instansiId, user } = useAuth()
+  const { isSuperAdmin, isViewer, instansiId } = useAuth()
   const [rows, setRows] = useState([])
   const [instansiList, setInstansiList] = useState([])
   const [loading, setLoading] = useState(true)
@@ -81,7 +79,7 @@ export default function HutangPiutangPage({ type }) {
     finally { setLoading(false) }
   }
 
-  useEffect(() => { load() }, [type, filterBulan, filterTahun, filterInstansi, instansiId, isSuperAdmin])
+  useEffect(() => { load() }, [type, filterBulan, filterTahun, filterInstansi, instansiId, isSuperAdmin]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleSearch(e) {
     e.preventDefault()

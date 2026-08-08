@@ -6,7 +6,6 @@ import { PrinterIcon } from '@heroicons/react/24/outline'
 import { hutangService, instansiService } from '../../services/firebase.service'
 import { useAuth } from '../../context/AuthContext'
 import { formatRupiah } from '../../utils/formatRupiah'
-import EmptyState from '../../components/ui/EmptyState'
 
 export default function LaporanHutangPiutangPage() {
   const { isSuperAdmin, instansiId } = useAuth()

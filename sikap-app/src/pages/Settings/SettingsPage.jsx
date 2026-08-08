@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Cog6ToothIcon, ArrowDownTrayIcon, DocumentCheckIcon, DocumentTextIcon, ArrowUpTrayIcon, ShieldExclamationIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
+import { Cog6ToothIcon, ArrowDownTrayIcon, DocumentTextIcon, ArrowUpTrayIcon, ShieldExclamationIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import { pengaturanService, transaksiService, instansiService, hutangService } from '../../services/firebase.service'
 import * as XLSX from 'xlsx'
 import { formatRupiah } from '../../utils/formatRupiah'
@@ -45,14 +45,15 @@ export default function SettingsPage() {
           tutup_buku:      data.tutup_buku     || []
         })
       }
-    } catch (e) {
+    } catch (err) {
+      console.error(err)
       showToast('Gagal memuat pengaturan.', 'error')
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => { loadSettings() }, [])
+  useEffect(() => { loadSettings() }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleSave(e) {
     if (e) e.preventDefault()
@@ -60,7 +61,8 @@ export default function SettingsPage() {
     try {
       await pengaturanService.updateSettings(form)
       showToast('Pengaturan berhasil disimpan!')
-    } catch (e) {
+    } catch (err) {
+      console.error(err)
       showToast('Gagal menyimpan pengaturan.', 'error')
     } finally {
       setSaving(false)
@@ -175,7 +177,8 @@ export default function SettingsPage() {
 
       XLSX.writeFile(wb, `Backup_Master_SIKAP_${new Date().toISOString().split('T')[0]}.xlsx`)
       showToast(`Berhasil mengekspor data ke Excel!`)
-    } catch (e) {
+    } catch (err) {
+      console.error(err)
       showToast('Gagal melakukan backup data.', 'error')
     } finally {
       setExporting(false)
@@ -212,6 +215,7 @@ export default function SettingsPage() {
         setPreviewRows(dataRows.slice(0, 5))
         setShowPreview(true)
       } catch (err) {
+        console.error(err)
         showToast('Gagal membaca file. Pastikan file tidak rusak.', 'error')
       }
     }
@@ -310,6 +314,7 @@ export default function SettingsPage() {
         if (success > 0 || skipped > 0) showToast(`Import selesai: ${success} berhasil, ${skipped} dilewati, ${failed} gagal.`)
         else showToast('Import gagal. Periksa daftar error.', 'error')
       } catch (err) {
+        console.error(err)
         showToast('Terjadi kesalahan saat memproses import.', 'error')
       } finally {
         setImporting(false)
