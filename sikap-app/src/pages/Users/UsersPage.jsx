@@ -40,7 +40,7 @@ export default function UsersPage() {
   const [editItem, setEditItem]       = useState(null)
   const [resetTarget, setResetTarget] = useState(null)
   const [form, setForm]               = useState(EMPTY)
-  const [newPassword, setNewPassword] = useState('')
+
   const [saving, setSaving]           = useState(false)
   const [resetting, setResetting]     = useState(false)
   const [showPassword, setShowPassword] = useState(false)
@@ -79,7 +79,7 @@ export default function UsersPage() {
     setEditItem(item)
     setModalOpen(true)
   }
-  function openReset(item) { setResetTarget(item); setNewPassword(''); setResetModal(true) }
+  function openReset(item) { setResetTarget(item); setResetModal(true) }
 
   async function handleSave() {
     if (!form.nama) return

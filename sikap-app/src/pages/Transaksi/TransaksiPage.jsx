@@ -3,7 +3,7 @@
 // CRUD Transaksi dengan tabel kolom BKU sesuai format Excel asli
 // ============================================================
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { PlusIcon, PencilIcon, TrashIcon, MagnifyingGlassIcon, FunnelIcon, ArrowDownTrayIcon, ArrowUpTrayIcon, CheckCircleIcon, ShieldExclamationIcon, XCircleIcon, PrinterIcon, ArrowUturnLeftIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, PencilIcon, TrashIcon, MagnifyingGlassIcon, ArrowDownTrayIcon, ArrowUpTrayIcon, CheckCircleIcon, ShieldExclamationIcon, XCircleIcon, PrinterIcon, ArrowUturnLeftIcon } from '@heroicons/react/24/outline'
 import Modal from '../../components/ui/Modal'
 import EmptyState from '../../components/ui/EmptyState'
 import KuitansiLayout from '../../components/pdf/KuitansiLayout'
@@ -156,7 +156,7 @@ export default function TransaksiPage() {
 
       XLSX.writeFile(wb, fileName)
       showToast(`Berhasil mengekspor ${rows.length} transaksi!`)
-    } catch (e) {
+    } catch (e) { console.error(e)
       showToast('Gagal mengekspor data.', 'error')
     } finally {
       setExporting(false)
@@ -191,7 +191,7 @@ export default function TransaksiPage() {
 
         setPreviewRows(dataRows.slice(0, 5))
         setShowPreview(true)
-      } catch (err) {
+      } catch (err) { console.error(err)
         showToast('Gagal membaca file. Pastikan file tidak rusak.', 'error')
       }
     }
@@ -304,7 +304,7 @@ export default function TransaksiPage() {
         } else {
           showToast('Import gagal. Periksa daftar error.', 'error')
         }
-      } catch (err) {
+      } catch (err) { console.error(err)
         showToast('Terjadi kesalahan saat memproses import.', 'error')
       } finally {
         setImporting(false)
@@ -348,7 +348,7 @@ export default function TransaksiPage() {
     finally { setLoading(false) }
   }
 
-  useEffect(() => { load() }, [filterBulan, filterTahun, filterInstansi, instansiId, isSuperAdmin, showTrash])
+  useEffect(() => { load() }, [filterBulan, filterTahun, filterInstansi, instansiId, isSuperAdmin, showTrash]) // eslint-disable-line react-hooks/exhaustive-deps
 
   function handleSearch(e) {
     e.preventDefault()
