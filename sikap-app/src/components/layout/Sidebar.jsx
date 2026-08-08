@@ -108,8 +108,8 @@ export default function Sidebar({ open, onClose }) {
   }
 
   const sidebarClass = `
-    fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-100 flex flex-col
-    transform transition-transform duration-200 ease-in-out shadow-2xl
+    fixed inset-y-0 left-0 z-40 w-64 bg-white/70 backdrop-blur-3xl border-r border-white/60 flex flex-col
+    transform transition-transform duration-300 ease-out shadow-[4px_0_24px_rgba(0,0,0,0.02)]
     ${open ? 'translate-x-0' : '-translate-x-full'}
     lg:translate-x-0 lg:static lg:z-auto
   `
@@ -137,30 +137,30 @@ export default function Sidebar({ open, onClose }) {
         </div>
 
         {/* Profile mini */}
-        <div className="p-4 border-b border-slate-100 bg-slate-50/50">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 border border-emerald-200">
-              <span className="text-sm font-bold text-emerald-700">
+        <div className="p-5 border-b border-white/50 bg-white/30">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-11 h-11 rounded-full bg-gradient-to-br from-brand-100 to-brand-50 flex items-center justify-center flex-shrink-0 border border-brand-200/50 shadow-sm">
+              <span className="text-base font-bold text-brand-700">
                 {profile?.nama?.[0]?.toUpperCase() || 'U'}
               </span>
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-bold text-slate-800 truncate">{profile?.nama || 'User'}</p>
-              <p className="text-xs text-slate-500 truncate capitalize">{profile?.role?.replace('_', ' ') || '-'}</p>
+              <p className="text-[11px] font-medium text-slate-500 truncate capitalize">{profile?.role?.replace('_', ' ') || '-'}</p>
             </div>
           </div>
           
           {profile?.instansi ? (
-            <div className="px-3 py-2 rounded-lg bg-emerald-600 shadow-sm shadow-emerald-200 text-center border border-emerald-500">
-              <p className="text-[10px] text-emerald-200 uppercase tracking-wider font-semibold mb-0.5">Mengelola Instansi</p>
-              <p className="text-sm font-bold text-white truncate">
+            <div className="px-3 py-2.5 rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 shadow-lg shadow-brand-500/20 text-center border border-brand-400/30">
+              <p className="text-[9px] text-brand-100 uppercase tracking-widest font-bold mb-0.5">Mengelola Instansi</p>
+              <p className="text-sm font-bold text-white truncate drop-shadow-sm">
                 {profile.instansi.nama_instansi}
               </p>
             </div>
           ) : isSuperAdmin ? (
-            <div className="px-3 py-2 rounded-lg bg-blue-600 shadow-sm shadow-blue-200 text-center border border-blue-500">
-              <p className="text-[10px] text-blue-200 uppercase tracking-wider font-semibold mb-0.5">Akses Penuh</p>
-              <p className="text-sm font-bold text-white truncate">Semua Instansi</p>
+            <div className="px-3 py-2.5 rounded-xl bg-gradient-to-br from-primary-500 to-primary-600 shadow-lg shadow-primary-500/20 text-center border border-primary-400/30">
+              <p className="text-[9px] text-primary-100 uppercase tracking-widest font-bold mb-0.5">Akses Penuh</p>
+              <p className="text-sm font-bold text-white truncate drop-shadow-sm">Semua Instansi</p>
             </div>
           ) : null}
         </div>
