@@ -76,19 +76,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 const SizedBox(height: 24),
                 const SectionHeader(title: 'Tentang Aplikasi'),
                 const SizedBox(height: 12),
-                GlassCard(
-                  padding: const EdgeInsets.all(16),
+                const GlassCard(
+                  padding: EdgeInsets.all(16),
                   child: Column(
                     children: [
-                      const Icon(Icons.account_balance_rounded, size: 48, color: AppColors.emerald500),
-                      const SizedBox(height: 12),
-                      const Text('SIKAP Mobile', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 4),
-                      const Text('Sistem Informasi Keuangan Pondok Pesantren\nDarur Roja\'ul Mukhtar', textAlign: TextAlign.center, style: TextStyle(color: AppColors.dark400, fontSize: 12)),
-                      const Divider(color: AppColors.dark600, height: 32),
+                      Icon(Icons.account_balance_rounded, size: 48, color: AppColors.emerald500),
+                      SizedBox(height: 12),
+                      Text('SIKAP Mobile', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 4),
+                      Text('Sistem Informasi Keuangan Pondok Pesantren\nDarur Roja\'ul Mukhtar', textAlign: TextAlign.center, style: TextStyle(color: AppColors.dark400, fontSize: 12)),
+                      Divider(color: AppColors.dark600, height: 32),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children: [
                           Text('Versi', style: TextStyle(color: AppColors.dark400)),
                           Text('1.0.0', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                         ],

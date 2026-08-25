@@ -151,7 +151,7 @@ class KategoriScreen extends ConsumerWidget {
                       ref.invalidate(kategoriListProvider);
                     }
                   } catch (e) {
-                    ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error));
+                    if (ctx.mounted) ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error));
                   } finally {
                     if (ctx.mounted) setState(() => loading = false);
                   }

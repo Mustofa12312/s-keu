@@ -216,11 +216,12 @@ class _RencanaAnggaranTabState extends ConsumerState<_RencanaAnggaranTab> {
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(ctx);
+              final messenger = ScaffoldMessenger.of(context);
               try {
                 await AnggaranRepository().deleteRencana(id);
                 ref.invalidate(anggaranListProvider);
               } catch (e) {
-                if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+                messenger.showSnackBar(SnackBar(content: Text(e.toString())));
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
