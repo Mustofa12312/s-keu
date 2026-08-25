@@ -150,15 +150,19 @@ class DashboardScreen extends ConsumerWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(width: 12, height: 12,
-                          decoration: BoxDecoration(color: AppColors.emerald500, borderRadius: BorderRadius.circular(2))),
-                        const SizedBox(width: 6),
-                        const Text('Pemasukan', style: TextStyle(color: AppColors.dark400, fontSize: 11)),
-                        const SizedBox(width: 20),
-                        Container(width: 12, height: 12,
-                          decoration: BoxDecoration(color: AppColors.error, borderRadius: BorderRadius.circular(2))),
-                        const SizedBox(width: 6),
-                        const Text('Pengeluaran', style: TextStyle(color: AppColors.dark400, fontSize: 11)),
+                          Container(
+                            width: 12, height: 12,
+                            decoration: BoxDecoration(color: AppColors.emerald500, borderRadius: BorderRadius.circular(2)),
+                          ),
+                          const SizedBox(width: 6),
+                          const Text('Pemasukan', style: TextStyle(color: AppColors.dark300, fontSize: 12)),
+                          const SizedBox(width: 16),
+                          Container(
+                            width: 12, height: 12,
+                            decoration: BoxDecoration(color: AppColors.error, borderRadius: BorderRadius.circular(2)),
+                          ),
+                          const SizedBox(width: 6),
+                          const Text('Pengeluaran', style: TextStyle(color: AppColors.dark300, fontSize: 12)),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -475,7 +479,7 @@ class _NotificationBell extends ConsumerWidget {
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                                   decoration: BoxDecoration(
-                                    color: isRead ? Colors.transparent : AppColors.emerald900.withOpacity(0.2),
+                                    color: isRead ? Colors.transparent : AppColors.emerald900.withValues(alpha: 0.2),
                                     border: const Border(bottom: BorderSide(color: AppColors.dark800)),
                                   ),
                                   child: Row(
@@ -484,7 +488,7 @@ class _NotificationBell extends ConsumerWidget {
                                       Container(
                                         padding: const EdgeInsets.all(8),
                                         decoration: BoxDecoration(
-                                          color: isMasuk ? AppColors.emerald900.withOpacity(0.5) : AppColors.error.withOpacity(0.2),
+                                          color: isMasuk ? AppColors.emerald900.withValues(alpha: 0.5) : AppColors.error.withValues(alpha: 0.2),
                                           shape: BoxShape.circle,
                                         ),
                                         child: Icon(
@@ -528,11 +532,11 @@ class _NotificationBell extends ConsumerWidget {
                                             const SizedBox(height: 4),
                                             Row(
                                               children: [
-                                                if (n.instansi != null) ...[
+                                                if (n.namaInstansi != null) ...[
                                                   Container(
                                                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                                     decoration: BoxDecoration(color: AppColors.dark700, borderRadius: BorderRadius.circular(4)),
-                                                    child: Text(n.instansi!['nama_instansi'] ?? '', style: const TextStyle(color: AppColors.dark300, fontSize: 10)),
+                                                    child: Text(n.namaInstansi!, style: const TextStyle(color: AppColors.dark300, fontSize: 10)),
                                                   ),
                                                   const SizedBox(width: 8),
                                                 ],

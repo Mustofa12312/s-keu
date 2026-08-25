@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/format_utils.dart';
 import '../../data/models/anggaran_model.dart';
@@ -148,13 +148,13 @@ class _RencanaAnggaranTabState extends ConsumerState<_RencanaAnggaranTab> {
                                 children: [
                                   Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                    decoration: BoxDecoration(color: AppColors.dark700, borderRadius: BorderRadius.circular(6)),
+                                    decoration: BoxDecoration(color: AppColors.dark700.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(6)),
                                     child: Text(item.kode, style: const TextStyle(color: AppColors.emerald400, fontWeight: FontWeight.bold, fontSize: 12)),
                                   ),
                                   const Spacer(),
                                   if (canEdit) ...[
                                     IconButton(
-                                      icon: const Icon(Icons.edit_rounded, size: 18, color: AppColors.blue400),
+                                      icon: const Icon(Icons.edit_rounded, size: 18, color: AppColors.info),
                                       onPressed: () => _showForm(item),
                                       padding: EdgeInsets.zero,
                                       constraints: const BoxConstraints(),
