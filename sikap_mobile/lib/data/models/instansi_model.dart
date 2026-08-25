@@ -21,7 +21,7 @@ class InstansiModel {
     kodeInstansi:  json['kode_instansi'] as String,
     alamat:        json['alamat'] as String?,
     aktif:         json['aktif'] as bool? ?? true,
-    createdAt:     json['created_at'] as String?,
+    createdAt:     json['created_at']?.toString(),
   );
 
   Map<String, dynamic> toJson() => {

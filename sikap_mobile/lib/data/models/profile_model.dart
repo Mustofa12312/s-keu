@@ -39,7 +39,7 @@ class ProfileModel {
       role:          json['role'] as String? ?? 'admin_instansi',
       instansiId:    json['instansi_id'] as String?,
       namaInstansi:  instansiMap?['nama_instansi'] as String?,
-      createdAt:     json['created_at'] as String?,
+      createdAt:     json['created_at']?.toString(),
     );
   }
 }

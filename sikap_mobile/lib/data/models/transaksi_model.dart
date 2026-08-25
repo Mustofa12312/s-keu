@@ -50,7 +50,7 @@ class TransaksiModel {
       sumberDana:      json['sumber_dana'] as String?,
       jenis:           json['jenis'] as String,
       nominal:         (json['nominal'] as num).toInt(),
-      createdAt:       json['created_at'] as String?,
+      createdAt:       json['created_at']?.toString(),
     );
   }
 
