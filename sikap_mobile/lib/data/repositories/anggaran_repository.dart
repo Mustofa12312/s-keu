@@ -15,9 +15,9 @@ class AnggaranRepository {
   }) async {
     try {
       Query q = _db;
-      if (instansiId != null) q = q.where('instansi_id', 'isEqualTo', instansiId);
-      if (tahunPelajaran != null) q = q.where('tahun_pelajaran', 'isEqualTo', tahunPelajaran);
-      if (kategori != null) q = q.where('kategori', 'isEqualTo', kategori);
+      if (instansiId != null) q = q.where('instansi_id', isEqualTo: instansiId);
+      if (tahunPelajaran != null) q = q.where('tahun_pelajaran', isEqualTo: tahunPelajaran);
+      if (kategori != null) q = q.where('kategori', isEqualTo: kategori);
 
       final snap = await q.get();
       List<AnggaranModel> data = [];
@@ -25,7 +25,7 @@ class AnggaranRepository {
       final instansiSnap = await _instansiDb.get();
       final instansiMap = <String, Map<String, dynamic>>{};
       for (var doc in instansiSnap.docs) {
-        instansiMap[doc.id] = {'id': doc.id, ...doc.data()};
+        instansiMap[doc.id] = {'id': doc.id, ...doc.data() as Map<String, dynamic>};
       }
 
       for (var e in snap.docs) {
@@ -77,7 +77,7 @@ class AnggaranRepository {
 
   Future<void> deleteRencana(String id) async {
     try {
-      final rSnap = await _realisasiDb.where('anggaran_id', 'isEqualTo', id).get();
+      final rSnap = await _realisasiDb.where('anggaran_id', isEqualTo: id).get();
       final batch = FirebaseClient.firestore.batch();
       for (var d in rSnap.docs) {
         batch.delete(d.reference);
@@ -92,7 +92,7 @@ class AnggaranRepository {
 
   Future<List<RealisasiAnggaranModel>> getRealisasi(String anggaranId) async {
     try {
-      final snap = await _realisasiDb.where('anggaran_id', 'isEqualTo', anggaranId).get();
+      final snap = await _realisasiDb.where('anggaran_id', isEqualTo: anggaranId).get();
       List<RealisasiAnggaranModel> data = snap.docs.map((e) {
         final d = e.data();
         d['id'] = e.id;

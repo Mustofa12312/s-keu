@@ -8,6 +8,7 @@ import '../../core/constants/app_strings.dart';
 import '../../core/utils/format_utils.dart';
 import '../../data/models/transaksi_model.dart';
 import '../../providers/app_providers.dart';
+import '../../providers/notification_provider.dart';
 import '../../shared/widgets/app_widgets.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -61,6 +62,8 @@ class DashboardScreen extends ConsumerWidget {
                               style: const TextStyle(color: AppColors.emerald400, fontSize: 11, fontWeight: FontWeight.w600),
                             ),
                           ),
+                          const SizedBox(width: 12),
+                          _NotificationBell(),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -358,5 +361,200 @@ class _RecentTransaksiCard extends StatelessWidget {
     ).animate(delay: Duration(milliseconds: 200 + index * 80))
       .fadeIn(duration: 300.ms)
       .slideX(begin: 0.1, end: 0);
+  }
+}
+
+class _NotificationBell extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notifsAsync = ref.watch(notificationStreamProvider);
+    final readIds = ref.watch(readNotificationProvider);
+
+    return notifsAsync.maybeWhen(
+      data: (notifs) {
+        final unreadCount = notifs.where((n) => !readIds.contains(n.id)).length;
+        
+        return InkWell(
+          onTap: () => _showNotificationSheet(context, notifs, readIds, ref),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Icon(
+                unreadCount > 0 ? Icons.notifications_active_rounded : Icons.notifications_none_rounded,
+                color: unreadCount > 0 ? AppColors.emerald400 : AppColors.dark400,
+                size: 24,
+              ).animate(target: unreadCount > 0 ? 1 : 0).shake(hz: 4, curve: Curves.easeInOut),
+              if (unreadCount > 0)
+                Positioned(
+                  top: -4,
+                  right: -4,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(color: AppColors.error, shape: BoxShape.circle),
+                    child: Text(
+                      unreadCount > 9 ? '9+' : unreadCount.toString(),
+                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
+      orElse: () => const Icon(Icons.notifications_none_rounded, color: AppColors.dark400, size: 24),
+    );
+  }
+
+  void _showNotificationSheet(BuildContext context, List<TransaksiModel> notifs, List<String> readIds, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (ctx) {
+        final unreadCount = notifs.where((n) => !readIds.contains(n.id)).length;
+
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.4,
+          maxChildSize: 0.9,
+          builder: (_, controller) {
+            return Container(
+              decoration: const BoxDecoration(
+                color: AppColors.dark900,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                    decoration: const BoxDecoration(
+                      border: Border(bottom: BorderSide(color: AppColors.dark700)),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.notifications_rounded, color: AppColors.emerald400),
+                        const SizedBox(width: 8),
+                        const Text('Notifikasi', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                        const Spacer(),
+                        if (unreadCount > 0)
+                          TextButton.icon(
+                            onPressed: () {
+                              ref.read(readNotificationProvider.notifier).markAllAsRead(notifs.map((e) => e.id).toList());
+                              Navigator.pop(ctx);
+                            },
+                            icon: const Icon(Icons.checklist_rounded, size: 16, color: AppColors.emerald400),
+                            label: const Text('Tandai Semua', style: TextStyle(color: AppColors.emerald400, fontSize: 12)),
+                          ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: notifs.isEmpty
+                        ? const Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.notifications_off_rounded, size: 48, color: AppColors.dark600),
+                                SizedBox(height: 12),
+                                Text('Belum ada notifikasi', style: TextStyle(color: AppColors.dark400)),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            controller: controller,
+                            itemCount: notifs.length,
+                            itemBuilder: (context, i) {
+                              final n = notifs[i];
+                              final isRead = readIds.contains(n.id);
+                              final isMasuk = n.jenis == 'pemasukan';
+                              
+                              return InkWell(
+                                onTap: () {
+                                  ref.read(readNotificationProvider.notifier).markAsRead(n.id);
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                                  decoration: BoxDecoration(
+                                    color: isRead ? Colors.transparent : AppColors.emerald900.withOpacity(0.2),
+                                    border: const Border(bottom: BorderSide(color: AppColors.dark800)),
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: isMasuk ? AppColors.emerald900.withOpacity(0.5) : AppColors.error.withOpacity(0.2),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          isMasuk ? Icons.trending_up_rounded : Icons.trending_down_rounded,
+                                          color: isMasuk ? AppColors.emerald400 : AppColors.error,
+                                          size: 16,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    n.uraian,
+                                                    style: TextStyle(
+                                                      color: isRead ? AppColors.dark300 : Colors.white,
+                                                      fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
+                                                      fontSize: 14,
+                                                    ),
+                                                    maxLines: 2,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                                if (!isRead)
+                                                  Container(width: 8, height: 8, margin: const EdgeInsets.only(left: 8), decoration: const BoxDecoration(color: AppColors.emerald500, shape: BoxShape.circle)),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              '${isMasuk ? '+' : '-'}${FormatUtils.rupiah(n.nominal)}',
+                                              style: TextStyle(
+                                                color: isMasuk ? AppColors.emerald400 : AppColors.error,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Row(
+                                              children: [
+                                                if (n.instansi != null) ...[
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                    decoration: BoxDecoration(color: AppColors.dark700, borderRadius: BorderRadius.circular(4)),
+                                                    child: Text(n.instansi!['nama_instansi'] ?? '', style: const TextStyle(color: AppColors.dark300, fontSize: 10)),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                ],
+                                                Text(FormatUtils.date(n.createdAt ?? ''), style: const TextStyle(color: AppColors.dark500, fontSize: 11)),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 }

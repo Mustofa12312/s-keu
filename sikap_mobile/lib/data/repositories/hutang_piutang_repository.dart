@@ -19,11 +19,11 @@ class HutangPiutangRepository {
   }) async {
     try {
       Query q = _db;
-      if (instansiId != null) q = q.where('instansi_id', 'isEqualTo', instansiId);
-      if (jenis != null) q = q.where('jenis', 'isEqualTo', jenis);
-      if (status != null) q = q.where('status', 'isEqualTo', status);
-      if (bulanHijriyah != null) q = q.where('bulan_hijriyah', 'isEqualTo', bulanHijriyah);
-      if (tahunHijriyah != null) q = q.where('tahun_hijriyah', 'isEqualTo', tahunHijriyah);
+      if (instansiId != null) q = q.where('instansi_id', isEqualTo: instansiId);
+      if (jenis != null) q = q.where('jenis', isEqualTo: jenis);
+      if (status != null) q = q.where('status', isEqualTo: status);
+      if (bulanHijriyah != null) q = q.where('bulan_hijriyah', isEqualTo: bulanHijriyah);
+      if (tahunHijriyah != null) q = q.where('tahun_hijriyah', isEqualTo: tahunHijriyah);
 
       final snap = await q.get();
       List<HutangPiutangModel> data = [];
@@ -103,9 +103,9 @@ class HutangPiutangRepository {
   Future<void> delete(String id) async {
     try {
       // Delete payments
-      final pSnap = await _pembayaranDb.where('hutang_piutang_id', 'isEqualTo', id).get();
+      final rSnap = await _pembayaranDb.where('hp_id', isEqualTo: id).get();
       final batch = FirebaseClient.firestore.batch();
-      for (var d in pSnap.docs) {
+      for (var d in rSnap.docs) {
         batch.delete(d.reference);
       }
       batch.delete(_db.doc(id));
@@ -119,7 +119,7 @@ class HutangPiutangRepository {
   // ---- PEMBAYARAN ----
   Future<List<PembayaranHutangModel>> getPembayaran(String hutangPiutangId) async {
     try {
-      final snap = await _pembayaranDb.where('hutang_piutang_id', 'isEqualTo', hutangPiutangId).get();
+      final snap = await _pembayaranDb.where('hutang_piutang_id', isEqualTo: hutangPiutangId).get();
       List<PembayaranHutangModel> data = snap.docs.map((e) {
         final d = e.data();
         d['id'] = e.id;

@@ -7,6 +7,8 @@ import '../../core/constants/app_strings.dart';
 import '../../core/utils/format_utils.dart';
 import '../../providers/app_providers.dart';
 import '../../shared/widgets/app_widgets.dart';
+import '../../core/services/pdf_export_service.dart';
+import '../../core/services/excel_export_service.dart';
 
 class LaporanScreen extends ConsumerWidget {
   const LaporanScreen({super.key});
@@ -24,6 +26,17 @@ class LaporanScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: const SikapAppBar(title: AppStrings.laporan, showBack: false),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          final data = laporanAsync.valueOrNull;
+          if (data == null) return;
+          _showExportOptions(context, activeTahun, data);
+        },
+        backgroundColor: AppColors.emerald500,
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.download_rounded),
+        label: const Text('Ekspor'),
+      ),
       body: Column(
         children: [
           // ── Controls ──
@@ -309,6 +322,66 @@ class LaporanScreen extends ConsumerWidget {
         ),
         ],
       ),
+    );
+  }
+
+  void _showExportOptions(BuildContext context, String tahun, DashboardSummary data) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: AppColors.dark800,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 12, bottom: 8),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(color: AppColors.dark600, borderRadius: BorderRadius.circular(2)),
+              ),
+              const Padding(
+                padding: EdgeInsets.all(16),
+                child: Text('Ekspor Laporan', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+              ),
+              ListTile(
+                leading: const Icon(Icons.picture_as_pdf_rounded, color: AppColors.error),
+                title: const Text('Cetak / Simpan PDF', style: TextStyle(color: Colors.white)),
+                subtitle: const Text('Cocok untuk diprint atau dibagikan sebagai dokumen resmi', style: TextStyle(color: AppColors.dark400, fontSize: 12)),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  PdfExportService.generateLaporanPdf(
+                    title: 'Laporan Keuangan Bulanan',
+                    subtitle: 'Tahun Pelajaran / Hijriyah: $tahun',
+                    totalPemasukan: data.totalPemasukan,
+                    totalPengeluaran: data.totalPengeluaran,
+                    saldoAkhir: data.saldo,
+                    chartData: data.chartData,
+                  );
+                },
+              ),
+              const Divider(color: AppColors.dark700),
+              ListTile(
+                leading: const Icon(Icons.table_chart_rounded, color: AppColors.emerald400),
+                title: const Text('Bagikan File Excel', style: TextStyle(color: Colors.white)),
+                subtitle: const Text('Buka di Microsoft Excel atau kirim via WhatsApp', style: TextStyle(color: AppColors.dark400, fontSize: 12)),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  ExcelExportService.generateLaporanExcel(
+                    title: 'Laporan_Keuangan_$tahun',
+                    chartData: data.chartData,
+                  );
+                },
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
+        );
+      },
     );
   }
 }
