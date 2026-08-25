@@ -25,7 +25,7 @@ class NotificationService {
       const InitializationSettings initSettings = InitializationSettings(
         android: initSettingsAndroid,
       );
-      await _localNotifications.initialize(initSettings);
+      await _localNotifications.initialize(settings: initSettings);
 
       // 2. Create the Android channel (needed for Heads Up notifications on Android 8+)
       await _localNotifications
@@ -40,10 +40,10 @@ class NotificationService {
 
         if (notification != null && android != null) {
           _localNotifications.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
+            id: notification.hashCode,
+            title: notification.title,
+            body: notification.body,
+            notificationDetails: NotificationDetails(
               android: AndroidNotificationDetails(
                 _channel.id,
                 _channel.name,
