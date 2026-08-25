@@ -423,7 +423,7 @@ class _TransaksiFormState extends ConsumerState<_TransaksiForm> {
   String  _jenis      = 'pemasukan';
   String? _tanggal;
   String? _bulanHijr;
-  String  _tahunHijr  = '1446';
+  String? _tahunHijr;
   bool    _loading    = false;
 
   @override
@@ -439,10 +439,18 @@ class _TransaksiFormState extends ConsumerState<_TransaksiForm> {
       _jenis            = e.jenis;
       _tanggal          = e.tanggal;
       _bulanHijr        = e.bulanHijriyah;
-      _tahunHijr        = e.tahunHijriyah ?? '1446';
+      _tahunHijr        = e.tahunHijriyah;
     } else {
       _tanggal = FormatUtils.nowDateISO();
     }
+    
+    // Set default year if null
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_tahunHijr == null) {
+        final setting = ref.read(pengaturanProvider).valueOrNull;
+        if (mounted) setState(() => _tahunHijr = setting?.tahunAktif ?? '1446');
+      }
+    });
   }
 
   @override
@@ -676,11 +684,12 @@ class _TransaksiFormState extends ConsumerState<_TransaksiForm> {
                             const SizedBox(height: 6),
                             TextFormField(
                               key: ValueKey(_jenis),
-                              initialValue: _tahunHijr,
+                              initialValue: _tahunHijr ?? SettingsService.activeYear,
                               style: const TextStyle(color: Colors.white),
                               keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(hintText: '1446', isDense: true),
-                              onChanged: (v) => setState(() => _tahunHijr = v.isEmpty ? '1446' : v),
+                              decoration: const InputDecoration(hintText: 'Tahun (misal: 1446)', isDense: true),
+                              onChanged: (v) => setState(() => _tahunHijr = v.isEmpty ? null : v),
+                              validator: (v) => (v == null || v.isEmpty) ? 'Isi tahun' : null,
                             ),
                           ])),
                         ],

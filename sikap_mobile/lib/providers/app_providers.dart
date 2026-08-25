@@ -51,13 +51,13 @@ final themeModeProvider = StateProvider((ref) => true); // true = dark
 class TransaksiFilter {
   final String? instansiId;
   final String? bulanHijriyah;
-  final String tahunHijriyah;
+  final String? tahunHijriyah;
   final String? search;
 
   const TransaksiFilter({
     this.instansiId,
     this.bulanHijriyah,
-    this.tahunHijriyah = '1446',
+    this.tahunHijriyah,
     this.search,
   });
 
@@ -84,15 +84,18 @@ final transaksiFilterProvider = StateProvider<TransaksiFilter>((ref) {
 final transaksiListProvider = FutureProvider<List>((ref) async {
   final profile = await ref.watch(profileProvider.future);
   final filter = ref.watch(transaksiFilterProvider);
+  final pengaturan = await ref.watch(pengaturanProvider.future);
   
   final effectiveInstansiId = profile?.isSuperAdmin == true 
       ? filter.instansiId 
       : profile?.instansiId;
 
+  final effectiveTahun = filter.tahunHijriyah ?? pengaturan.tahunAktif;
+
   return TransaksiRepository().getAll(
     instansiId:    effectiveInstansiId,
     bulanHijriyah: filter.bulanHijriyah,
-    tahunHijriyah: filter.tahunHijriyah,
+    tahunHijriyah: effectiveTahun,
     search:        filter.search,
     orderDesc:     false,
   );
@@ -220,14 +223,14 @@ class HutangPiutangFilter {
   final String jenis; // 'hutang' | 'piutang'
   final String? instansiId;
   final String? bulanHijriyah;
-  final String tahunHijriyah;
+  final String? tahunHijriyah;
   final String? search;
 
   const HutangPiutangFilter({
     this.jenis = 'hutang',
     this.instansiId,
     this.bulanHijriyah,
-    this.tahunHijriyah = '1446',
+    this.tahunHijriyah,
     this.search,
   });
 
@@ -249,23 +252,28 @@ class HutangPiutangFilter {
   );
 }
 
-final hutangPiutangFilterProvider = StateProvider<HutangPiutangFilter>((ref) => const HutangPiutangFilter());
+final hutangPiutangFilterProvider = StateProvider<HutangPiutangFilter>((ref) {
+  return const HutangPiutangFilter();
+});
 
-final hutangPiutangListProvider = FutureProvider((ref) async {
+final hutangPiutangListProvider = FutureProvider<List>((ref) async {
   final profile = await ref.watch(profileProvider.future);
   final filter = ref.watch(hutangPiutangFilterProvider);
+  final pengaturan = await ref.watch(pengaturanProvider.future);
   
   final effectiveInstansiId = profile?.isSuperAdmin == true 
       ? filter.instansiId 
       : profile?.instansiId;
 
+  final effectiveTahun = filter.tahunHijriyah ?? pengaturan.tahunAktif;
+
   return HutangPiutangRepository().getAll(
-    instansiId: effectiveInstansiId,
-    jenis: filter.jenis,
+    jenis:         filter.jenis,
+    instansiId:    effectiveInstansiId,
     bulanHijriyah: filter.bulanHijriyah,
-    tahunHijriyah: filter.tahunHijriyah,
-    search: filter.search,
-    orderDesc: true,
+    tahunHijriyah: effectiveTahun,
+    search:        filter.search,
+    orderDesc:     true,
   );
 });
 

@@ -44,47 +44,62 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* Left panel — branding */}
-      <div className="hidden lg:flex flex-col justify-between w-1/2 bg-gradient-to-br from-emerald-800 via-emerald-700 to-emerald-600 p-12 relative overflow-hidden">
-        {/* decorative circles */}
-        <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/5" />
-        <div className="absolute -bottom-32 -left-20 w-96 h-96 rounded-full bg-white/5" />
-        <div className="absolute top-1/3 right-10 w-32 h-32 rounded-full bg-white/5" />
+      <div className="hidden lg:flex flex-col justify-between w-1/2 relative overflow-hidden bg-slate-900">
+        {/* Deep, dynamic gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-950 via-emerald-900 to-slate-900 opacity-90" />
+        
+        {/* Animated ambient glowing orbs */}
+        <div className="absolute -top-[20%] -right-[10%] w-[500px] h-[500px] rounded-full bg-emerald-500/20 blur-[120px] mix-blend-screen animate-pulse duration-10000" />
+        <div className="absolute -bottom-[20%] -left-[10%] w-[600px] h-[600px] rounded-full bg-teal-600/20 blur-[120px] mix-blend-screen" />
+        <div className="absolute top-[40%] left-[20%] w-[300px] h-[300px] rounded-full bg-emerald-400/10 blur-[80px] mix-blend-screen" />
 
-        <div className="relative z-10">
-          <div className="flex items-center gap-3 mb-12">
-            <div className="w-20 h-20 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center">
-              <ShieldCheckIcon className="w-10 h-10 text-white" />
-            </div>
-            <div>
-              <p className="text-white font-bold text-xl font-display">S-KEU</p>
-              <p className="text-emerald-200 text-xs">Darur Rohman</p>
-            </div>
-          </div>
-          <h2 className="text-white font-display font-bold text-4xl leading-tight mb-4">
-            Sistem Informasi<br />Keuangan &<br />Pelaporan
-          </h2>
-          <p className="text-emerald-100 text-sm leading-relaxed max-w-xs">
-            Pengelolaan keuangan Pondok Pesantren Darur Rohman yang modern, terpusat, dan mudah digunakan.
-          </p>
-        </div>
+        {/* Abstract geometric grid overlay */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+CjxwYXRoIGQ9Ik0wIDBoNDB2NDBIMHoiIGZpbGw9Im5vbmUiLz4KPHBhdGggZD0iTTAgMTBoNDBNMTAgMHY0ME0wIDIwaDQwTTIwIDB2NDBNMCAzMGg0ME0zMCAwdjQwIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsMC4wMykiIHN0cm9rZS13aWR0aD0iMSIvPgo8L3N2Zz4=')] opacity-50" />
 
-        <div className="relative z-10">
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              { label: 'Instansi', value: '7+' },
-              { label: 'Bulan Hijriyah', value: '12' },
-              { label: 'Laporan', value: '∞' },
-            ].map(({ label, value }) => (
-              <div key={label} className="bg-white/10 backdrop-blur rounded-xl p-4 text-center">
-                <p className="text-white text-2xl font-bold font-display">{value}</p>
-                <p className="text-emerald-200 text-xs mt-1">{label}</p>
+        <div className="relative z-10 p-16 flex flex-col h-full justify-between">
+          <div>
+            <div className="flex items-center gap-4 mb-16 animate-fade-in" style={{ animationDelay: '100ms' }}>
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400/30 to-emerald-600/10 border border-emerald-400/20 backdrop-blur-xl flex items-center justify-center shadow-[0_0_40px_rgba(52,211,153,0.15)]">
+                <ShieldCheckIcon className="w-8 h-8 text-emerald-300 drop-shadow-md" />
               </div>
-            ))}
+              <div>
+                <p className="text-white font-bold text-2xl font-display tracking-wide">S-KEU</p>
+                <p className="text-emerald-400/80 font-medium text-xs tracking-[0.2em] uppercase mt-0.5">Darur Rohman</p>
+              </div>
+            </div>
+            
+            <div className="animate-fade-in" style={{ animationDelay: '300ms' }}>
+              <h2 className="text-transparent bg-clip-text bg-gradient-to-br from-white via-emerald-50 to-emerald-200/60 font-display font-bold text-5xl leading-[1.15] mb-6 tracking-tight">
+                Sistem Informasi<br />Keuangan &<br />Pelaporan
+              </h2>
+              <p className="text-emerald-100/70 text-base leading-relaxed max-w-sm font-light">
+                Pengelolaan keuangan terpusat yang didesain secara khusus untuk transparansi dan efisiensi operasional Pondok Pesantren.
+              </p>
+            </div>
           </div>
-          <p className="text-emerald-200 text-base mt-12 text-center leading-relaxed">
-            Dibuat oleh Cakrawala Digital. <br />
-            Hubungi : <span className="font-bold text-white text-lg">0813 5908 8246</span>
-          </p>
+
+          <div className="animate-fade-in" style={{ animationDelay: '500ms' }}>
+            <div className="grid grid-cols-3 gap-5">
+              {[
+                { label: 'Instansi', value: '7+' },
+                { label: 'Sistem', value: 'Terpadu' },
+                { label: 'Keamanan', value: 'Ketat' },
+              ].map(({ label, value }) => (
+                <div key={label} className="bg-white/[0.03] backdrop-blur-xl border border-white/[0.05] rounded-2xl p-5 text-center group hover:bg-white/[0.06] transition-all duration-500 cursor-default">
+                  <p className="text-emerald-50 text-xl font-bold font-display group-hover:scale-105 transition-transform duration-500">{value}</p>
+                  <p className="text-emerald-400/60 text-xs mt-2 uppercase tracking-widest font-medium group-hover:text-emerald-400/80 transition-colors">{label}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-12 flex items-center justify-between border-t border-white/5 pt-8">
+              <p className="text-emerald-400/50 text-xs uppercase tracking-widest font-medium">
+                © {new Date().getFullYear()} Cakrawala Digital
+              </p>
+              <p className="text-emerald-100/80 text-sm font-light">
+                Bantuan: <span className="font-semibold text-white ml-1">0813 5908 8246</span>
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
