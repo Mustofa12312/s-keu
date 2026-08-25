@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../data/models/profile_model.dart';
 import '../data/repositories/instansi_repository.dart';
 import '../data/repositories/transaksi_repository.dart';
+import '../data/repositories/kategori_repository.dart';
 import '../core/firebase_client.dart';
 
 // ─── Auth Provider ──────────────────────────────────────────
@@ -25,6 +26,11 @@ final pengaturanProvider = FutureProvider((ref) async {
 // ─── Instansi List ──────────────────────────────────────────
 final instansiListProvider = FutureProvider((ref) async {
   return InstansiRepository().getAll();
+});
+
+// ─── Kategori List ──────────────────────────────────────────
+final kategoriListProvider = FutureProvider((ref) async {
+  return KategoriRepository().getAll();
 });
 
 // ─── Theme Mode Provider ─────────────────────────────────────
