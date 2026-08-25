@@ -53,9 +53,22 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   build_runner: ^2.4.9
   riverpod_generator: ^2.4.0
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/logo/
     - .env
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: false
+  image_path: "assets/logo/logofix.png"
+  min_sdk_size: 21
+  web:
+    generate: true
+    image_path: "assets/logo/logofix.png"
+    background_color: "#FFFFFF"
+    theme_color: "#FFFFFF"
