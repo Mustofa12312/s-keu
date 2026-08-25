@@ -4,6 +4,7 @@ import '../data/models/profile_model.dart';
 import '../data/repositories/instansi_repository.dart';
 import '../data/repositories/transaksi_repository.dart';
 import '../data/repositories/kategori_repository.dart';
+import '../data/repositories/hutang_piutang_repository.dart';
 import '../core/firebase_client.dart';
 
 // ─── Auth Provider ──────────────────────────────────────────
@@ -197,3 +198,52 @@ final laporanProvider = FutureProvider<DashboardSummary>((ref) async {
     recentTransaksi: const [], // Not needed for laporan
   );
 });
+
+// ─── Hutang Piutang Filter & Provider ─────────────────────────
+class HutangPiutangFilter {
+  final String jenis; // 'hutang' | 'piutang'
+  final String? instansiId;
+  final String? bulanHijriyah;
+  final String tahunHijriyah;
+  final String? search;
+
+  const HutangPiutangFilter({
+    this.jenis = 'hutang',
+    this.instansiId,
+    this.bulanHijriyah,
+    this.tahunHijriyah = '1446',
+    this.search,
+  });
+
+  HutangPiutangFilter copyWith({
+    String? jenis,
+    String? instansiId,
+    String? bulanHijriyah,
+    String? tahunHijriyah,
+    String? search,
+    bool clearInstansi = false,
+    bool clearBulan = false,
+    bool clearSearch = false,
+  }) => HutangPiutangFilter(
+    jenis: jenis ?? this.jenis,
+    instansiId: clearInstansi ? null : instansiId ?? this.instansiId,
+    bulanHijriyah: clearBulan ? null : bulanHijriyah ?? this.bulanHijriyah,
+    tahunHijriyah: tahunHijriyah ?? this.tahunHijriyah,
+    search: clearSearch ? null : search ?? this.search,
+  );
+}
+
+final hutangPiutangFilterProvider = StateProvider<HutangPiutangFilter>((ref) => const HutangPiutangFilter());
+
+final hutangPiutangListProvider = FutureProvider((ref) async {
+  final filter = ref.watch(hutangPiutangFilterProvider);
+  return HutangPiutangRepository().getAll(
+    instansiId: filter.instansiId,
+    jenis: filter.jenis,
+    bulanHijriyah: filter.bulanHijriyah,
+    tahunHijriyah: filter.tahunHijriyah,
+    search: filter.search,
+    orderDesc: true,
+  );
+});
+

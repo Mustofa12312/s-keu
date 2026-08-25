@@ -127,6 +127,32 @@ class ProfileScreen extends ConsumerWidget {
 
             const SizedBox(height: 24),
 
+            if (profile?.isSuperAdmin == true) ...[
+              const SectionHeader(title: 'Data Master'),
+              const SizedBox(height: 12),
+              GlassCard(
+                padding: EdgeInsets.zero,
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.category_rounded, color: AppColors.emerald400),
+                      title: const Text('Kategori Transaksi', style: TextStyle(color: Colors.white, fontSize: 14)),
+                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
+                      onTap: () => context.push(AppStrings.routeKategori),
+                    ),
+                    Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
+                    ListTile(
+                      leading: const Icon(Icons.business_rounded, color: AppColors.blue400),
+                      title: const Text('Instansi', style: TextStyle(color: Colors.white, fontSize: 14)),
+                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
+                      onTap: () => context.push(AppStrings.routeInstansi),
+                    ),
+                  ],
+                ),
+              ).animate(delay: 220.ms).fadeIn(duration: 400.ms),
+              const SizedBox(height: 24),
+            ],
+
             // ── Change Password Button ──
             ElevatedButton.icon(
               onPressed: () => _showChangePasswordDialog(context),
