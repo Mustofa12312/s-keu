@@ -11,6 +11,9 @@
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
+    <!-- Notifications Permission (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application android:enableOnBackInvokedCallback="true"
         android:label="SIKAP Darur Rohman"
         android:name="${applicationName}"
@@ -43,6 +46,14 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2"/>
+            
+        <!-- FCM Config -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="high_importance_channel" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
     </application>
     <queries>
         <intent>

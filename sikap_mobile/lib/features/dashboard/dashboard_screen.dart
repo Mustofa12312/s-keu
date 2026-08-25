@@ -8,14 +8,41 @@ import '../../core/constants/app_strings.dart';
 import '../../core/utils/format_utils.dart';
 import '../../data/models/transaksi_model.dart';
 import '../../providers/app_providers.dart';
+import '../../core/services/notification_service.dart';
+import '../../data/repositories/instansi_repository.dart';
 import '../../providers/notification_provider.dart';
 import '../../shared/widgets/app_widgets.dart';
 
-class DashboardScreen extends ConsumerWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _initNotifications();
+  }
+
+  Future<void> _initNotifications() async {
+    final ns = NotificationService();
+    await ns.requestPermission();
+    
+    // Save FCM token
+    final token = await ns.getToken();
+    if (token != null) {
+      final user = ref.read(authProvider).valueOrNull;
+      if (user != null) {
+        ProfileRepository().updateFcmToken(user.uid, token);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final profileAsync  = ref.watch(profileProvider);
     final dashboardAsync = ref.watch(dashboardProvider);
 

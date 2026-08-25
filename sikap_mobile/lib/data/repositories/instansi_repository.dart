@@ -123,12 +123,20 @@ class ProfileRepository {
     }
   }
 
-  Future<void> update(String id, Map<String, dynamic> payload) async {
+  Future<void> update(String uid, Map<String, dynamic> data) async {
     try {
-      await _db.doc(id).update(payload);
+      await _db.doc(uid).update(data);
     } catch (e, st) {
-      logger.e('Error update profile $id', error: e, stackTrace: st);
+      logger.e('Error update profile $uid', error: e, stackTrace: st);
       throw Exception('Gagal memperbarui profil');
+    }
+  }
+
+  Future<void> updateFcmToken(String uid, String token) async {
+    try {
+      await _db.doc(uid).set({'fcm_token': token}, SetOptions(merge: true));
+    } catch (e, st) {
+      logger.e('Error update fcm_token $uid', error: e, stackTrace: st);
     }
   }
 }

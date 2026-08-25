@@ -50,6 +50,8 @@ dependencies:
   local_auth: ^3.0.2
   esc_pos_utils_plus: ^2.0.4
   print_bluetooth_thermal: ^1.2.1
+  firebase_messaging: ^15.2.10
+  flutter_local_notifications: ^22.3.0
 
 dev_dependencies:
   flutter_test:
