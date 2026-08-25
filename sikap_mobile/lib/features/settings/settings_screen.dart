@@ -111,7 +111,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       // Because PengaturanRepository getSettings in mobile app hardcoded id '1' and doesn't have update method
       // Wait, let's look at instansi_repository.dart to see if it has update method for Pengaturan.
       // If not, we can just throw an error or create the update method inline here for simplicity since it's just a query.
-      await FirebaseClient.firestore.collection('pengaturan').doc('1').update({
+      await FirebaseClient.firestore.collection('pengaturan').doc('general').update({
         'tahun_aktif': _tahunCtrl!.text.trim(),
       });
       ref.invalidate(pengaturanProvider);

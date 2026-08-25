@@ -32,13 +32,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         email: _emailCtrl.text.trim(),
         password: _passCtrl.text,
       );
-      if (mounted) context.go(AppStrings.routeDashboard);
+      // Tidak perlu manual context.go() karena RouterNotifier akan otomatis 
+      // mengarahkan ke dashboard saat status authProvider berubah menjadi Auth
     } on FirebaseAuthException catch (e) {
-      setState(() => _error = _translateError(e.message ?? ''));
+      if (mounted) {
+        setState(() {
+          _error = _translateError(e.message ?? '');
+          _loading = false;
+        });
+      }
     } catch (e) {
-      setState(() => _error = 'Terjadi kesalahan. Coba lagi.');
-    } finally {
-      if (mounted) setState(() => _loading = false);
+      if (mounted) {
+        setState(() {
+          _error = 'Terjadi kesalahan. Coba lagi.';
+          _loading = false;
+        });
+      }
     }
   }
 

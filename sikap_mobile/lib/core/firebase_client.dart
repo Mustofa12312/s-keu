@@ -8,22 +8,16 @@ class FirebaseClient {
     // In a real scenario, you'd use flutterfire configure to generate firebase_options.dart.
     // For now we assume either firebase_options.dart is generated or we use env variables.
     
-    // For simplicity, relying on default initializeApp() which requires google-services.json / GoogleService-Info.plist
-    // Or you can pass options manually if needed:
-    /*
-    await Firebase.initializeApp(
-      options: FirebaseOptions(
-        apiKey: dotenv.env['FIREBASE_API_KEY'] ?? '',
-        appId: dotenv.env['FIREBASE_APP_ID'] ?? '',
-        messagingSenderId: dotenv.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '',
-        projectId: dotenv.env['FIREBASE_PROJECT_ID'] ?? '',
-      ),
-    );
-    */
-    
-    // Using default initialization (requires platform specific config files)
     try {
-      await Firebase.initializeApp();
+      await Firebase.initializeApp(
+        options: const FirebaseOptions(
+          apiKey: 'AIzaSyBGn2ALAU9DiiQoyyGjzpT_PhbCQCX5yTE',
+          appId: '1:180609665503:web:f497638e1dbfaf3c311c6a', // Menggunakan Web App ID sementara untuk koneksi API
+          messagingSenderId: '180609665503',
+          projectId: 'fir-keu',
+          storageBucket: 'fir-keu.firebasestorage.app',
+        ),
+      );
     } catch (e) {
       debugPrint('Firebase init error: $e');
     }

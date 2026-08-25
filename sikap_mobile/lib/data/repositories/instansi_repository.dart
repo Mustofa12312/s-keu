@@ -138,8 +138,8 @@ class PengaturanRepository {
 
   Future<PengaturanModel> getSettings() async {
     try {
-      // Assuming ID is '1' in Firestore as well
-      final doc = await _db.doc('1').get();
+      // Assuming ID is 'general' in Firestore as well
+      final doc = await _db.doc('general').get();
       if (!doc.exists) return PengaturanModel.defaultSettings();
       
       final data = doc.data()!;
