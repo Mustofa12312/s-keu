@@ -684,7 +684,7 @@ class _TransaksiFormState extends ConsumerState<_TransaksiForm> {
                             const SizedBox(height: 6),
                             TextFormField(
                               key: ValueKey(_jenis),
-                              initialValue: _tahunHijr ?? SettingsService.activeYear,
+                              initialValue: _tahunHijr,
                               style: const TextStyle(color: Colors.white),
                               keyboardType: TextInputType.number,
                               decoration: const InputDecoration(hintText: 'Tahun (misal: 1446)', isDense: true),

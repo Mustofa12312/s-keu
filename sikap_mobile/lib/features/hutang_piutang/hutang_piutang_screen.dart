@@ -273,8 +273,15 @@ class _HutangPiutangFormState extends ConsumerState<_HutangPiutangForm> {
     _keteranganCtrl = TextEditingController(text: ext?.keterangan);
     _tglCtrl = TextEditingController(text: ext?.tanggal ?? DateTime.now().toString().split(' ')[0]);
     _bulanHCtrl = TextEditingController(text: ext?.bulanHijriyah ?? AppStrings.bulanHijriyah.first);
-    _tahunHCtrl = TextEditingController(text: ext?.tahunHijriyah ?? '1446');
+    _tahunHCtrl = TextEditingController(text: ext?.tahunHijriyah);
     _instansiId = ext?.instansiId;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_tahunHCtrl.text.isEmpty) {
+        final setting = ref.read(pengaturanProvider).valueOrNull;
+        if (mounted) setState(() => _tahunHCtrl.text = setting?.tahunAktif ?? '1446');
+      }
+    });
   }
 
   @override
