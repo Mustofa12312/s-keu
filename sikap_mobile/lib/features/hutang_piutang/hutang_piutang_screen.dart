@@ -128,7 +128,7 @@ class _HutangPiutangList extends ConsumerWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: lunas ? AppColors.emerald500.withOpacity(0.2) : AppColors.error.withOpacity(0.2),
+                            color: lunas ? AppColors.emerald500.withValues(alpha: 0.2) : AppColors.error.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -175,13 +175,12 @@ class _HutangPiutangList extends ConsumerWidget {
                           onPressed: () => _showCicilan(context, item, ref),
                           icon: const Icon(Icons.list_alt_rounded, size: 16),
                           label: const Text('Cicilan'),
-                          style: TextButton.styleFrom(foregroundColor: AppColors.blue400),
+                          style: TextButton.styleFrom(foregroundColor: AppColors.info),
                         ),
                         if (canEdit) ...[
                           const SizedBox(width: 8),
                           IconButton(
-                            icon: const Icon(Icons.edit_rounded, size: 18),
-                            color: AppColors.emerald400,
+                            icon: const Icon(Icons.edit_rounded, size: 18, color: AppColors.info),
                             onPressed: () => ctx.findAncestorStateOfType<_HutangPiutangScreenState>()?._showForm(context, ref, item, jenis),
                           ),
                           IconButton(
