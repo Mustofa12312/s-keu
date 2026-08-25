@@ -116,6 +116,101 @@ class TransaksiRepository {
     }
   }
 
+  Future<List<TransaksiModel>> getAll({
+    String? instansiId,
+    String? bulanHijriyah,
+    String? tahunHijriyah,
+    String? search,
+    String? tglMulai,
+    String? tglAkhir,
+    bool orderDesc = false,
+    int limit = 100000,
+  }) async {
+    try {
+      Query q = _db;
+
+      if (instansiId != null && instansiId.isNotEmpty) {
+        q = q.where('instansi_id', isEqualTo: instansiId);
+      }
+      if (bulanHijriyah != null && bulanHijriyah.isNotEmpty) {
+        q = q.where('bulan_hijriyah', isEqualTo: bulanHijriyah);
+      }
+      if (tahunHijriyah != null && tahunHijriyah.isNotEmpty) {
+        q = q.where('tahun_hijriyah', isEqualTo: tahunHijriyah);
+      }
+      if (tglMulai != null) q = q.where('tanggal', isGreaterThanOrEqualTo: tglMulai);
+      if (tglAkhir != null) q = q.where('tanggal', isLessThanOrEqualTo: tglAkhir);
+      
+      if (limit < 100000) {
+        q = q.limit(limit);
+      }
+      final snap = await q.get();
+      
+      var docs = snap.docs.map((e) {
+        var data = e.data() as Map<String, dynamic>;
+        data['id'] = e.id;
+        return data;
+      }).toList();
+
+      if (search != null && search.isNotEmpty) {
+        docs = docs.where((d) {
+          final uraian = (d['uraian'] ?? '').toString().toLowerCase();
+          return uraian.contains(search.toLowerCase());
+        }).toList();
+      }
+
+      docs.sort((a, b) {
+        final dateA = a['tanggal'] ?? '';
+        final dateB = b['tanggal'] ?? '';
+        int cmp = dateA.compareTo(dateB);
+        if (cmp != 0) return orderDesc ? -cmp : cmp;
+        
+        final caA = a['created_at'];
+        final caB = b['created_at'];
+        
+        DateTime? dtA;
+        if (caA is Timestamp) {
+          dtA = caA.toDate();
+        } else if (caA is String) {
+          dtA = DateTime.tryParse(caA);
+        }
+        
+        DateTime? dtB;
+        if (caB is Timestamp) {
+          dtB = caB.toDate();
+        } else if (caB is String) {
+          dtB = DateTime.tryParse(caB);
+        }
+        
+        if (dtA != null && dtB != null) {
+          return orderDesc ? dtB.compareTo(dtA) : dtA.compareTo(dtB);
+        }
+        return 0;
+      });
+
+      final instansiSnap = await _instansiDb.get();
+      final instansiMap = <String, Map<String, dynamic>>{};
+      for (var doc in instansiSnap.docs) {
+        instansiMap[doc.id] = doc.data();
+      }
+
+      return docs.map((data) {
+        final instId = data['instansi_id'];
+        if (instId != null && instansiMap.containsKey(instId)) {
+          data['instansi'] = {
+            'nama_instansi': instansiMap[instId]!['nama_instansi'],
+            'kode_instansi': instansiMap[instId]!['kode_instansi']
+          };
+        }
+        return TransaksiModel.fromJson(data);
+      }).toList();
+
+    } catch (e, st) {
+      logger.e('Error getAll transaksi', error: e, stackTrace: st);
+      throw Exception('Gagal mengambil data transaksi');
+    }
+  }
+
   Future<TransaksiModel> create(Map<String, dynamic> payload) async {
     try {
       payload['created_at'] = FieldValue.serverTimestamp();

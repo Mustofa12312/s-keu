@@ -85,24 +85,9 @@ final transaksiFilterProvider = StateProvider<TransaksiFilter>((ref) {
 });
 
 class TransaksiListNotifier extends AsyncNotifier<TransaksiPage> {
-  Timer? _debounce;
-  String? _debounceQuery;
-
   @override
   FutureOr<TransaksiPage> build() async {
     return _fetch(null);
-  }
-
-  void _onSearchChanged(String query, TextEditingController controller) {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      if (_debounceQuery != query) {
-        _debounceQuery = query;
-        ref.read(transaksiFilterProvider.notifier).update(
-          (state) => state.copyWith(search: query, clearSearch: query.isEmpty)
-        );
-      }
-    });
   }
 
   Future<TransaksiPage> _fetch(DocumentSnapshot? lastDoc) async {

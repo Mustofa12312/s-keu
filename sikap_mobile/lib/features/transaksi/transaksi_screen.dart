@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,6 +37,18 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
     if (_scrollCtrl.position.pixels >= _scrollCtrl.position.maxScrollExtent - 200) {
       ref.read(transaksiListProvider.notifier).fetchNextPage();
     }
+  }
+
+  void _onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (_debounceQuery != _searchCtrl.text) {
+        _debounceQuery = _searchCtrl.text;
+        ref.read(transaksiFilterProvider.notifier).update(
+          (state) => state.copyWith(search: _searchCtrl.text, clearSearch: _searchCtrl.text.isEmpty)
+        );
+      }
+    });
   }
 
   @override
