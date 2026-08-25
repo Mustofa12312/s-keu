@@ -192,6 +192,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               onFieldSubmitted: (_) => _login(),
             ),
 
+            const SizedBox(height: 8),
+            
+            // Lupa Password
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () => _showForgotPasswordDialog(context),
+                style: TextButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                child: const Text('Lupa Password?', style: TextStyle(color: AppColors.emerald400, fontSize: 13, fontWeight: FontWeight.w600)),
+              ),
+            ),
+
             // Error Message
             if (_error != null) ...[
               const SizedBox(height: 14),
@@ -249,5 +265,83 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _buildLabel(String text) {
     return Text(text, style: const TextStyle(color: AppColors.dark300, fontSize: 13, fontWeight: FontWeight.w500));
+  }
+
+  void _showForgotPasswordDialog(BuildContext context) {
+    final emailCtrl = TextEditingController(text: _emailCtrl.text);
+    final formKey = GlobalKey<FormState>();
+    bool loading = false;
+    String? errorMsg;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Lupa Password'),
+            content: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Masukkan email akun Anda. Kami akan mengirimkan link untuk mereset password.', 
+                    style: TextStyle(color: AppColors.dark400, fontSize: 13)),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: emailCtrl,
+                    keyboardType: TextInputType.emailAddress,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      hintText: 'contoh@email.com',
+                      prefixIcon: Icon(Icons.email_rounded, color: AppColors.dark400, size: 20),
+                    ),
+                    validator: (v) {
+                      if (v == null || v.isEmpty) return 'Email wajib diisi';
+                      if (!RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(v)) return 'Format email tidak valid';
+                      return null;
+                    },
+                  ),
+                  if (errorMsg != null) ...[
+                    const SizedBox(height: 12),
+                    Text(errorMsg!, style: const TextStyle(color: AppColors.error, fontSize: 12)),
+                  ],
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: loading ? null : () => Navigator.pop(ctx),
+                child: const Text('Batal'),
+              ),
+              ElevatedButton(
+                onPressed: loading ? null : () async {
+                  if (!formKey.currentState!.validate()) return;
+                  setState(() { loading = true; errorMsg = null; });
+                  try {
+                    await FirebaseClient.auth.sendPasswordResetEmail(email: emailCtrl.text.trim());
+                    if (ctx.mounted) {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(ctx).showSnackBar(
+                        const SnackBar(content: Text('Link reset password telah dikirim ke email Anda'), backgroundColor: AppColors.emerald500),
+                      );
+                    }
+                  } on FirebaseAuthException catch (e) {
+                    setState(() => errorMsg = _translateError(e.message ?? ''));
+                  } catch (e) {
+                    setState(() => errorMsg = 'Terjadi kesalahan. Coba lagi.');
+                  } finally {
+                    if (mounted) setState(() => loading = false);
+                  }
+                },
+                child: loading
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : const Text('Kirim Link'),
+              ),
+            ],
+          );
+        }
+      ),
+    );
   }
 }

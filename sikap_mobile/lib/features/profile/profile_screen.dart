@@ -127,6 +127,20 @@ class ProfileScreen extends ConsumerWidget {
 
             const SizedBox(height: 24),
 
+            // ── Change Password Button ──
+            ElevatedButton.icon(
+              onPressed: () => _showChangePasswordDialog(context),
+              icon: const Icon(Icons.lock_reset_rounded),
+              label: const Text('Ubah Password'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.dark600,
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 52),
+              ),
+            ).animate(delay: 250.ms).fadeIn(duration: 400.ms),
+
+            const SizedBox(height: 12),
+
             // ── Logout Button ──
             ElevatedButton.icon(
               onPressed: () => _confirmLogout(context, ref),
@@ -170,6 +184,102 @@ class ProfileScreen extends ConsumerWidget {
             child: const Text('Keluar'),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showChangePasswordDialog(BuildContext context) {
+    final passCtrl = TextEditingController();
+    final confirmCtrl = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+    bool loading = false;
+    String? errorMsg;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Ubah Password'),
+            content: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Silakan masukkan password baru Anda.', style: TextStyle(color: AppColors.dark400, fontSize: 13)),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: passCtrl,
+                    obscureText: true,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      hintText: 'Password Baru',
+                      prefixIcon: Icon(Icons.lock_outline_rounded, color: AppColors.dark400, size: 20),
+                    ),
+                    validator: (v) {
+                      if (v == null || v.isEmpty) return 'Wajib diisi';
+                      if (v.length < 6) return 'Minimal 6 karakter';
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: confirmCtrl,
+                    obscureText: true,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: const InputDecoration(
+                      hintText: 'Konfirmasi Password Baru',
+                      prefixIcon: Icon(Icons.lock_rounded, color: AppColors.dark400, size: 20),
+                    ),
+                    validator: (v) {
+                      if (v == null || v.isEmpty) return 'Wajib diisi';
+                      if (v != passCtrl.text) return 'Password tidak cocok';
+                      return null;
+                    },
+                  ),
+                  if (errorMsg != null) ...[
+                    const SizedBox(height: 12),
+                    Text(errorMsg!, style: const TextStyle(color: AppColors.error, fontSize: 12)),
+                  ],
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: loading ? null : () => Navigator.pop(ctx),
+                child: const Text('Batal'),
+              ),
+              ElevatedButton(
+                onPressed: loading ? null : () async {
+                  if (!formKey.currentState!.validate()) return;
+                  setState(() { loading = true; errorMsg = null; });
+                  try {
+                    final user = FirebaseClient.auth.currentUser;
+                    if (user != null) {
+                      await user.updatePassword(passCtrl.text);
+                      if (ctx.mounted) {
+                        Navigator.pop(ctx);
+                        ScaffoldMessenger.of(ctx).showSnackBar(
+                          const SnackBar(content: Text('Password berhasil diubah'), backgroundColor: AppColors.emerald500),
+                        );
+                      }
+                    } else {
+                      setState(() => errorMsg = 'Sesi tidak valid, harap login ulang');
+                    }
+                  } catch (e) {
+                    setState(() => errorMsg = 'Gagal mengubah password: ${e.toString()}');
+                  } finally {
+                    if (mounted) setState(() => loading = false);
+                  }
+                },
+                child: loading
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : const Text('Simpan'),
+              ),
+            ],
+          );
+        }
       ),
     );
   }
