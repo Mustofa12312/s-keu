@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/utils/format_utils.dart';
@@ -269,7 +270,7 @@ class _HutangPiutangFormState extends ConsumerState<_HutangPiutangForm> {
     super.initState();
     final ext = widget.existing;
     _pihakCtrl = TextEditingController(text: ext?.namaPihak);
-    _nominalCtrl = TextEditingController(text: ext != null ? ext.nominalTotal.toString() : '');
+    _nominalCtrl = TextEditingController(text: ext != null ? FormatUtils.rupiah(ext.nominalTotal) : '');
     _keteranganCtrl = TextEditingController(text: ext?.keterangan);
     _tglCtrl = TextEditingController(text: ext?.tanggal ?? DateTime.now().toString().split(' ')[0]);
     _bulanHCtrl = TextEditingController(text: ext?.bulanHijriyah ?? AppStrings.bulanHijriyah.first);
@@ -342,8 +343,23 @@ class _HutangPiutangFormState extends ConsumerState<_HutangPiutangForm> {
               TextFormField(
                 controller: _nominalCtrl,
                 keyboardType: TextInputType.number,
-                style: const TextStyle(color: Colors.white),
-                validator: (v) => v!.isEmpty ? 'Wajib diisi' : null,
+                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                inputFormatters: [
+                  CurrencyTextInputFormatter.currency(
+                    locale: 'id',
+                    decimalDigits: 0,
+                    symbol: 'Rp ',
+                  )
+                ],
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.attach_money_rounded, color: AppColors.dark400),
+                  hintText: 'Rp 0',
+                ),
+                validator: (v) {
+                  final val = int.tryParse(v!.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+                  if (val <= 0) return 'Wajib diisi';
+                  return null;
+                },
               ),
               const SizedBox(height: 12),
 
@@ -438,7 +454,7 @@ class _HutangPiutangFormState extends ConsumerState<_HutangPiutangForm> {
         'instansi_id': _instansiId,
         'jenis': widget.jenis,
         'nama_pihak': _pihakCtrl.text.trim(),
-        'nominal_total': int.tryParse(_nominalCtrl.text.trim()) ?? 0,
+        'nominal_total': int.tryParse(_nominalCtrl.text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0,
         'nominal_dibayar': widget.existing?.nominalDibayar ?? 0,
         'status': widget.existing?.status ?? 'belum_lunas',
         'tanggal': _tglCtrl.text,
@@ -506,7 +522,7 @@ class _CicilanSheetState extends State<_CicilanSheet> {
   }
 
   Future<void> _addCicilan() async {
-    final nom = int.tryParse(_nominalCtrl.text) ?? 0;
+    final nom = int.tryParse(_nominalCtrl.text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
     if (nom <= 0) return;
 
     setState(() => _saving = true);
@@ -593,6 +609,13 @@ class _CicilanSheetState extends State<_CicilanSheet> {
                     controller: _nominalCtrl,
                     keyboardType: TextInputType.number,
                     style: const TextStyle(color: Colors.white),
+                    inputFormatters: [
+                      CurrencyTextInputFormatter.currency(
+                        locale: 'id',
+                        decimalDigits: 0,
+                        symbol: 'Rp ',
+                      )
+                    ],
                     decoration: const InputDecoration(labelText: 'Nominal (Rp)', contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8)),
                   ),
                 ),

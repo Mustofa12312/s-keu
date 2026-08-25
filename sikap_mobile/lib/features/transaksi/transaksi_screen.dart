@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/utils/format_utils.dart';
@@ -432,7 +433,7 @@ class _TransaksiFormState extends ConsumerState<_TransaksiForm> {
     if (widget.existing != null) {
       final e = widget.existing!;
       _uraianCtrl.text  = e.uraian;
-      _nominalCtrl.text = e.nominal.toString();
+      _nominalCtrl.text = FormatUtils.rupiah(e.nominal);
       _kodCtrl.text     = e.kodeTransaksi ?? '';
       _buktiCtrl.text   = e.nomorBukti    ?? '';
       _sumberCtrl.text  = e.sumberDana    ?? '';
@@ -475,7 +476,7 @@ class _TransaksiFormState extends ConsumerState<_TransaksiForm> {
         'uraian':         _uraianCtrl.text.trim(),
         'sumber_dana':    _sumberCtrl.text.trim().isEmpty ? null : _sumberCtrl.text.trim(),
         'jenis':          _jenis,
-        'nominal':        int.parse(_nominalCtrl.text.replaceAll(RegExp(r'[^0-9]'), '')),
+        'nominal':        int.tryParse(_nominalCtrl.text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0,
       };
       final repo = TransaksiRepository();
       if (widget.existing != null) {
@@ -624,13 +625,22 @@ class _TransaksiFormState extends ConsumerState<_TransaksiForm> {
                       const SizedBox(height: 6),
                       TextFormField(
                         controller: _nominalCtrl,
-                        style: const TextStyle(color: Colors.white),
                         keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(hintText: '0', prefixText: 'Rp '),
+                        style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                        inputFormatters: [
+                          CurrencyTextInputFormatter.currency(
+                            locale: 'id',
+                            decimalDigits: 0,
+                            symbol: 'Rp ',
+                          )
+                        ],
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.attach_money_rounded, color: AppColors.dark400),
+                          hintText: 'Rp 0',
+                        ),
                         validator: (v) {
-                          if (v == null || v.isEmpty) return 'Nominal wajib diisi';
-                          final n = int.tryParse(v.replaceAll(RegExp(r'[^0-9]'), ''));
-                          if (n == null || n <= 0) return 'Nominal tidak valid';
+                          final val = int.tryParse(v!.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+                          if (val <= 0) return 'Nominal tidak valid';
                           return null;
                         },
                       ),

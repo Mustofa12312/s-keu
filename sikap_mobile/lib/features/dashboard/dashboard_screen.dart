@@ -20,13 +20,13 @@ class DashboardScreen extends ConsumerWidget {
     final dashboardAsync = ref.watch(dashboardProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.dark900,
       body: RefreshIndicator(
-        color: AppColors.emerald400,
+        color: AppColors.emerald500,
         backgroundColor: AppColors.dark800,
         onRefresh: () async {
           ref.invalidate(dashboardProvider);
-          ref.invalidate(profileProvider);
-          await ref.read(dashboardProvider.future);
+          return await ref.read(dashboardProvider.future);
         },
         child: CustomScrollView(
         slivers: [
