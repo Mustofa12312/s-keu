@@ -29,6 +29,14 @@ const MENU_OPTIONS = [
   { value: '/piutang', label: 'Data Piutang' },
   { value: '/buku-kas-hutang', label: 'Buku Kas Hutang' },
   { value: '/laporan-hutang', label: 'Laporan Hutang' },
+  { value: '/anggaran/rencana', label: 'Rencana Anggaran' },
+  { value: '/anggaran/realisasi', label: 'Realisasi Anggaran' },
+  { value: '/anggaran/laporan', label: 'Laporan RAPBM' },
+  { value: '/kategori', label: 'Kategori Transaksi' },
+  { value: '/instansi', label: 'Instansi' },
+  { value: '/users', label: 'Pengguna' },
+  { value: '/log-aktivitas', label: 'Log Aktivitas' },
+  { value: '/pengaturan', label: 'Pengaturan' },
 ]
 
 export default function UsersPage() {

@@ -32,8 +32,14 @@ export default function ProtectedRoute({ children, adminOnly = false }) {
         </div>
       )
     }
-    // Jika gagal fetch profile atau bukan super_admin → redirect ke dashboard
-    if (profileError || profile?.role !== 'super_admin') {
+    // Periksa akses berdasarkan super_admin atau akses_menu
+    const currentPath = window.location.pathname;
+    const isSuperAdmin = profile?.role === 'super_admin';
+    const hasAksesMenu = profile?.akses_menu?.some(menu => currentPath.startsWith(menu));
+    const canAccess = isSuperAdmin || hasAksesMenu;
+
+    // Jika gagal fetch profile atau tidak memiliki akses → redirect ke dashboard
+    if (profileError || !canAccess) {
       return <Navigate to="/dashboard" replace />
     }
   }

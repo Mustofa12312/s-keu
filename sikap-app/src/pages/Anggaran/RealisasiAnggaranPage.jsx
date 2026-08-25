@@ -99,7 +99,7 @@ export default function RealisasiAnggaranPage() {
     
     setLoadingRealisasi(true)
     try {
-      const list = await anggaranService.getRealisasi(item.id)
+      const list = await anggaranService.getRealisasi(item.id, isSuperAdmin ? null : instansiId)
       setRealisasiList(list)
     } catch (error) {
       console.error(error)
@@ -115,7 +115,7 @@ export default function RealisasiAnggaranPage() {
       await anggaranService.deleteRealisasi(id)
       showToast('Dihapus')
       // Refresh list
-      const list = await anggaranService.getRealisasi(selectedAnggaran.id)
+      const list = await anggaranService.getRealisasi(selectedAnggaran.id, isSuperAdmin ? null : instansiId)
       setRealisasiList(list)
       fetchData() // to update parent table numbers
     } catch (error) {
@@ -143,7 +143,7 @@ export default function RealisasiAnggaranPage() {
         uraian: `Realisasi ${selectedAnggaran.uraian}`,
         nominal: 0
       })
-      const list = await anggaranService.getRealisasi(selectedAnggaran.id)
+      const list = await anggaranService.getRealisasi(selectedAnggaran.id, isSuperAdmin ? null : instansiId)
       setRealisasiList(list)
       fetchData()
     } catch (error) {

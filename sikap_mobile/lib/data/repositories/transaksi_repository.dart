@@ -37,7 +37,10 @@ class TransaksiRepository {
       // The original ordered by tanggal then created_at.
       // We will do a basic fetch and sort in memory for simplicity to mimic supabase.
       
-      final snap = await q.limit(limit).get();
+      if (limit < 100000) {
+        q = q.limit(limit);
+      }
+      final snap = await q.get();
       
       var docs = snap.docs.map((e) {
         var data = e.data() as Map<String, dynamic>;

@@ -90,11 +90,15 @@ class AnggaranRepository {
     }
   }
 
-  Future<List<RealisasiAnggaranModel>> getRealisasi(String anggaranId) async {
+  Future<List<RealisasiAnggaranModel>> getRealisasi(String anggaranId, {String? instansiId}) async {
     try {
-      final snap = await _realisasiDb.where('anggaran_id', isEqualTo: anggaranId).get();
+      Query q = _realisasiDb.where('anggaran_id', isEqualTo: anggaranId);
+      if (instansiId != null) {
+        q = q.where('instansi_id', isEqualTo: instansiId);
+      }
+      final snap = await q.get();
       List<RealisasiAnggaranModel> data = snap.docs.map((e) {
-        final d = e.data();
+        final d = e.data() as Map<String, dynamic>;
         d['id'] = e.id;
         return RealisasiAnggaranModel.fromJson(d);
       }).toList();

@@ -127,88 +127,122 @@ class ProfileScreen extends ConsumerWidget {
 
             const SizedBox(height: 24),
 
-            if (profile?.isViewer != true) ...[
-              const SectionHeader(title: 'Modul Keuangan Lanjutan'),
-              const SizedBox(height: 12),
-              GlassCard(
-                padding: EdgeInsets.zero,
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.account_balance_wallet_rounded, color: AppColors.info),
-                      title: const Text('Hutang & Piutang', style: TextStyle(color: Colors.white, fontSize: 14)),
-                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
-                      onTap: () => context.push(AppStrings.routeHutangPiutang),
-                    ),
-                    Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
-                    ListTile(
-                      leading: const Icon(Icons.assignment_rounded, color: AppColors.emerald400),
-                      title: const Text('Anggaran (RAPBM)', style: TextStyle(color: Colors.white, fontSize: 14)),
-                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
-                      onTap: () => context.push(AppStrings.routeAnggaran),
-                    ),
-                  ],
-                ),
-              ).animate(delay: 210.ms).fadeIn(duration: 400.ms),
-              const SizedBox(height: 24),
-            ],
+            ...(() {
+              final hasHutang = profile?.isSuperAdmin == true || (profile?.aksesMenu?.any((menu) => menu.startsWith('/hutang') || menu.startsWith('/piutang')) ?? false);
+              final hasAnggaran = profile?.isSuperAdmin == true || (profile?.aksesMenu?.any((menu) => menu.startsWith('/anggaran')) ?? false);
+              final hasModulLanjutan = hasHutang || hasAnggaran;
 
-            if (profile?.isSuperAdmin == true) ...[
-              const SectionHeader(title: 'Data Master'),
-              const SizedBox(height: 12),
-              GlassCard(
-                padding: EdgeInsets.zero,
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.category_rounded, color: AppColors.emerald400),
-                      title: const Text('Kategori Transaksi', style: TextStyle(color: Colors.white, fontSize: 14)),
-                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
-                      onTap: () => context.push(AppStrings.routeKategori),
-                    ),
-                    Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
-                    ListTile(
-                      leading: const Icon(Icons.business_rounded, color: AppColors.info),
-                      title: const Text('Instansi', style: TextStyle(color: Colors.white, fontSize: 14)),
-                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
-                      onTap: () => context.push(AppStrings.routeInstansi),
-                    ),
-                  ],
-                ),
-              ).animate(delay: 220.ms).fadeIn(duration: 400.ms),
-              const SizedBox(height: 24),
+              if (!hasModulLanjutan) return [];
 
-              const SectionHeader(title: 'Manajemen Sistem'),
-              const SizedBox(height: 12),
-              GlassCard(
-                padding: EdgeInsets.zero,
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: const Icon(Icons.people_rounded, color: AppColors.info),
-                      title: const Text('Manajemen Pengguna', style: TextStyle(color: Colors.white, fontSize: 14)),
-                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
-                      onTap: () => context.push(AppStrings.routeUsers),
+              return [
+                const SectionHeader(title: 'Modul Keuangan Lanjutan'),
+                const SizedBox(height: 12),
+                GlassCard(
+                  padding: EdgeInsets.zero,
+                  child: Column(
+                    children: [
+                      if (hasHutang)
+                        ListTile(
+                          leading: const Icon(Icons.account_balance_wallet_rounded, color: AppColors.info),
+                          title: const Text('Hutang & Piutang', style: TextStyle(color: Colors.white, fontSize: 14)),
+                          trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
+                          onTap: () => context.push(AppStrings.routeHutangPiutang),
+                        ),
+                      if (hasHutang && hasAnggaran)
+                        Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
+                      if (hasAnggaran)
+                        ListTile(
+                          leading: const Icon(Icons.assignment_rounded, color: AppColors.emerald400),
+                          title: const Text('Anggaran (RAPBM)', style: TextStyle(color: Colors.white, fontSize: 14)),
+                          trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
+                          onTap: () => context.push(AppStrings.routeAnggaran),
+                        ),
+                    ],
+                  ),
+                ).animate(delay: 210.ms).fadeIn(duration: 400.ms),
+                const SizedBox(height: 24),
+              ];
+            })(),
+
+            ...(() {
+              final hasKategori = profile?.isSuperAdmin == true || (profile?.aksesMenu?.contains('/kategori') ?? false);
+              final hasInstansi = profile?.isSuperAdmin == true || (profile?.aksesMenu?.contains('/instansi') ?? false);
+              final hasDataMaster = hasKategori || hasInstansi;
+
+              final hasUsers = profile?.isSuperAdmin == true || (profile?.aksesMenu?.contains('/users') ?? false);
+              final hasLog = profile?.isSuperAdmin == true || (profile?.aksesMenu?.contains('/log-aktivitas') ?? false);
+              final hasPengaturan = profile?.isSuperAdmin == true || (profile?.aksesMenu?.contains('/pengaturan') ?? false);
+              final hasManajemen = hasUsers || hasLog || hasPengaturan;
+
+              return [
+                if (hasDataMaster) ...[
+                  const SectionHeader(title: 'Data Master'),
+                  const SizedBox(height: 12),
+                  GlassCard(
+                    padding: EdgeInsets.zero,
+                    child: Column(
+                      children: [
+                        if (hasKategori)
+                          ListTile(
+                            leading: const Icon(Icons.category_rounded, color: AppColors.emerald400),
+                            title: const Text('Kategori Transaksi', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
+                            onTap: () => context.push(AppStrings.routeKategori),
+                          ),
+                        if (hasKategori && hasInstansi)
+                          Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
+                        if (hasInstansi)
+                          ListTile(
+                            leading: const Icon(Icons.business_rounded, color: AppColors.info),
+                            title: const Text('Instansi', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
+                            onTap: () => context.push(AppStrings.routeInstansi),
+                          ),
+                      ],
                     ),
-                    Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
-                    ListTile(
-                      leading: const Icon(Icons.history_rounded, color: AppColors.warning),
-                      title: const Text('Log Aktivitas', style: TextStyle(color: Colors.white, fontSize: 14)),
-                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
-                      onTap: () => context.push(AppStrings.routeLogAktivitas),
+                  ).animate(delay: 220.ms).fadeIn(duration: 400.ms),
+                  const SizedBox(height: 24),
+                ],
+
+                if (hasManajemen) ...[
+                  const SectionHeader(title: 'Manajemen Sistem'),
+                  const SizedBox(height: 12),
+                  GlassCard(
+                    padding: EdgeInsets.zero,
+                    child: Column(
+                      children: [
+                        if (hasUsers)
+                          ListTile(
+                            leading: const Icon(Icons.people_rounded, color: AppColors.info),
+                            title: const Text('Manajemen Pengguna', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
+                            onTap: () => context.push(AppStrings.routeUsers),
+                          ),
+                        if (hasUsers && (hasLog || hasPengaturan))
+                          Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
+                        if (hasLog)
+                          ListTile(
+                            leading: const Icon(Icons.history_rounded, color: AppColors.warning),
+                            title: const Text('Log Aktivitas', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
+                            onTap: () => context.push(AppStrings.routeLogAktivitas),
+                          ),
+                        if (hasLog && hasPengaturan)
+                          Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
+                        if (hasPengaturan)
+                          ListTile(
+                            leading: const Icon(Icons.settings_rounded, color: AppColors.emerald400),
+                            title: const Text('Pengaturan Sistem', style: TextStyle(color: Colors.white, fontSize: 14)),
+                            trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
+                            onTap: () => context.push(AppStrings.routeSettings),
+                          ),
+                      ],
                     ),
-                    Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
-                    ListTile(
-                      leading: const Icon(Icons.settings_rounded, color: AppColors.emerald400),
-                      title: const Text('Pengaturan Sistem', style: TextStyle(color: Colors.white, fontSize: 14)),
-                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
-                      onTap: () => context.push(AppStrings.routeSettings),
-                    ),
-                  ],
-                ),
-              ).animate(delay: 230.ms).fadeIn(duration: 400.ms),
-              const SizedBox(height: 24),
-            ],
+                  ).animate(delay: 230.ms).fadeIn(duration: 400.ms),
+                  const SizedBox(height: 24),
+                ],
+              ];
+            })(),
 
             // ── Change Password Button ──
             ElevatedButton.icon(

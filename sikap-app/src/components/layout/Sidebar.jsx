@@ -213,24 +213,28 @@ export default function Sidebar({ open, onClose }) {
             );
           })}
 
-          {isSuperAdmin && (
-            <>
-              <p className="px-3 py-1.5 mt-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Administrasi</p>
-              {adminItems.map(({ to, label, icon: Icon }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  className={({ isActive }) =>
-                    `sidebar-link ${isActive ? 'active' : ''}`
-                  }
-                  onClick={onClose}
-                >
-                  <Icon style={{ width: '18px', height: '18px' }} className="flex-shrink-0" />
-                  <span>{label}</span>
-                </NavLink>
-              ))}
-            </>
-          )}
+          {(() => {
+            const visibleAdminItems = adminItems.filter(item => isSuperAdmin || !profile?.akses_menu || profile.akses_menu.includes(item.to));
+            if (visibleAdminItems.length === 0) return null;
+            return (
+              <>
+                <p className="px-3 py-1.5 mt-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">Administrasi</p>
+                {visibleAdminItems.map(({ to, label, icon: Icon }) => (
+                  <NavLink
+                    key={to}
+                    to={to}
+                    className={({ isActive }) =>
+                      `sidebar-link ${isActive ? 'active' : ''}`
+                    }
+                    onClick={onClose}
+                  >
+                    <Icon style={{ width: '18px', height: '18px' }} className="flex-shrink-0" />
+                    <span>{label}</span>
+                  </NavLink>
+                ))}
+              </>
+            );
+          })()}
         </nav>
 
         <div className="p-4 border-t border-white/60 bg-white/40 backdrop-blur-md mt-auto">

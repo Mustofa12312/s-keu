@@ -6,6 +6,7 @@ class ProfileModel {
   final String? instansiId;
   final String? namaInstansi;
   final String? createdAt;
+  final List<String>? aksesMenu;
 
   const ProfileModel({
     required this.id,
@@ -15,6 +16,7 @@ class ProfileModel {
     this.instansiId,
     this.namaInstansi,
     this.createdAt,
+    this.aksesMenu,
   });
 
   bool get isSuperAdmin    => role == 'super_admin';
@@ -40,6 +42,7 @@ class ProfileModel {
       instansiId:    json['instansi_id'] as String?,
       namaInstansi:  instansiMap?['nama_instansi'] as String?,
       createdAt:     json['created_at']?.toString(),
+      aksesMenu:     (json['akses_menu'] as List<dynamic>?)?.map((e) => e.toString()).toList(),
     );
   }
 }

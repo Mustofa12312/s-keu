@@ -75,8 +75,12 @@ export const anggaranService = {
   // ==========================
   // REALISASI ANGGARAN
   // ==========================
-  async getRealisasi(anggaranId) {
-    const q = query(collection(db, 'realisasi_anggaran'), where('anggaran_id', '==', anggaranId));
+  async getRealisasi(anggaranId, instansiId = null) {
+    let constraints = [where('anggaran_id', '==', anggaranId)];
+    if (instansiId) {
+      constraints.push(where('instansi_id', '==', instansiId));
+    }
+    const q = query(collection(db, 'realisasi_anggaran'), ...constraints);
     const snapshot = await getDocs(q);
     let data = snapshot.docs.map(mapDoc);
     

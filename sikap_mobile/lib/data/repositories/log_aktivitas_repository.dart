@@ -8,10 +8,11 @@ class LogAktivitasRepository {
 
   Future<List<LogAktivitasModel>> getAll({int limitCount = 100}) async {
     try {
-      final snap = await _db
-          .orderBy('created_at', descending: true)
-          .limit(limitCount)
-          .get();
+      var q = _db.orderBy('created_at', descending: true);
+      if (limitCount < 100000) {
+        q = q.limit(limitCount);
+      }
+      final snap = await q.get();
 
       return snap.docs.map((e) {
         final data = e.data();

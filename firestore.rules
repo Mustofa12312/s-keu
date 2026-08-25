@@ -97,5 +97,17 @@ service cloud.firestore {
       allow update: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id) && hasInstansiAccess(request.resource.data.instansi_id) && !isViewer();
       allow delete: if isAuthenticated() && isNotBlocked() && hasInstansiAccess(resource.data.instansi_id) && !isViewer();
     }
+
+    // Kategori Transaksi
+    match /kategori_transaksi/{kategoriId} {
+      allow read: if isAuthenticated() && isNotBlocked();
+      allow write: if isSuperAdmin();
+    }
+
+    // Activity Logs
+    match /activity_logs/{logId} {
+      allow read: if isSuperAdmin() || (isAuthenticated() && isNotBlocked() && resource.data.user_id == request.auth.uid);
+      allow create: if isAuthenticated() && isNotBlocked();
+    }
   }
 }
