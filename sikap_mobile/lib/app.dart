@@ -11,6 +11,8 @@ import 'features/transaksi/transaksi_screen.dart';
 import 'features/buku_kas/buku_kas_screen.dart';
 import 'features/laporan/laporan_screen.dart';
 import 'features/profile/profile_screen.dart';
+import 'features/kategori/kategori_screen.dart';
+import 'features/instansi/instansi_screen.dart';
 import 'providers/app_providers.dart';
 
 // ── Shell with Bottom Nav ────────────────────────────────────
@@ -80,6 +82,8 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(path: AppStrings.routeSplash, builder: (_, __) => const SplashScreen()),
       GoRoute(path: AppStrings.routeLogin,  builder: (_, __) => const LoginScreen()),
+      GoRoute(path: AppStrings.routeKategori, builder: (_, __) => const KategoriScreen()),
+      GoRoute(path: AppStrings.routeInstansi, builder: (_, __) => const InstansiScreen()),
 
       ShellRoute(
         builder: (_, state, child) {

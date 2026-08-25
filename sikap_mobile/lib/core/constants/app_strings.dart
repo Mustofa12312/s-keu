@@ -12,6 +12,8 @@ class AppStrings {
   static const routeBukuKas     = '/buku-kas';
   static const routeLaporan     = '/laporan';
   static const routeProfile     = '/profile';
+  static const routeKategori    = '/kategori';
+  static const routeInstansi    = '/instansi';
 
   // Labels
   static const dashboard   = 'Dashboard';
