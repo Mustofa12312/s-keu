@@ -3,19 +3,46 @@ import '../models/transaksi_model.dart';
 import '../../core/firebase_client.dart';
 import '../../core/utils/logger.dart';
 
+class TransaksiPage {
+  final List<TransaksiModel> data;
+  final DocumentSnapshot? lastDocument;
+  final bool hasMore;
+  final bool isFetchingMore;
+  TransaksiPage({
+    required this.data, 
+    this.lastDocument, 
+    required this.hasMore, 
+    this.isFetchingMore = false,
+  });
+
+  TransaksiPage copyWith({
+    List<TransaksiModel>? data,
+    DocumentSnapshot? lastDocument,
+    bool? hasMore,
+    bool? isFetchingMore,
+  }) {
+    return TransaksiPage(
+      data: data ?? this.data,
+      lastDocument: lastDocument ?? this.lastDocument,
+      hasMore: hasMore ?? this.hasMore,
+      isFetchingMore: isFetchingMore ?? this.isFetchingMore,
+    );
+  }
+}
+
 class TransaksiRepository {
   final _db = FirebaseClient.firestore.collection('transaksi');
   final _instansiDb = FirebaseClient.firestore.collection('instansi');
 
-  Future<List<TransaksiModel>> getAll({
+  Future<TransaksiPage> getPaginated({
     String? instansiId,
     String? bulanHijriyah,
     String? tahunHijriyah,
     String? search,
     String? tglMulai,
     String? tglAkhir,
-    bool orderDesc = false,
-    int limit = 100000,
+    int limit = 15,
+    DocumentSnapshot? lastDocument,
   }) async {
     try {
       Query q = _db;
@@ -32,14 +59,17 @@ class TransaksiRepository {
       if (tglMulai != null) q = q.where('tanggal', isGreaterThanOrEqualTo: tglMulai);
       if (tglAkhir != null) q = q.where('tanggal', isLessThanOrEqualTo: tglAkhir);
 
-      // We cannot order by 'tanggal' and 'created_at' if we have inequality filters on other fields in Firestore easily.
-      // We will sort client side or just order by created_at.
-      // The original ordered by tanggal then created_at.
-      // We will do a basic fetch and sort in memory for simplicity to mimic supabase.
+      // We sort client side if there is a text search, but for normal pagination we order by firestore
+      // Note: If tglMulai/Akhir is used, firestore requires first orderBy to be 'tanggal'
+      q = q.orderBy('tanggal', descending: true);
+      q = q.orderBy('created_at', descending: true);
       
-      if (limit < 100000) {
-        q = q.limit(limit);
+      if (lastDocument != null) {
+        q = q.startAfterDocument(lastDocument);
       }
+
+      q = q.limit(limit);
+      
       final snap = await q.get();
       
       var docs = snap.docs.map((e) {
@@ -56,37 +86,6 @@ class TransaksiRepository {
         }).toList();
       }
 
-      // Client-side sort
-      docs.sort((a, b) {
-        final dateA = a['tanggal'] ?? '';
-        final dateB = b['tanggal'] ?? '';
-        int cmp = dateA.compareTo(dateB);
-        if (cmp != 0) return orderDesc ? -cmp : cmp;
-        
-        final caA = a['created_at'];
-        final caB = b['created_at'];
-        
-        // Handle FieldValue / Timestamp
-        DateTime? dtA;
-        if (caA is Timestamp) {
-          dtA = caA.toDate();
-        } else if (caA is String) {
-          dtA = DateTime.tryParse(caA);
-        }
-        
-        DateTime? dtB;
-        if (caB is Timestamp) {
-          dtB = caB.toDate();
-        } else if (caB is String) {
-          dtB = DateTime.tryParse(caB);
-        }
-        
-        if (dtA != null && dtB != null) {
-          return orderDesc ? dtB.compareTo(dtA) : dtA.compareTo(dtB);
-        }
-        return 0;
-      });
-
       // Join Instansi
       final instansiSnap = await _instansiDb.get();
       final instansiMap = <String, Map<String, dynamic>>{};
@@ -94,7 +93,7 @@ class TransaksiRepository {
         instansiMap[doc.id] = doc.data();
       }
 
-      return docs.map((data) {
+      final models = docs.map((data) {
         final instId = data['instansi_id'];
         if (instId != null && instansiMap.containsKey(instId)) {
           data['instansi'] = {
@@ -105,8 +104,14 @@ class TransaksiRepository {
         return TransaksiModel.fromJson(data);
       }).toList();
 
+      return TransaksiPage(
+        data: models,
+        lastDocument: snap.docs.isNotEmpty ? snap.docs.last : null,
+        hasMore: snap.docs.length == limit,
+      );
+
     } catch (e, st) {
-      logger.e('Error getAll transaksi', error: e, stackTrace: st);
+      logger.e('Error getPaginated transaksi', error: e, stackTrace: st);
       throw Exception('Gagal mengambil data transaksi');
     }
   }

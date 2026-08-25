@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../data/models/profile_model.dart';
 import '../data/repositories/instansi_repository.dart';
 import '../data/repositories/transaksi_repository.dart';
@@ -81,24 +84,72 @@ final transaksiFilterProvider = StateProvider<TransaksiFilter>((ref) {
   return const TransaksiFilter();
 });
 
-final transaksiListProvider = FutureProvider<List>((ref) async {
-  final profile = await ref.watch(profileProvider.future);
-  final filter = ref.watch(transaksiFilterProvider);
-  final pengaturan = await ref.watch(pengaturanProvider.future);
-  
-  final effectiveInstansiId = profile?.isSuperAdmin == true 
-      ? filter.instansiId 
-      : profile?.instansiId;
+class TransaksiListNotifier extends AsyncNotifier<TransaksiPage> {
+  Timer? _debounce;
+  String? _debounceQuery;
 
-  final effectiveTahun = filter.tahunHijriyah ?? pengaturan.tahunAktif;
+  @override
+  FutureOr<TransaksiPage> build() async {
+    return _fetch(null);
+  }
 
-  return TransaksiRepository().getAll(
-    instansiId:    effectiveInstansiId,
-    bulanHijriyah: filter.bulanHijriyah,
-    tahunHijriyah: effectiveTahun,
-    search:        filter.search,
-    orderDesc:     false,
-  );
+  void _onSearchChanged(String query, TextEditingController controller) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (_debounceQuery != query) {
+        _debounceQuery = query;
+        ref.read(transaksiFilterProvider.notifier).update(
+          (state) => state.copyWith(search: query, clearSearch: query.isEmpty)
+        );
+      }
+    });
+  }
+
+  Future<TransaksiPage> _fetch(DocumentSnapshot? lastDoc) async {
+    final profile = await ref.watch(profileProvider.future);
+    final filter = ref.watch(transaksiFilterProvider);
+    final pengaturan = await ref.watch(pengaturanProvider.future);
+    
+    final effectiveInstansiId = profile?.isSuperAdmin == true 
+        ? filter.instansiId 
+        : profile?.instansiId;
+
+    final effectiveTahun = filter.tahunHijriyah ?? pengaturan.tahunAktif;
+
+    return TransaksiRepository().getPaginated(
+      instansiId:    effectiveInstansiId,
+      bulanHijriyah: filter.bulanHijriyah,
+      tahunHijriyah: effectiveTahun,
+      search:        filter.search,
+      lastDocument:  lastDoc,
+      limit:         15,
+    );
+  }
+
+  Future<void> fetchNextPage() async {
+    final currentPage = state.valueOrNull;
+    if (currentPage == null || !currentPage.hasMore || currentPage.isFetchingMore) return;
+
+    // Set UI to loading more
+    state = AsyncData(currentPage.copyWith(isFetchingMore: true));
+
+    try {
+      final nextPage = await _fetch(currentPage.lastDocument);
+      state = AsyncData(TransaksiPage(
+        data: [...currentPage.data, ...nextPage.data],
+        lastDocument: nextPage.lastDocument,
+        hasMore: nextPage.hasMore,
+        isFetchingMore: false,
+      ));
+    } catch (e, st) {
+      // Revert loading state on error
+      state = AsyncData(currentPage.copyWith(isFetchingMore: false));
+    }
+  }
+}
+
+final transaksiListProvider = AsyncNotifierProvider<TransaksiListNotifier, TransaksiPage>(() {
+  return TransaksiListNotifier();
 });
 
 // ─── Dashboard Summary ───────────────────────────────────────

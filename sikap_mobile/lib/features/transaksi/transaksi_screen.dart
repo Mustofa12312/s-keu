@@ -21,10 +21,28 @@ class TransaksiScreen extends ConsumerStatefulWidget {
 
 class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
   final _searchCtrl = TextEditingController();
+  final _scrollCtrl = ScrollController();
+  String? _debounceQuery;
+  Timer? _debounce;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchCtrl.addListener(_onSearchChanged);
+    _scrollCtrl.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    if (_scrollCtrl.position.pixels >= _scrollCtrl.position.maxScrollExtent - 200) {
+      ref.read(transaksiListProvider.notifier).fetchNextPage();
+    }
+  }
 
   @override
   void dispose() {
     _searchCtrl.dispose();
+    _scrollCtrl.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -136,8 +154,8 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
                 itemBuilder: (_, __) => const ShimmerCard(height: 80),
               ),
               error: (e, _) => EmptyState(message: 'Gagal memuat', subtitle: e.toString(), icon: Icons.error_outline),
-              data: (list) {
-                final items = list as List<TransaksiModel>;
+              data: (page) {
+                final items = page.data;
                 if (items.isEmpty) {
                   return const EmptyState(
                     message: 'Belum ada transaksi',
@@ -153,10 +171,19 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
                     await ref.read(transaksiListProvider.future);
                   },
                   child: ListView.separated(
+                    controller: _scrollCtrl,
                     padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
-                    itemCount: items.length,
+                    itemCount: items.length + (page.isFetchingMore ? 1 : 0),
                     separatorBuilder: (_, __) => const SizedBox(height: 10),
                     itemBuilder: (_, i) {
+                      if (i == items.length) {
+                        return const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: CircularProgressIndicator(color: AppColors.emerald400),
+                          ),
+                        );
+                      }
                       final t = items[i];
                       return _TransaksiCard(
                         transaksi: t,
