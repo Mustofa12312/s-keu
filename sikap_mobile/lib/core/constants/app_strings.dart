@@ -18,7 +18,8 @@ class AppStrings {
   static const routeAnggaran      = '/anggaran';
   static const routeUsers         = '/users';
   static const routeLogAktivitas  = '/log-aktivitas';
-  static const routeSettings      = '/settings';
+  static const String routeSettings = '/settings';
+  static const String routeLock = '/lock';
 
   // Labels
   static const dashboard   = 'Dashboard';

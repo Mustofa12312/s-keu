@@ -6,6 +6,7 @@ import 'core/constants/app_strings.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/splash_screen.dart';
 import 'features/auth/login_screen.dart';
+import 'features/auth/lock_screen.dart';
 import 'features/dashboard/dashboard_screen.dart';
 import 'features/transaksi/transaksi_screen.dart';
 import 'features/buku_kas/buku_kas_screen.dart';
@@ -19,6 +20,7 @@ import 'features/users/users_screen.dart';
 import 'features/log_aktivitas/log_aktivitas_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'providers/app_providers.dart';
+import 'providers/biometric_provider.dart';
 
 // ── Shell with Bottom Nav ────────────────────────────────────
 class _AppShell extends StatelessWidget {
@@ -64,6 +66,7 @@ class RouterNotifier extends ChangeNotifier {
 
   RouterNotifier(this._ref) {
     _ref.listen<AsyncValue<User?>>(authProvider, (_, __) => notifyListeners());
+    _ref.listen<bool>(biometricStateProvider, (_, __) => notifyListeners());
   }
 }
 
@@ -77,16 +80,25 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final user = ref.read(authProvider).valueOrNull;
       final isAuth = user != null;
+      final isUnlocked = ref.read(biometricStateProvider);
       final loc  = state.uri.path;
 
       if (loc == AppStrings.routeSplash) return null;
+      
       if (!isAuth && loc != AppStrings.routeLogin) return AppStrings.routeLogin;
-      if (isAuth  && loc == AppStrings.routeLogin)  return AppStrings.routeDashboard;
+      
+      if (isAuth && !isUnlocked && loc != AppStrings.routeLock) return AppStrings.routeLock;
+      
+      if (isAuth && isUnlocked && (loc == AppStrings.routeLogin || loc == AppStrings.routeLock)) {
+        return AppStrings.routeDashboard;
+      }
+      
       return null;
     },
     routes: [
       GoRoute(path: AppStrings.routeSplash, builder: (_, __) => const SplashScreen()),
       GoRoute(path: AppStrings.routeLogin,  builder: (_, __) => const LoginScreen()),
+      GoRoute(path: AppStrings.routeLock,   builder: (_, __) => const LockScreen()),
       GoRoute(path: AppStrings.routeKategori, builder: (_, __) => const KategoriScreen()),
       GoRoute(path: AppStrings.routeInstansi, builder: (_, __) => const InstansiScreen()),
       GoRoute(path: AppStrings.routeHutangPiutang, builder: (_, __) => const HutangPiutangScreen()),
@@ -125,6 +137,7 @@ class SikapApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark  = ref.watch(themeModeProvider);
     final router  = ref.watch(routerProvider);
+    ref.watch(biometricLifecycleProvider);
 
     return MaterialApp.router(
       title: AppStrings.appFullName,
