@@ -13,6 +13,11 @@ import 'features/laporan/laporan_screen.dart';
 import 'features/profile/profile_screen.dart';
 import 'features/kategori/kategori_screen.dart';
 import 'features/instansi/instansi_screen.dart';
+import 'features/hutang_piutang/hutang_piutang_screen.dart';
+import 'features/anggaran/anggaran_screen.dart';
+import 'features/users/users_screen.dart';
+import 'features/log_aktivitas/log_aktivitas_screen.dart';
+import 'features/settings/settings_screen.dart';
 import 'providers/app_providers.dart';
 
 // ── Shell with Bottom Nav ────────────────────────────────────
@@ -84,6 +89,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: AppStrings.routeLogin,  builder: (_, __) => const LoginScreen()),
       GoRoute(path: AppStrings.routeKategori, builder: (_, __) => const KategoriScreen()),
       GoRoute(path: AppStrings.routeInstansi, builder: (_, __) => const InstansiScreen()),
+      GoRoute(path: AppStrings.routeHutangPiutang, builder: (_, __) => const HutangPiutangScreen()),
+      GoRoute(path: AppStrings.routeAnggaran, builder: (_, __) => const AnggaranScreen()),
+      GoRoute(path: AppStrings.routeUsers, builder: (_, __) => const UsersScreen()),
+      GoRoute(path: AppStrings.routeLogAktivitas, builder: (_, __) => const LogAktivitasScreen()),
+      GoRoute(path: AppStrings.routeSettings, builder: (_, __) => const SettingsScreen()),
 
       ShellRoute(
         builder: (_, state, child) {

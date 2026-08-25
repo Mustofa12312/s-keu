@@ -14,6 +14,11 @@ class AppStrings {
   static const routeProfile     = '/profile';
   static const routeKategori    = '/kategori';
   static const routeInstansi    = '/instansi';
+  static const routeHutangPiutang = '/hutang-piutang';
+  static const routeAnggaran      = '/anggaran';
+  static const routeUsers         = '/users';
+  static const routeLogAktivitas  = '/log-aktivitas';
+  static const routeSettings      = '/settings';
 
   // Labels
   static const dashboard   = 'Dashboard';

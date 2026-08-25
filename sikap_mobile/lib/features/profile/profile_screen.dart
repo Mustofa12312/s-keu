@@ -127,6 +127,32 @@ class ProfileScreen extends ConsumerWidget {
 
             const SizedBox(height: 24),
 
+            if (profile?.isViewer != true) ...[
+              const SectionHeader(title: 'Modul Keuangan Lanjutan'),
+              const SizedBox(height: 12),
+              GlassCard(
+                padding: EdgeInsets.zero,
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.account_balance_wallet_rounded, color: AppColors.blue400),
+                      title: const Text('Hutang & Piutang', style: TextStyle(color: Colors.white, fontSize: 14)),
+                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
+                      onTap: () => context.push(AppStrings.routeHutangPiutang),
+                    ),
+                    Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
+                    ListTile(
+                      leading: const Icon(Icons.assignment_rounded, color: AppColors.emerald400),
+                      title: const Text('Anggaran (RAPBM)', style: TextStyle(color: Colors.white, fontSize: 14)),
+                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
+                      onTap: () => context.push(AppStrings.routeAnggaran),
+                    ),
+                  ],
+                ),
+              ).animate(delay: 210.ms).fadeIn(duration: 400.ms),
+              const SizedBox(height: 24),
+            ],
+
             if (profile?.isSuperAdmin == true) ...[
               const SectionHeader(title: 'Data Master'),
               const SizedBox(height: 12),
@@ -150,6 +176,37 @@ class ProfileScreen extends ConsumerWidget {
                   ],
                 ),
               ).animate(delay: 220.ms).fadeIn(duration: 400.ms),
+              const SizedBox(height: 24),
+
+              const SectionHeader(title: 'Manajemen Sistem'),
+              const SizedBox(height: 12),
+              GlassCard(
+                padding: EdgeInsets.zero,
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.people_rounded, color: AppColors.blue400),
+                      title: const Text('Manajemen Pengguna', style: TextStyle(color: Colors.white, fontSize: 14)),
+                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
+                      onTap: () => context.push(AppStrings.routeUsers),
+                    ),
+                    Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
+                    ListTile(
+                      leading: const Icon(Icons.history_rounded, color: AppColors.amber400),
+                      title: const Text('Log Aktivitas', style: TextStyle(color: Colors.white, fontSize: 14)),
+                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
+                      onTap: () => context.push(AppStrings.routeLogAktivitas),
+                    ),
+                    Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
+                    ListTile(
+                      leading: const Icon(Icons.settings_rounded, color: AppColors.emerald400),
+                      title: const Text('Pengaturan Sistem', style: TextStyle(color: Colors.white, fontSize: 14)),
+                      trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
+                      onTap: () => context.push(AppStrings.routeSettings),
+                    ),
+                  ],
+                ),
+              ).animate(delay: 230.ms).fadeIn(duration: 400.ms),
               const SizedBox(height: 24),
             ],
 

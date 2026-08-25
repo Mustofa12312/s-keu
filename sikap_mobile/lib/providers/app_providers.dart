@@ -5,6 +5,8 @@ import '../data/repositories/instansi_repository.dart';
 import '../data/repositories/transaksi_repository.dart';
 import '../data/repositories/kategori_repository.dart';
 import '../data/repositories/hutang_piutang_repository.dart';
+import '../data/repositories/anggaran_repository.dart';
+import '../data/repositories/log_aktivitas_repository.dart';
 import '../core/firebase_client.dart';
 
 // ─── Auth Provider ──────────────────────────────────────────
@@ -17,6 +19,14 @@ final profileProvider = FutureProvider<ProfileModel?>((ref) async {
   final user = await ref.watch(authProvider.future);
   if (user == null) return null;
   return ProfileRepository().getMyProfile(user.uid);
+});
+
+final usersListProvider = FutureProvider<List<ProfileModel>>((ref) async {
+  return ProfileRepository().getAll();
+});
+
+final logAktivitasListProvider = FutureProvider((ref) async {
+  return LogAktivitasRepository().getAll();
 });
 
 // ─── Pengaturan ─────────────────────────────────────────────
@@ -247,3 +257,37 @@ final hutangPiutangListProvider = FutureProvider((ref) async {
   );
 });
 
+// ─── Anggaran Filter & Provider ─────────────────────────
+class AnggaranFilter {
+  final String? instansiId;
+  final String tahunPelajaran;
+  final String kategori; // 'pemasukan' | 'pengeluaran'
+
+  const AnggaranFilter({
+    this.instansiId,
+    this.tahunPelajaran = '2025/2026',
+    this.kategori = 'pengeluaran',
+  });
+
+  AnggaranFilter copyWith({
+    String? instansiId,
+    String? tahunPelajaran,
+    String? kategori,
+    bool clearInstansi = false,
+  }) => AnggaranFilter(
+    instansiId: clearInstansi ? null : instansiId ?? this.instansiId,
+    tahunPelajaran: tahunPelajaran ?? this.tahunPelajaran,
+    kategori: kategori ?? this.kategori,
+  );
+}
+
+final anggaranFilterProvider = StateProvider<AnggaranFilter>((ref) => const AnggaranFilter());
+
+final anggaranListProvider = FutureProvider((ref) async {
+  final filter = ref.watch(anggaranFilterProvider);
+  return AnggaranRepository().getRencana(
+    instansiId: filter.instansiId,
+    tahunPelajaran: filter.tahunPelajaran,
+    kategori: filter.kategori,
+  );
+});
