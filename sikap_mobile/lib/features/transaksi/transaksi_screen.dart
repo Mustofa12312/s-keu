@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_strings.dart';
 import '../../core/utils/format_utils.dart';
+import '../../core/services/printer_service.dart';
 import '../../data/models/transaksi_model.dart';
 import '../../data/repositories/transaksi_repository.dart';
 import '../../providers/app_providers.dart';
+import '../../providers/printer_provider.dart';
 import '../../shared/widgets/app_widgets.dart';
 
 class TransaksiScreen extends ConsumerStatefulWidget {
@@ -161,6 +164,7 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
                         canEdit: canEdit,
                         onEdit: () => _showForm(existing: t),
                         onDelete: () => _delete(t.id),
+                        onPrint: () => _handlePrint(t, instansiMap[t.instansiId]?.namaInstansi ?? 'SIKAP'),
                       );
                     },
                   ),
@@ -180,6 +184,100 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
       backgroundColor: AppColors.dark800,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (_) => _FilterSheet(filter: filter, instansiList: instansiList, profile: profile),
+    );
+  }
+
+  Future<void> _handlePrint(TransaksiModel t, String instansiName) async {
+    final isConnected = ref.read(bluetoothStateProvider);
+    if (!isConnected) {
+      _showPrinterDialog(t, instansiName);
+      return;
+    }
+
+    try {
+      final printerService = PrinterService();
+      await printerService.printTransaksiStruk(t, instansiName);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Mencetak struk...'), backgroundColor: AppColors.emerald500),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal mencetak: ${e.toString()}'), backgroundColor: AppColors.error),
+        );
+      }
+    }
+  }
+
+  void _showPrinterDialog(TransaksiModel t, String instansiName) {
+    showDialog(
+      context: context,
+      builder: (ctx) => _PrinterDialog(
+        onConnected: () {
+          Navigator.pop(ctx);
+          _handlePrint(t, instansiName);
+        },
+      ),
+    );
+  }
+}
+
+class _PrinterDialog extends ConsumerStatefulWidget {
+  final VoidCallback onConnected;
+  const _PrinterDialog({required this.onConnected});
+
+  @override
+  ConsumerState<_PrinterDialog> createState() => _PrinterDialogState();
+}
+
+class _PrinterDialogState extends ConsumerState<_PrinterDialog> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() => ref.read(printerControllerProvider.notifier).scanDevices());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final scannedDevices = ref.watch(scannedPrintersProvider);
+    final printerState = ref.watch(printerControllerProvider);
+
+    return AlertDialog(
+      backgroundColor: AppColors.dark800,
+      title: const Text('Pilih Printer Bluetooth', style: TextStyle(color: Colors.white)),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: printerState.isLoading
+            ? const Center(child: CircularProgressIndicator(color: AppColors.emerald500))
+            : scannedDevices.isEmpty
+                ? const Text('Tidak ada perangkat bluetooth tersimpan. Silakan pairing printer di pengaturan HP Anda.', style: TextStyle(color: AppColors.dark400))
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: scannedDevices.length,
+                    itemBuilder: (ctx, i) {
+                      final device = scannedDevices[i];
+                      return ListTile(
+                        leading: const Icon(Icons.print_rounded, color: AppColors.dark400),
+                        title: Text(device.name, style: const TextStyle(color: Colors.white)),
+                        subtitle: Text(device.macAdress, style: const TextStyle(color: AppColors.dark400, fontSize: 12)),
+                        onTap: () async {
+                          await ref.read(printerControllerProvider.notifier).connect(device);
+                          if (ref.read(bluetoothStateProvider)) {
+                            widget.onConnected();
+                          }
+                        },
+                      );
+                    },
+                  ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Batal', style: TextStyle(color: AppColors.dark400)),
+        ),
+      ],
     );
   }
 }
@@ -234,6 +332,7 @@ class _TransaksiCard extends StatelessWidget {
   final bool canEdit;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback onPrint;
 
   const _TransaksiCard({
     required this.transaksi,
@@ -241,6 +340,7 @@ class _TransaksiCard extends StatelessWidget {
     required this.canEdit,
     required this.onEdit,
     required this.onDelete,
+    required this.onPrint,
   });
 
   @override
@@ -297,11 +397,16 @@ class _TransaksiCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    GestureDetector(onTap: onEdit,
-                      child: const Icon(Icons.edit_rounded, size: 16, color: AppColors.dark400)),
-                    const SizedBox(width: 10),
-                    GestureDetector(onTap: onDelete,
-                      child: const Icon(Icons.delete_outline_rounded, size: 16, color: AppColors.error)),
+                    GestureDetector(onTap: onPrint,
+                      child: const Icon(Icons.print_rounded, size: 16, color: AppColors.dark400)),
+                    if (canEdit) ...[
+                      const SizedBox(width: 10),
+                      GestureDetector(onTap: onEdit,
+                        child: const Icon(Icons.edit_rounded, size: 16, color: AppColors.dark400)),
+                      const SizedBox(width: 10),
+                      GestureDetector(onTap: onDelete,
+                        child: const Icon(Icons.delete_outline_rounded, size: 16, color: AppColors.error)),
+                    ],
                   ],
                 ),
               ],

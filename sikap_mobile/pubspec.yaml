@@ -48,6 +48,8 @@ dependencies:
   logger: ^2.7.0
   currency_text_input_formatter: ^2.3.2
   local_auth: ^3.0.2
+  esc_pos_utils_plus: ^2.0.4
+  print_bluetooth_thermal: ^1.2.1
 
 dev_dependencies:
   flutter_test:
