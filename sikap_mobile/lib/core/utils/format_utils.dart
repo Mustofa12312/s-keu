@@ -27,24 +27,37 @@ class FormatUtils {
     return rupiah(value);
   }
 
+  static DateTime? _parseInternal(String dateStr) {
+    if (dateStr.startsWith('Timestamp(seconds=')) {
+      try {
+        final secStr = dateStr.replaceAll('Timestamp(seconds=', '').split(',')[0];
+        final seconds = int.parse(secStr);
+        return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
+      } catch (_) {}
+    }
+    try {
+      return DateTime.parse(dateStr);
+    } catch (_) {
+      return null;
+    }
+  }
+
   static String date(String? dateStr) {
     if (dateStr == null || dateStr.isEmpty) return '-';
-    try {
-      final dt = DateTime.parse(dateStr);
+    final dt = _parseInternal(dateStr);
+    if (dt != null) {
       return DateFormat('dd MMM yyyy', 'id_ID').format(dt);
-    } catch (_) {
-      return dateStr;
     }
+    return ''; // Hilangkan hal yang tidak perlu jika gagal di-parse
   }
 
   static String dateShort(String? dateStr) {
     if (dateStr == null || dateStr.isEmpty) return '-';
-    try {
-      final dt = DateTime.parse(dateStr);
+    final dt = _parseInternal(dateStr);
+    if (dt != null) {
       return DateFormat('dd/MM/yy', 'id_ID').format(dt);
-    } catch (_) {
-      return dateStr;
     }
+    return '';
   }
 
   static String todayDate() {
