@@ -82,9 +82,15 @@ final transaksiFilterProvider = StateProvider<TransaksiFilter>((ref) {
 });
 
 final transaksiListProvider = FutureProvider<List>((ref) async {
+  final profile = await ref.watch(profileProvider.future);
   final filter = ref.watch(transaksiFilterProvider);
+  
+  final effectiveInstansiId = profile?.isSuperAdmin == true 
+      ? filter.instansiId 
+      : profile?.instansiId;
+
   return TransaksiRepository().getAll(
-    instansiId:    filter.instansiId,
+    instansiId:    effectiveInstansiId,
     bulanHijriyah: filter.bulanHijriyah,
     tahunHijriyah: filter.tahunHijriyah,
     search:        filter.search,
@@ -246,9 +252,15 @@ class HutangPiutangFilter {
 final hutangPiutangFilterProvider = StateProvider<HutangPiutangFilter>((ref) => const HutangPiutangFilter());
 
 final hutangPiutangListProvider = FutureProvider((ref) async {
+  final profile = await ref.watch(profileProvider.future);
   final filter = ref.watch(hutangPiutangFilterProvider);
+  
+  final effectiveInstansiId = profile?.isSuperAdmin == true 
+      ? filter.instansiId 
+      : profile?.instansiId;
+
   return HutangPiutangRepository().getAll(
-    instansiId: filter.instansiId,
+    instansiId: effectiveInstansiId,
     jenis: filter.jenis,
     bulanHijriyah: filter.bulanHijriyah,
     tahunHijriyah: filter.tahunHijriyah,
@@ -284,9 +296,15 @@ class AnggaranFilter {
 final anggaranFilterProvider = StateProvider<AnggaranFilter>((ref) => const AnggaranFilter());
 
 final anggaranListProvider = FutureProvider((ref) async {
+  final profile = await ref.watch(profileProvider.future);
   final filter = ref.watch(anggaranFilterProvider);
+  
+  final effectiveInstansiId = profile?.isSuperAdmin == true 
+      ? filter.instansiId 
+      : profile?.instansiId;
+
   return AnggaranRepository().getRencana(
-    instansiId: filter.instansiId,
+    instansiId: effectiveInstansiId,
     tahunPelajaran: filter.tahunPelajaran,
     kategori: filter.kategori,
   );
