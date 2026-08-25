@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/constants/app_colors.dart';
-import '../../data/models/profile_model.dart';
-import '../../data/repositories/instansi_repository.dart';
 import '../../providers/app_providers.dart';
 import '../../shared/widgets/app_widgets.dart';
 
@@ -18,12 +16,12 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final _formKey = GlobalKey<FormState>();
-  late TextEditingController _tahunCtrl;
+  TextEditingController? _tahunCtrl;
   bool _loading = false;
 
   @override
   void dispose() {
-    _tahunCtrl.dispose();
+    _tahunCtrl?.dispose();
     super.dispose();
   }
 
@@ -37,9 +35,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald500)),
         error: (e, _) => EmptyState(message: 'Gagal memuat pengaturan', subtitle: e.toString(), icon: Icons.error_outline),
         data: (settings) {
-          if (_tahunCtrl == null) {
-            _tahunCtrl = TextEditingController(text: settings.tahunAktif);
-          }
+          _tahunCtrl ??= TextEditingController(text: settings.tahunAktif);
           
           return Form(
             key: _formKey,
@@ -116,7 +112,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       // Wait, let's look at instansi_repository.dart to see if it has update method for Pengaturan.
       // If not, we can just throw an error or create the update method inline here for simplicity since it's just a query.
       await FirebaseClient.firestore.collection('pengaturan').doc('1').update({
-        'tahun_aktif': _tahunCtrl.text.trim(),
+        'tahun_aktif': _tahunCtrl!.text.trim(),
       });
       ref.invalidate(pengaturanProvider);
       if (mounted) {

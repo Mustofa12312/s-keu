@@ -311,7 +311,7 @@ class _HutangPiutangFormState extends ConsumerState<_HutangPiutangForm> {
                 const Text('Instansi', style: TextStyle(color: AppColors.dark300, fontSize: 12)),
                 const SizedBox(height: 4),
                 DropdownButtonFormField<String>(
-                  value: _instansiId,
+                  initialValue: _instansiId,
                   dropdownColor: AppColors.dark800,
                   items: instansiList.map((i) => DropdownMenuItem(value: i.id, child: Text(i.namaInstansi))).toList(),
                   onChanged: (v) => setState(() => _instansiId = v),
@@ -369,7 +369,7 @@ class _HutangPiutangFormState extends ConsumerState<_HutangPiutangForm> {
                         const Text('Bulan Hijriyah', style: TextStyle(color: AppColors.dark300, fontSize: 12)),
                         const SizedBox(height: 4),
                         DropdownButtonFormField<String>(
-                          value: _bulanHCtrl.text,
+                          initialValue: _bulanHCtrl.text,
                           dropdownColor: AppColors.dark800,
                           items: AppStrings.bulanHijriyah.map((b) => DropdownMenuItem(value: b, child: Text(b))).toList(),
                           onChanged: (v) => setState(() => _bulanHCtrl.text = v!),

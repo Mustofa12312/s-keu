@@ -25,7 +25,7 @@ class AnggaranRepository {
       final instansiSnap = await _instansiDb.get();
       final instansiMap = <String, Map<String, dynamic>>{};
       for (var doc in instansiSnap.docs) {
-        instansiMap[doc.id] = {'id': doc.id, ...doc.data() as Map<String, dynamic>};
+        instansiMap[doc.id] = {'id': doc.id, ...doc.data()};
       }
 
       for (var e in snap.docs) {
@@ -38,7 +38,7 @@ class AnggaranRepository {
         data.add(AnggaranModel.fromJson(d));
       }
 
-      data.sort((a, b) => (a.kode ?? '').compareTo(b.kode ?? ''));
+      data.sort((a, b) => a.kode.compareTo(b.kode));
       return data;
     } catch (e, st) {
       logger.e('Error getRencana anggaran', error: e, stackTrace: st);

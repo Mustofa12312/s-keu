@@ -284,7 +284,7 @@ class _UserFormSheetState extends State<_UserFormSheet> {
               ],
 
               DropdownButtonFormField<String>(
-                value: _role,
+                initialValue: _role,
                 dropdownColor: AppColors.dark800,
                 decoration: const InputDecoration(labelText: 'Role'),
                 items: const [
@@ -299,7 +299,7 @@ class _UserFormSheetState extends State<_UserFormSheet> {
 
               if (_role != 'super_admin') ...[
                 DropdownButtonFormField<String>(
-                  value: _instansiId,
+                  initialValue: _instansiId,
                   dropdownColor: AppColors.dark800,
                   decoration: const InputDecoration(labelText: 'Instansi'),
                   items: widget.instansiList.map((i) => DropdownMenuItem<String>(value: i.id, child: Text(i.namaInstansi))).toList(),

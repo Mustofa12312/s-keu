@@ -155,7 +155,7 @@ class InstansiScreen extends ConsumerWidget {
                       SwitchListTile(
                         title: const Text('Status Aktif', style: TextStyle(color: Colors.white)),
                         value: aktif,
-                        activeColor: AppColors.emerald500,
+                        activeThumbColor: AppColors.emerald500,
                         contentPadding: EdgeInsets.zero,
                         onChanged: (v) => setState(() => aktif = v),
                       ),

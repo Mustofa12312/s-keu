@@ -353,7 +353,7 @@ class ProfileScreen extends ConsumerWidget {
                   } catch (e) {
                     setState(() => errorMsg = 'Gagal mengubah password: ${e.toString()}');
                   } finally {
-                    if (mounted) setState(() => loading = false);
+                    if (ctx.mounted) setState(() => loading = false);
                   }
                 },
                 child: loading

@@ -113,7 +113,7 @@ class KategoriScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<String>(
-                    value: jenis,
+                    initialValue: jenis,
                     dropdownColor: AppColors.dark800,
                     style: const TextStyle(color: Colors.white),
                     decoration: const InputDecoration(labelText: 'Jenis'),

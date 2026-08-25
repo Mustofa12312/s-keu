@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/format_utils.dart';
-import '../../data/models/log_aktivitas_model.dart';
 import '../../providers/app_providers.dart';
 import '../../shared/widgets/app_widgets.dart';
 
