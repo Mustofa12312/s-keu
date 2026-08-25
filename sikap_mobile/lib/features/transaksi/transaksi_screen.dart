@@ -164,7 +164,12 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
                         canEdit: canEdit,
                         onEdit: () => _showForm(existing: t),
                         onDelete: () => _delete(t.id),
-                        onPrint: () => _handlePrint(t, instansiMap[t.instansiId]?.namaInstansi ?? 'SIKAP'),
+                        onPrint: () {
+                          final instName = instansiList.cast<dynamic>().firstWhere(
+                            (e) => e.id == t.instansiId, orElse: () => null
+                          )?.namaInstansi ?? 'SIKAP';
+                          _handlePrint(t, instName);
+                        },
                       );
                     },
                   ),
