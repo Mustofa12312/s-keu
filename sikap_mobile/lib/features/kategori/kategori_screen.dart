@@ -61,7 +61,7 @@ class KategoriScreen extends ConsumerWidget {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.edit_rounded, color: AppColors.blue400, size: 20),
+                      icon: const Icon(Icons.edit_rounded, color: AppColors.info, size: 20),
                       onPressed: () => _showFormDialog(context, ref, item),
                     ),
                     IconButton(

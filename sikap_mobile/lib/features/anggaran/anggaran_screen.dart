@@ -270,7 +270,7 @@ class _SegmentButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isActive ? color.withOpacity(0.15) : AppColors.dark800,
+          color: isActive ? color.withValues(alpha: 0.15) : AppColors.dark800,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: isActive ? color : AppColors.dark700),
         ),

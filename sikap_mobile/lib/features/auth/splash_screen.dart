@@ -29,7 +29,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> with TickerProvider
 
   void _navigate() {
     final user = ref.read(authProvider).valueOrNull;
-    if (!mounted) return;
+    if (!context.mounted) return;
     if (user != null) {
       context.go(AppStrings.routeDashboard);
     } else {

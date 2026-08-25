@@ -68,7 +68,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
-                          onPressed: _loading ? null : () => _saveSettings(settings.id),
+                          onPressed: _loading ? null : () => _saveSettings(settings.tahunAktif),
                           icon: _loading ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Icon(Icons.save_rounded),
                           label: const Text('Simpan Pengaturan'),
                         ),

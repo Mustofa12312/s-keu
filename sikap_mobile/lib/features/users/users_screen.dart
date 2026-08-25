@@ -149,9 +149,9 @@ class _UserCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isBlocked = user.role == 'blocked';
-    Color roleColor = AppColors.blue400;
+    Color roleColor = AppColors.info;
     if (user.role == 'admin_instansi') roleColor = AppColors.emerald400;
-    if (user.role == 'viewer') roleColor = AppColors.amber400;
+    if (user.role == 'viewer') roleColor = AppColors.warning;
     if (isBlocked) roleColor = AppColors.error;
 
     return GlassCard(
@@ -163,7 +163,7 @@ class _UserCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CircleAvatar(
-                backgroundColor: roleColor.withOpacity(0.2),
+                backgroundColor: roleColor.withValues(alpha: 0.2),
                 foregroundColor: roleColor,
                 child: Text(user.nama.substring(0, 1).toUpperCase()),
               ),
@@ -175,14 +175,14 @@ class _UserCard extends StatelessWidget {
                     Text(user.nama, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
                     const SizedBox(height: 2),
                     Text(user.email ?? '-', style: const TextStyle(color: AppColors.dark400, fontSize: 13)),
-                    if (user.instansi != null)
-                      Text(user.instansi!['nama_instansi'], style: const TextStyle(color: AppColors.dark300, fontSize: 12)),
+                    if (user.namaInstansi != null)
+                      Text(user.namaInstansi!, style: const TextStyle(color: AppColors.dark300, fontSize: 12)),
                   ],
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(color: roleColor.withOpacity(0.2), borderRadius: BorderRadius.circular(6)),
+                decoration: BoxDecoration(color: roleColor.withValues(alpha: 0.2), borderRadius: BorderRadius.circular(6)),
                 child: Text(user.roleLabel, style: TextStyle(color: roleColor, fontSize: 10, fontWeight: FontWeight.bold)),
               ),
             ],
@@ -191,7 +191,7 @@ class _UserCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              IconButton(icon: const Icon(Icons.lock_reset_rounded, size: 20), color: AppColors.blue400, onPressed: onResetPassword, tooltip: 'Reset Password'),
+              IconButton(icon: const Icon(Icons.lock_reset_rounded, size: 20), color: AppColors.info, onPressed: onResetPassword, tooltip: 'Reset Password'),
               IconButton(icon: const Icon(Icons.edit_rounded, size: 20), color: AppColors.emerald400, onPressed: onEdit, tooltip: 'Edit Profil'),
               IconButton(icon: Icon(isBlocked ? Icons.restore_rounded : Icons.block_rounded, size: 20), color: isBlocked ? AppColors.emerald400 : AppColors.error, onPressed: onToggleBlock, tooltip: isBlocked ? 'Pulihkan' : 'Blokir'),
             ],

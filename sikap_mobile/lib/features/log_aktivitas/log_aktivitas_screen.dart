@@ -39,7 +39,7 @@ class LogAktivitasScreen extends ConsumerWidget {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(color: _getModuleColor(log.module).withOpacity(0.15), borderRadius: BorderRadius.circular(8)),
+                        decoration: BoxDecoration(color: _getModuleColor(log.module).withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
                         child: Icon(_getModuleIcon(log.module), color: _getModuleColor(log.module), size: 20),
                       ),
                       const SizedBox(width: 12),
@@ -75,8 +75,8 @@ class LogAktivitasScreen extends ConsumerWidget {
   Color _getModuleColor(String module) {
     switch (module.toLowerCase()) {
       case 'transaksi': return AppColors.emerald400;
-      case 'buku_kas': return AppColors.blue400;
-      case 'auth': return AppColors.amber400;
+      case 'buku_kas': return AppColors.info;
+      case 'auth': return AppColors.warning;
       case 'users': return AppColors.error;
       case 'hutang_piutang': return AppColors.incomeGradient.colors.first;
       case 'anggaran': return AppColors.expenseGradient.colors.first;

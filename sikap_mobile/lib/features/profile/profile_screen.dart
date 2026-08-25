@@ -135,7 +135,7 @@ class ProfileScreen extends ConsumerWidget {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.account_balance_wallet_rounded, color: AppColors.blue400),
+                      leading: const Icon(Icons.account_balance_wallet_rounded, color: AppColors.info),
                       title: const Text('Hutang & Piutang', style: TextStyle(color: Colors.white, fontSize: 14)),
                       trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
                       onTap: () => context.push(AppStrings.routeHutangPiutang),
@@ -168,7 +168,7 @@ class ProfileScreen extends ConsumerWidget {
                     ),
                     Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
                     ListTile(
-                      leading: const Icon(Icons.business_rounded, color: AppColors.blue400),
+                      leading: const Icon(Icons.business_rounded, color: AppColors.info),
                       title: const Text('Instansi', style: TextStyle(color: Colors.white, fontSize: 14)),
                       trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
                       onTap: () => context.push(AppStrings.routeInstansi),
@@ -185,14 +185,14 @@ class ProfileScreen extends ConsumerWidget {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.people_rounded, color: AppColors.blue400),
+                      leading: const Icon(Icons.people_rounded, color: AppColors.info),
                       title: const Text('Manajemen Pengguna', style: TextStyle(color: Colors.white, fontSize: 14)),
                       trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
                       onTap: () => context.push(AppStrings.routeUsers),
                     ),
                     Divider(height: 1, color: AppColors.dark700.withValues(alpha: 0.4), indent: 16, endIndent: 16),
                     ListTile(
-                      leading: const Icon(Icons.history_rounded, color: AppColors.amber400),
+                      leading: const Icon(Icons.history_rounded, color: AppColors.warning),
                       title: const Text('Log Aktivitas', style: TextStyle(color: Colors.white, fontSize: 14)),
                       trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.dark400),
                       onTap: () => context.push(AppStrings.routeLogAktivitas),
