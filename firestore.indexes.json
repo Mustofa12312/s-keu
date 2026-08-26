@@ -1,0 +1,64 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "transaksi",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "tahun_hijriyah", "order": "ASCENDING" },
+        { "fieldPath": "tanggal",        "order": "DESCENDING" },
+        { "fieldPath": "created_at",     "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "transaksi",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "instansi_id",    "order": "ASCENDING" },
+        { "fieldPath": "tahun_hijriyah", "order": "ASCENDING" },
+        { "fieldPath": "tanggal",        "order": "DESCENDING" },
+        { "fieldPath": "created_at",     "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "transaksi",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "bulan_hijriyah", "order": "ASCENDING" },
+        { "fieldPath": "tahun_hijriyah", "order": "ASCENDING" },
+        { "fieldPath": "tanggal",        "order": "DESCENDING" },
+        { "fieldPath": "created_at",     "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "transaksi",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "instansi_id",    "order": "ASCENDING" },
+        { "fieldPath": "bulan_hijriyah", "order": "ASCENDING" },
+        { "fieldPath": "tahun_hijriyah", "order": "ASCENDING" },
+        { "fieldPath": "tanggal",        "order": "DESCENDING" },
+        { "fieldPath": "created_at",     "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "hutang_piutang",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "instansi_id", "order": "ASCENDING" },
+        { "fieldPath": "jenis",       "order": "ASCENDING" },
+        { "fieldPath": "status",      "order": "ASCENDING" },
+        { "fieldPath": "tanggal",     "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "hutang_piutang",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "jenis",   "order": "ASCENDING" },
+        { "fieldPath": "status",  "order": "ASCENDING" },
+        { "fieldPath": "tanggal", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
