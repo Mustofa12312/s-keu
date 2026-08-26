@@ -5,10 +5,12 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'app.dart';
 import 'core/firebase_client.dart';
 import 'core/services/notification_service.dart';
 import 'core/utils/logger.dart';
+import 'providers/app_providers.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -50,5 +52,15 @@ Future<void> main() async {
   // Initialize Notification Service
   await NotificationService().initialize();
 
-  runApp(const ProviderScope(child: SkeuApp()));
+  // Initialize SharedPreferences
+  final sharedPreferences = await SharedPreferences.getInstance();
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+      ],
+      child: const SkeuApp(),
+    ),
+  );
 }

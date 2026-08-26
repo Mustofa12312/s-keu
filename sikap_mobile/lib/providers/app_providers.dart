@@ -2,7 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../data/models/profile_model.dart';
 import '../data/repositories/instansi_repository.dart';
 import '../data/repositories/transaksi_repository.dart';
@@ -11,6 +12,12 @@ import '../data/repositories/hutang_piutang_repository.dart';
 import '../data/repositories/anggaran_repository.dart';
 import '../data/repositories/log_aktivitas_repository.dart';
 import '../core/firebase_client.dart';
+
+// ─── Shared Preferences ─────────────────────────────────────
+final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
+  throw UnimplementedError('sharedPreferencesProvider must be overridden');
+});
+
 
 // ─── Auth Provider ──────────────────────────────────────────
 final authProvider = StreamProvider<User?>((ref) {

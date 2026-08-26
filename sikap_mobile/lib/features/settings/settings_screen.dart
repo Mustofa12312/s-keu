@@ -74,6 +74,25 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ).animate().fadeIn(duration: 400.ms),
                 
                 const SizedBox(height: 24),
+                const SectionHeader(title: 'Keamanan'),
+                const SizedBox(height: 12),
+                GlassCard(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: SwitchListTile(
+                    title: const Text('Gunakan Sidik Jari', style: TextStyle(color: Colors.white, fontSize: 14)),
+                    subtitle: const Text('Kunci aplikasi dengan biometrik', style: TextStyle(color: AppColors.dark400, fontSize: 12)),
+                    activeColor: AppColors.emerald500,
+                    value: ref.watch(sharedPreferencesProvider).getBool('use_biometric') ?? false,
+                    onChanged: (val) async {
+                      await ref.read(sharedPreferencesProvider).setBool('use_biometric', val);
+                      // Invalidate the provider to rebuild UI based on new preference
+                      ref.invalidate(sharedPreferencesProvider);
+                    },
+                    secondary: const Icon(Icons.fingerprint_rounded, color: AppColors.emerald500),
+                  ),
+                ).animate().fadeIn(duration: 400.ms),
+
+                const SizedBox(height: 24),
                 const SectionHeader(title: 'Tentang Aplikasi'),
                 const SizedBox(height: 12),
                 const GlassCard(
