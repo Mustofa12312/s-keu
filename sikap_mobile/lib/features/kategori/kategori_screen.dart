@@ -15,7 +15,7 @@ class KategoriScreen extends ConsumerWidget {
     final kategoriAsync = ref.watch(kategoriListProvider);
 
     return Scaffold(
-      appBar: const S-KeuAppBar(title: 'Master Kategori'),
+      appBar: const SkeuAppBar(title: 'Master Kategori'),
       body: kategoriAsync.when(
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald500)),
         error: (e, _) => EmptyState(message: 'Gagal memuat kategori', subtitle: e.toString(), icon: Icons.error_outline_rounded),

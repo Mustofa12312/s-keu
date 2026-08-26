@@ -130,8 +130,8 @@ final routerProvider = Provider<GoRouter>((ref) {
 });
 
 // ── Root App ─────────────────────────────────────────────────
-class S-KeuApp extends ConsumerWidget {
-  const S-KeuApp({super.key});
+class SkeuApp extends ConsumerWidget {
+  const SkeuApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

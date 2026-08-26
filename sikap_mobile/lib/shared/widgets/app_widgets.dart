@@ -275,12 +275,12 @@ class JenisBadge extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════════
 // CUSTOM APP BAR
 // ═══════════════════════════════════════════════════════════════
-class S-KeuAppBar extends StatelessWidget implements PreferredSizeWidget {
+class SkeuAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final List<Widget>? actions;
   final bool showBack;
 
-  const S-KeuAppBar({
+  const SkeuAppBar({
     super.key,
     required this.title,
     this.actions,

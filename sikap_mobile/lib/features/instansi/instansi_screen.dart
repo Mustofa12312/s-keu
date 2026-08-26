@@ -15,7 +15,7 @@ class InstansiScreen extends ConsumerWidget {
     final instansiAsync = ref.watch(instansiListProvider);
 
     return Scaffold(
-      appBar: const S-KeuAppBar(title: 'Master Instansi'),
+      appBar: const SkeuAppBar(title: 'Master Instansi'),
       body: instansiAsync.when(
         loading: () => const Center(child: CircularProgressIndicator(color: AppColors.emerald500)),
         error: (e, _) => EmptyState(message: 'Gagal memuat instansi', subtitle: e.toString(), icon: Icons.error_outline_rounded),

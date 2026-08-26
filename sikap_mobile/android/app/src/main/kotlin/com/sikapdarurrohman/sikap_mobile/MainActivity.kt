@@ -1,4 +1,4 @@
-package com.sikapdarurrohman.s-keu_mobile
+package com.sikapdarurrohman.sikap_mobile
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 
