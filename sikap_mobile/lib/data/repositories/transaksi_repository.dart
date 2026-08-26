@@ -112,7 +112,7 @@ class TransaksiRepository {
 
     } catch (e, st) {
       logger.e('Error getPaginated transaksi', error: e, stackTrace: st);
-      throw Exception('Gagal mengambil data transaksi');
+      throw Exception('Gagal memuat: ${e.toString()}');
     }
   }
 
@@ -207,7 +207,7 @@ class TransaksiRepository {
 
     } catch (e, st) {
       logger.e('Error getAll transaksi', error: e, stackTrace: st);
-      throw Exception('Gagal mengambil data transaksi');
+      throw Exception('Gagal memuat: ${e.toString()}');
     }
   }
 
