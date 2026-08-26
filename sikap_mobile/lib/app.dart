@@ -130,8 +130,8 @@ final routerProvider = Provider<GoRouter>((ref) {
 });
 
 // ── Root App ─────────────────────────────────────────────────
-class SikapApp extends ConsumerWidget {
-  const SikapApp({super.key});
+class S-KeuApp extends ConsumerWidget {
+  const S-KeuApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

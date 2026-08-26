@@ -92,7 +92,7 @@ class _BukuKasScreenState extends ConsumerState<BukuKasScreen> {
         : null;
 
     return Scaffold(
-      appBar: const SikapAppBar(title: AppStrings.bukuKas, showBack: false),
+      appBar: const S-KeuAppBar(title: AppStrings.bukuKas, showBack: false),
       body: Column(
         children: [
           // Controls

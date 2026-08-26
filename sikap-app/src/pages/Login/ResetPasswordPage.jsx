@@ -117,7 +117,7 @@ export default function ResetPasswordPage() {
               <ShieldCheckIcon className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="font-bold text-slate-800 font-display">SIKAP</p>
+              <p className="font-bold text-slate-800 font-display">S-KEU</p>
               <p className="text-emerald-600 text-[10px] font-bold tracking-wider uppercase">Pondok Pesantren</p>
             </div>
           </div>

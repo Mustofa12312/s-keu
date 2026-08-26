@@ -89,7 +89,7 @@ export default function SettingsPage() {
       // 1. Sheet Transaksi
       if (data.length > 0) {
         const wsData = [
-          ['BACKUP MASTER DATA TRANSAKSI SIKAP'],
+          ['BACKUP MASTER DATA TRANSAKSI S-KEU'],
           ['Tanggal Backup', ':', new Date().toLocaleString()],
           [],
           EXPECTED_HEADERS
@@ -118,7 +118,7 @@ export default function SettingsPage() {
       // 2. Sheet Hutang Piutang
       if (dataHutang.length > 0) {
         const wsHutangData = [
-          ['BACKUP DATA HUTANG PIUTANG SIKAP'],
+          ['BACKUP DATA HUTANG PIUTANG S-KEU'],
           ['Tanggal Backup', ':', new Date().toLocaleString()],
           [],
           ['No', 'Instansi', 'Tanggal (M)', 'Tanggal (H)', 'Bulan (H)', 'Tahun (H)', 'Kode', 'Bukti', 'Jenis', 'Pihak', 'Uraian', 'Status', 'Jatuh Tempo', 'Nominal Total (Rp)', 'Nominal Dibayar (Rp)', 'Sisa (Rp)']
@@ -175,7 +175,7 @@ export default function SettingsPage() {
         XLSX.utils.book_append_sheet(wb, ws, 'Data')
       }
 
-      XLSX.writeFile(wb, `Backup_Master_SIKAP_${new Date().toISOString().split('T')[0]}.xlsx`)
+      XLSX.writeFile(wb, `Backup_Master_S-KEU_${new Date().toISOString().split('T')[0]}.xlsx`)
       showToast(`Berhasil mengekspor data ke Excel!`)
     } catch (err) {
       console.error(err)
@@ -201,7 +201,7 @@ export default function SettingsPage() {
 
         const headerRowIdx = raw.findIndex(r => r[0] === 'No' && r[1] === 'Instansi')
         if (headerRowIdx === -1) {
-          showToast('Format file tidak valid. Gunakan file dari Backup SIKAP.', 'error')
+          showToast('Format file tidak valid. Gunakan file dari Backup S-KEU.', 'error')
           fileInputRef.current.value = ''
           return
         }
@@ -566,7 +566,7 @@ export default function SettingsPage() {
 
             <div className="mt-3 p-2 rounded-lg bg-blue-100/70 border border-blue-200">
               <p className="text-[10px] text-blue-700 leading-relaxed">
-                💡 <strong>Catatan:</strong> Gunakan hanya file dari menu Backup SIKAP. Nama instansi di file harus sama persis dengan yang ada di sistem.
+                💡 <strong>Catatan:</strong> Gunakan hanya file dari menu Backup S-KEU. Nama instansi di file harus sama persis dengan yang ada di sistem.
               </p>
             </div>
           </div>

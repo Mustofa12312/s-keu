@@ -50,5 +50,5 @@ Future<void> main() async {
   // Initialize Notification Service
   await NotificationService().initialize();
 
-  runApp(const ProviderScope(child: SikapApp()));
+  runApp(const ProviderScope(child: S-KeuApp()));
 }

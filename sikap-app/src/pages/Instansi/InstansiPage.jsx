@@ -70,7 +70,7 @@ export default function InstansiPage() {
     if (list.length === 0) { showToast('Tidak ada data instansi untuk diekspor.', 'error'); return }
 
     const wsData = [
-      ['BACKUP DATA INSTANSI SIKAP'],
+      ['BACKUP DATA INSTANSI S-KEU'],
       ['Tanggal Backup', ':', new Date().toLocaleString()],
       [],
       HEADER_ROW,
@@ -88,7 +88,7 @@ export default function InstansiPage() {
     ws['!cols'] = [{ wch: 5 }, { wch: 35 }, { wch: 15 }, { wch: 40 }, { wch: 10 }]
     const wb = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(wb, ws, 'Data Instansi')
-    XLSX.writeFile(wb, `Backup_Instansi_SIKAP_${new Date().toISOString().split('T')[0]}.xlsx`)
+    XLSX.writeFile(wb, `Backup_Instansi_S-KEU_${new Date().toISOString().split('T')[0]}.xlsx`)
     showToast(`Berhasil mengekspor ${list.length} instansi!`)
   }
 
@@ -109,7 +109,7 @@ export default function InstansiPage() {
         // Cari baris header
         const headerIdx = raw.findIndex(r => r[1] === 'Nama Instansi' && r[2] === 'Kode')
         if (headerIdx === -1) {
-          showToast('Format file tidak valid. Gunakan file dari Export Instansi SIKAP.', 'error')
+          showToast('Format file tidak valid. Gunakan file dari Export Instansi S-KEU.', 'error')
           fileInputRef.current.value = ''
           return
         }

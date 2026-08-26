@@ -46,7 +46,7 @@ class _LockScreenState extends ConsumerState<LockScreen> {
       }
 
       authenticated = await localAuth.authenticate(
-        localizedReason: 'Verifikasi identitas Anda untuk mengakses SIKAP',
+        localizedReason: 'Verifikasi identitas Anda untuk mengakses S-KEU',
       );
 
       if (authenticated) {

@@ -122,7 +122,7 @@ export default function TransaksiPage() {
     setExporting(true)
     try {
       const wsData = [
-        ['BACKUP DATA TRANSAKSI SIKAP'],
+        ['BACKUP DATA TRANSAKSI S-KEU'],
         ['Tanggal Ekspor', ':', new Date().toLocaleString()],
         [],
         EXPECTED_HEADERS
@@ -151,8 +151,8 @@ export default function TransaksiPage() {
       XLSX.utils.book_append_sheet(wb, ws, 'Transaksi')
       
       const fileName = isSuperAdmin 
-        ? `Backup_Transaksi_SIKAP_${new Date().toISOString().split('T')[0]}.xlsx`
-        : `Backup_Transaksi_${profile?.instansi?.nama_instansi || 'Unit'}_SIKAP_${new Date().toISOString().split('T')[0]}.xlsx`
+        ? `Backup_Transaksi_S-KEU_${new Date().toISOString().split('T')[0]}.xlsx`
+        : `Backup_Transaksi_${profile?.instansi?.nama_instansi || 'Unit'}_S-KEU_${new Date().toISOString().split('T')[0]}.xlsx`
 
       XLSX.writeFile(wb, fileName)
       showToast(`Berhasil mengekspor ${rows.length} transaksi!`)

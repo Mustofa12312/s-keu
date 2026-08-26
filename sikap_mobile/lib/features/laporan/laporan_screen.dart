@@ -25,7 +25,7 @@ class LaporanScreen extends ConsumerWidget {
         filter.tahunHijriyah ?? pengaturan?.tahunAktif ?? '1446';
 
     return Scaffold(
-      appBar: const SikapAppBar(title: AppStrings.laporan, showBack: false),
+      appBar: const S-KeuAppBar(title: AppStrings.laporan, showBack: false),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
           final data = laporanAsync.valueOrNull;

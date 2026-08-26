@@ -272,7 +272,7 @@ class ProfileScreen extends ConsumerWidget {
 
             const SizedBox(height: 8),
             const Center(
-              child: Text('SIKAP Darur Rohman · ${AppStrings.pondokName}',
+              child: Text('S-KEU Darur Rohman · ${AppStrings.pondokName}',
                 style: TextStyle(color: AppColors.dark500, fontSize: 11),
                 textAlign: TextAlign.center),
             ),
