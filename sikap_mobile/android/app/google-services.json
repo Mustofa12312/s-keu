@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "180609665503",
+    "project_id": "fir-keu",
+    "storage_bucket": "fir-keu.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:180609665503:android:9dee952d98721e80311c6a",
+        "android_client_info": {
+          "package_name": "com.sikapdarurrohman.sikap_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxb-_z9W44SB37fke3lkHWp11m75o3pxU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

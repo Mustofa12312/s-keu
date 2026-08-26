@@ -5,14 +5,13 @@ import 'package:flutter/foundation.dart';
 
 class FirebaseClient {
   static Future<void> initialize() async {
-    // In a real scenario, you'd use flutterfire configure to generate firebase_options.dart.
-    // For now we assume either firebase_options.dart is generated or we use env variables.
-    
+    // firebase_options.dart is now generated via google-services.json
+    // Android App ID: 1:180609665503:android:9dee952d98721e80311c6a
     try {
       await Firebase.initializeApp(
         options: const FirebaseOptions(
-          apiKey: 'AIzaSyBGn2ALAU9DiiQoyyGjzpT_PhbCQCX5yTE',
-          appId: '1:180609665503:web:f497638e1dbfaf3c311c6a', // Menggunakan Web App ID sementara untuk koneksi API
+          apiKey: 'AIzaSyCxb-_z9W44SB37fke3lkHWp11m75o3pxU', // Android API Key from google-services.json
+          appId: '1:180609665503:android:9dee952d98721e80311c6a', // Android App ID
           messagingSenderId: '180609665503',
           projectId: 'fir-keu',
           storageBucket: 'fir-keu.firebasestorage.app',
