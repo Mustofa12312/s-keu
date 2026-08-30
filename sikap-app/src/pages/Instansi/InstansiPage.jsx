@@ -9,13 +9,15 @@ import {
 } from '@heroicons/react/24/outline'
 import Modal from '../../components/ui/Modal'
 import EmptyState from '../../components/ui/EmptyState'
-import { instansiService } from '../../services/firebase.service'
+import { instansiService, activityLogService } from '../../services/firebase.service'
+import { useAuth } from '../../context/AuthContext'
 import * as XLSX from 'xlsx'
 
 const EMPTY = { nama_instansi: '', kode_instansi: '', alamat: '', aktif: true }
 const HEADER_ROW = ['No', 'Nama Instansi', 'Kode', 'Alamat', 'Status']
 
 export default function InstansiPage() {
+  const { profile } = useAuth()
   const [list, setList]           = useState([])
   const [loading, setLoading]     = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
@@ -53,8 +55,26 @@ export default function InstansiPage() {
     if (!form.nama_instansi || !form.kode_instansi) return
     setSaving(true)
     try {
-      if (editItem) await instansiService.update(editItem.id, form)
-      else await instansiService.create(form)
+      if (editItem) {
+        await instansiService.update(editItem.id, form)
+        await activityLogService.create({
+          user: profile,
+          action: 'UPDATE',
+          target_type: 'instansi',
+          target_id: editItem.id,
+          details: `Mengubah data instansi ${form.nama_instansi}`
+        })
+      }
+      else {
+        const res = await instansiService.create(form)
+        await activityLogService.create({
+          user: profile,
+          action: 'CREATE',
+          target_type: 'instansi',
+          target_id: res?.id || 'new',
+          details: `Menambah instansi baru ${form.nama_instansi}`
+        })
+      }
       setModalOpen(false); load()
     } catch(e) { showToast('Gagal: ' + e.message, 'error') }
     finally { setSaving(false) }
@@ -164,11 +184,18 @@ export default function InstansiPage() {
           }
 
           try {
-            await instansiService.create({
+            const res = await instansiService.create({
               nama_instansi: namaBersih,
               kode_instansi: kodeBersih,
               alamat:        alamat?.toString().trim() || null,
               aktif:         aktifValue,
+            })
+            await activityLogService.create({
+              user: profile,
+              action: 'CREATE',
+              target_type: 'instansi',
+              target_id: res?.id || 'new',
+              details: `Import data instansi ${namaBersih}`
             })
             success++
           } catch (error) {

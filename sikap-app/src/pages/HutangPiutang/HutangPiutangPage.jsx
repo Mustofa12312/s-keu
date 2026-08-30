@@ -6,7 +6,7 @@ import { PlusIcon, PencilIcon, TrashIcon, MagnifyingGlassIcon, DocumentTextIcon 
 import Modal from '../../components/ui/Modal'
 import EmptyState from '../../components/ui/EmptyState'
 import { formatRupiah } from '../../utils/formatRupiah'
-import { hutangService, instansiService, pengaturanService } from '../../services/firebase.service'
+import { hutangService, instansiService, pengaturanService, activityLogService } from '../../services/firebase.service'
 import { useAuth } from '../../context/AuthContext'
 import { BULAN_HIJRIYAH, getBulanLabel } from '../../utils/hijriyah'
 
@@ -30,7 +30,7 @@ export default function HutangPiutangPage({ type }) {
   const pageTitle = isHutang ? 'Data Hutang' : 'Data Piutang'
   const pihakLabel = isHutang ? 'Pemberi Hutang (Kreditur)' : 'Peminjam (Debitur)'
   const btnColor = isHutang ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'
-  const { isSuperAdmin, isViewer, instansiId } = useAuth()
+  const { isSuperAdmin, isViewer, instansiId, profile } = useAuth()
   const [rows, setRows] = useState([])
   const [instansiList, setInstansiList] = useState([])
   const [loading, setLoading] = useState(true)
@@ -129,8 +129,25 @@ export default function HutangPiutangPage({ type }) {
         status: editRow ? editRow.status : 'belum_lunas',
         instansi_id: finalInstansiId,
       }
-      if (editRow) await hutangService.update(editRow.id, payload)
-      else await hutangService.create(payload)
+      if (editRow) {
+        await hutangService.update(editRow.id, payload)
+        await activityLogService.create({
+          user: profile,
+          action: 'UPDATE',
+          target_type: 'hutang_piutang',
+          target_id: editRow.id,
+          details: `Mengubah data ${type} a.n. ${form.nama_pihak} menjadi sebesar ${formatRupiah(payload.nominal_total)}`
+        })
+      } else {
+        const res = await hutangService.create(payload)
+        await activityLogService.create({
+          user: profile,
+          action: 'CREATE',
+          target_type: 'hutang_piutang',
+          target_id: res?.id || 'new',
+          details: `Menambah data ${type} baru a.n. ${form.nama_pihak} sebesar ${formatRupiah(payload.nominal_total)}`
+        })
+      }
       setModalOpen(false)
       load()
     } catch(e) { alert('Gagal menyimpan: ' + e.message) }
@@ -141,6 +158,13 @@ export default function HutangPiutangPage({ type }) {
     if (!window.confirm('Yakin ingin menghapus data ini beserta seluruh histori cicilannya?')) return
     try {
       await hutangService.delete(id)
+      await activityLogService.create({
+        user: profile,
+        action: 'DELETE',
+        target_type: 'hutang_piutang',
+        target_id: id,
+        details: `Menghapus data ${type} beserta histori cicilannya`
+      })
       load()
     } catch(e) { alert('Gagal hapus: ' + e.message) }
   }
@@ -170,10 +194,17 @@ export default function HutangPiutangPage({ type }) {
     setSaving(true)
     try {
       // 1. Tambah cicilan
-      await hutangService.createPembayaran(selectedInduk.id, {
+      const cicilanRes = await hutangService.createPembayaran(selectedInduk.id, {
         nominal: nom,
         tanggal: cForm.tanggal,
         keterangan: cForm.keterangan || 'Pembayaran cicilan'
+      })
+      await activityLogService.create({
+        user: profile,
+        action: 'CREATE',
+        target_type: 'pembayaran_hutang',
+        target_id: cicilanRes?.id || 'new',
+        details: `Mencatat pembayaran cicilan sebesar ${formatRupiah(nom)} untuk a.n. ${selectedInduk.nama_pihak}`
       })
       // 2. Update induk
       const totalBayarBaru = (selectedInduk.nominal_dibayar || 0) + nom
@@ -202,6 +233,13 @@ export default function HutangPiutangPage({ type }) {
       await hutangService.update(selectedInduk.id, {
         nominal_dibayar: totalBayarBaru,
         status: statusBaru
+      })
+      await activityLogService.create({
+        user: profile,
+        action: 'DELETE',
+        target_type: 'pembayaran_hutang',
+        target_id: cicilan.id,
+        details: `Menghapus histori cicilan sebesar ${formatRupiah(cicilan.nominal)} untuk a.n. ${selectedInduk.nama_pihak}`
       })
       setSelectedInduk(prev => ({...prev, nominal_dibayar: totalBayarBaru, status: statusBaru}))
       loadCicilan(selectedInduk.id)

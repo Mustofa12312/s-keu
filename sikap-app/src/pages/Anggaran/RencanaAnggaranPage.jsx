@@ -2,14 +2,14 @@ import { useState, useEffect } from 'react'
 import { PlusIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { useAuth } from '../../context/AuthContext'
 import { anggaranService } from '../../services/anggaran.service'
-import { pengaturanService } from '../../services/firebase.service'
+import { pengaturanService, activityLogService } from '../../services/firebase.service'
 import { formatRupiah } from '../../utils/formatRupiah'
 import referensiAnggaran from '../../data/referensiAnggaran.json'
 import Modal from '../../components/ui/Modal'
 import EmptyState from '../../components/ui/EmptyState'
 
 export default function RencanaAnggaranPage() {
-  const { instansiId, isSuperAdmin } = useAuth()
+  const { instansiId, isSuperAdmin, profile } = useAuth()
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [kategori, setKategori] = useState('pendapatan')
@@ -117,6 +117,13 @@ export default function RencanaAnggaranPage() {
     if (!window.confirm('Yakin ingin menghapus item anggaran ini? Semua realisasi terkait juga akan dihapus.')) return
     try {
       await anggaranService.deleteRencana(id)
+      await activityLogService.create({
+        user: profile,
+        action: 'DELETE',
+        target_type: 'anggaran',
+        target_id: id,
+        details: `Menghapus rencana anggaran beserta realisasi terkait`
+      })
       showToast('Berhasil dihapus')
       fetchData()
     } catch (error) {
@@ -140,9 +147,23 @@ export default function RencanaAnggaranPage() {
       
       if (editingData) {
         await anggaranService.updateRencana(editingData.id, payload)
+        await activityLogService.create({
+          user: profile,
+          action: 'UPDATE',
+          target_type: 'anggaran',
+          target_id: editingData.id,
+          details: `Mengubah rencana anggaran ${payload.uraian} menjadi sebesar ${formatRupiah(payload.jumlah)}`
+        })
         showToast('Berhasil diperbarui')
       } else {
-        await anggaranService.createRencana(payload)
+        const res = await anggaranService.createRencana(payload)
+        await activityLogService.create({
+          user: profile,
+          action: 'CREATE',
+          target_type: 'anggaran',
+          target_id: res?.id || 'new',
+          details: `Menambah rencana anggaran baru ${payload.uraian} sebesar ${formatRupiah(payload.jumlah)}`
+        })
         showToast('Berhasil ditambahkan')
       }
       setIsModalOpen(false)

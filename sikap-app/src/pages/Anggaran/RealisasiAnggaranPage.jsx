@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { CheckCircleIcon, DocumentPlusIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { useAuth } from '../../context/AuthContext'
 import { anggaranService } from '../../services/anggaran.service'
-import { pengaturanService } from '../../services/firebase.service'
+import { pengaturanService, activityLogService } from '../../services/firebase.service'
 import { formatRupiah } from '../../utils/formatRupiah'
 import Modal from '../../components/ui/Modal'
 import EmptyState from '../../components/ui/EmptyState'
@@ -18,7 +18,7 @@ function formatDateID(str) {
 }
 
 export default function RealisasiAnggaranPage() {
-  const { instansiId, isSuperAdmin } = useAuth()
+  const { instansiId, isSuperAdmin, profile } = useAuth()
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [kategori, setKategori] = useState('pendapatan')
@@ -113,6 +113,13 @@ export default function RealisasiAnggaranPage() {
     if (!window.confirm('Hapus realisasi ini?')) return
     try {
       await anggaranService.deleteRealisasi(id)
+      await activityLogService.create({
+        user: profile,
+        action: 'DELETE',
+        target_type: 'realisasi_anggaran',
+        target_id: id,
+        details: `Menghapus pencatatan realisasi anggaran`
+      })
       showToast('Dihapus')
       // Refresh list
       const list = await anggaranService.getRealisasi(selectedAnggaran.id, isSuperAdmin ? null : instansiId)
@@ -134,7 +141,14 @@ export default function RealisasiAnggaranPage() {
         tahun_pelajaran: selectedAnggaran.tahun_pelajaran
       }
       
-      await anggaranService.createRealisasi(selectedAnggaran.id, payload)
+      const res = await anggaranService.createRealisasi(selectedAnggaran.id, payload)
+      await activityLogService.create({
+        user: profile,
+        action: 'CREATE',
+        target_type: 'realisasi_anggaran',
+        target_id: res?.id || 'new',
+        details: `Mencatat realisasi ${payload.uraian} sebesar ${formatRupiah(payload.nominal)}`
+      })
       showToast('Realisasi dicatat')
       
       // Reset form and refresh list

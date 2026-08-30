@@ -59,8 +59,8 @@ export default function LoginPage() {
         <div className="relative z-10 p-16 flex flex-col h-full justify-between">
           <div>
             <div className="flex items-center gap-4 mb-16 animate-fade-in" style={{ animationDelay: '100ms' }}>
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400/30 to-emerald-600/10 border border-emerald-400/20 backdrop-blur-xl flex items-center justify-center shadow-[0_0_40px_rgba(52,211,153,0.15)]">
-                <ShieldCheckIcon className="w-8 h-8 text-emerald-300 drop-shadow-md" />
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-white/10 backdrop-blur-xl border border-white/20 overflow-hidden shadow-[0_0_40px_rgba(52,211,153,0.15)]">
+                <img src="/logofix.png" alt="Logo L-Keu" className="w-full h-full object-contain p-1.5" />
               </div>
               <div>
                 <p className="text-white font-bold text-2xl font-display tracking-wide">L-Keu</p>
@@ -108,8 +108,8 @@ export default function LoginPage() {
         <div className="w-full max-w-sm">
           {/* Mobile logo */}
           <div className="flex items-center gap-3 mb-8 lg:hidden">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center">
-              <ShieldCheckIcon className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center border border-slate-200 overflow-hidden shadow-sm">
+              <img src="/logofix.png" alt="Logo L-Keu" className="w-full h-full object-contain p-1" />
             </div>
             <div>
               <p className="font-bold text-slate-800 font-display">L-Keu</p>

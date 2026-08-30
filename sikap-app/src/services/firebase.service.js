@@ -43,12 +43,12 @@ export const activityLogService = {
     if (!user) return;
     try {
       await addDoc(collection(db, 'activity_logs'), {
-        user_id: user.uid,
+        user_id: user.uid || user.id || 'unknown',
         user_name: user.nama || user.email || 'Unknown',
-        action,           // e.g., 'CREATE', 'UPDATE', 'DELETE', 'RESTORE'
-        target_type,      // e.g., 'transaksi'
-        target_id,
-        details,          // text description
+        action: action || 'UNKNOWN',
+        target_type: target_type || 'unknown',
+        target_id: target_id || 'unknown',
+        details: details || '',
         created_at: serverTimestamp()
       });
     } catch (e) {

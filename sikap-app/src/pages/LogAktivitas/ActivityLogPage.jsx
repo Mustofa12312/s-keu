@@ -11,13 +11,18 @@ export default function ActivityLogPage() {
   const { isSuperAdmin } = useAuth()
   const [logs, setLogs] = useState([])
   const [loading, setLoading] = useState(true)
+  const [errorMsg, setErrorMsg] = useState(null)
 
   async function load() {
     setLoading(true)
+    setErrorMsg(null)
     try {
       const data = await activityLogService.getAll({ limitCount: 100 })
       setLogs(data)
-    } catch(e) { console.error(e) }
+    } catch(e) {
+      console.error('Error loading logs:', e)
+      setErrorMsg(e.message)
+    }
     finally { setLoading(false) }
   }
 
@@ -43,7 +48,12 @@ export default function ActivityLogPage() {
       </div>
 
       <div className="card overflow-hidden">
-        {loading ? (
+        {errorMsg ? (
+          <div className="p-5 text-center">
+            <div className="text-red-500 font-medium mb-2">Gagal memuat log aktivitas</div>
+            <div className="text-slate-500 text-sm bg-slate-50 p-3 rounded">{errorMsg}</div>
+          </div>
+        ) : loading ? (
           <div className="p-5 space-y-4">
             {[1, 2, 3, 4, 5].map(n => <div key={n} className="h-10 skeleton w-full" />)}
           </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Cog6ToothIcon, ArrowDownTrayIcon, DocumentTextIcon, ArrowUpTrayIcon, ShieldExclamationIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline'
-import { pengaturanService, transaksiService, instansiService, hutangService } from '../../services/firebase.service'
+import { pengaturanService, transaksiService, instansiService, hutangService, activityLogService } from '../../services/firebase.service'
+import { useAuth } from '../../context/AuthContext'
 import * as XLSX from 'xlsx'
 import { formatRupiah } from '../../utils/formatRupiah'
 import { getBulanLabel, BULAN_HIJRIYAH } from '../../utils/hijriyah'
@@ -8,6 +9,7 @@ import { getBulanLabel, BULAN_HIJRIYAH } from '../../utils/hijriyah'
 const EXPECTED_HEADERS = ['No', 'Instansi', 'Tanggal (M)', 'Tanggal (H)', 'Bulan (H)', 'Tahun (H)', 'Kode', 'Bukti', 'Jenis', 'Uraian', 'Sumber Dana', 'Nominal (Rp)', 'Dibuat Pada']
 
 export default function SettingsPage() {
+  const { profile } = useAuth()
   const [form, setForm] = useState({
     nama_yayasan: '', alamat_yayasan: '', ketua_yayasan: '', bendahara_pusat: '', tahun_aktif: '', tutup_buku: []
   })
@@ -60,6 +62,13 @@ export default function SettingsPage() {
     setSaving(true)
     try {
       await pengaturanService.updateSettings(form)
+      await activityLogService.create({
+        user: profile,
+        action: 'UPDATE',
+        target_type: 'pengaturan',
+        target_id: 'settings',
+        details: `Memperbarui pengaturan aplikasi (Tahun aktif: ${form.tahun_aktif})`
+      })
       showToast('Pengaturan berhasil disimpan!')
     } catch (err) {
       console.error(err)
@@ -311,7 +320,18 @@ export default function SettingsPage() {
         }
 
         setImportResult({ success, failed, skipped, errors: errors.slice(0, 10) })
-        if (success > 0 || skipped > 0) showToast(`Import selesai: ${success} berhasil, ${skipped} dilewati, ${failed} gagal.`)
+        if (success > 0 || skipped > 0) {
+          showToast(`Import selesai: ${success} berhasil, ${skipped} dilewati, ${failed} gagal.`)
+          if (success > 0) {
+            await activityLogService.create({
+              user: profile,
+              action: 'CREATE',
+              target_type: 'transaksi',
+              target_id: 'batch_import',
+              details: `Import masal ${success} data transaksi`
+            })
+          }
+        }
         else showToast('Import gagal. Periksa daftar error.', 'error')
       } catch (err) {
         console.error(err)

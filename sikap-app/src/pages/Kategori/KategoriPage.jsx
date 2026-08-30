@@ -6,11 +6,11 @@ import { useState, useEffect } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 import Modal from '../../components/ui/Modal'
 import EmptyState from '../../components/ui/EmptyState'
-import { kategoriService } from '../../services/firebase.service'
+import { kategoriService, activityLogService } from '../../services/firebase.service'
 import { useAuth } from '../../context/AuthContext'
 
 export default function KategoriPage() {
-  const { isSuperAdmin } = useAuth()
+  const { isSuperAdmin, profile } = useAuth()
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
   const [modalOpen, setModalOpen] = useState(false)
@@ -57,8 +57,22 @@ export default function KategoriPage() {
     try {
       if (editRow) {
         await kategoriService.update(editRow.id, form)
+        await activityLogService.create({
+          user: profile,
+          action: 'UPDATE',
+          target_type: 'kategori',
+          target_id: editRow.id,
+          details: `Mengubah data kategori ${form.nama_kategori}`
+        })
       } else {
-        await kategoriService.create(form)
+        const res = await kategoriService.create(form)
+        await activityLogService.create({
+          user: profile,
+          action: 'CREATE',
+          target_type: 'kategori',
+          target_id: res?.id || 'new',
+          details: `Menambah kategori baru ${form.nama_kategori}`
+        })
       }
       setModalOpen(false)
       load()
@@ -73,6 +87,13 @@ export default function KategoriPage() {
     if (!window.confirm('Hapus kategori ini?')) return
     try {
       await kategoriService.delete(id)
+      await activityLogService.create({
+        user: profile,
+        action: 'DELETE',
+        target_type: 'kategori',
+        target_id: id,
+        details: `Menghapus kategori`
+      })
       load()
     } catch(e) { alert('Gagal menghapus: ' + e.message) }
   }

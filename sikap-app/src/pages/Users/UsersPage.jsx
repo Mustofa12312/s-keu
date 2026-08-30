@@ -6,7 +6,8 @@ import { useState, useEffect } from 'react'
 import { PlusIcon, PencilIcon, KeyIcon, EyeIcon, EyeSlashIcon, NoSymbolIcon, CheckCircleIcon, TrashIcon } from '@heroicons/react/24/outline'
 import Modal from '../../components/ui/Modal'
 import EmptyState from '../../components/ui/EmptyState'
-import { profileService, instansiService } from '../../services/firebase.service'
+import { profileService, instansiService, activityLogService } from '../../services/firebase.service'
+import { useAuth } from '../../context/AuthContext'
 import { auth, app } from '../../lib/firebase'
 import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth'
 import { initializeApp } from 'firebase/app'
@@ -40,6 +41,7 @@ const MENU_OPTIONS = [
 ]
 
 export default function UsersPage() {
+  const { profile } = useAuth()
   const [list, setList]               = useState([])
   const [instansiList, setInstansiList] = useState([])
   const [loading, setLoading]         = useState(true)
@@ -100,6 +102,13 @@ export default function UsersPage() {
           instansi_id: form.instansi_id || null,
           akses_menu: form.akses_menu,
         })
+        await activityLogService.create({
+          user: profile,
+          action: 'UPDATE',
+          target_type: 'pengguna',
+          target_id: editItem.id,
+          details: `Mengubah data dan hak akses pengguna ${form.nama}`
+        })
         showToast('Data pengguna berhasil diperbarui')
       } else {
         // Create secondary app to avoid logging out current admin
@@ -113,6 +122,13 @@ export default function UsersPage() {
           role: form.role,
           instansi_id: form.instansi_id || null,
           akses_menu: form.akses_menu,
+        })
+        await activityLogService.create({
+          user: profile,
+          action: 'CREATE',
+          target_type: 'pengguna',
+          target_id: userCredential.user.uid,
+          details: `Menambah pengguna baru ${form.nama}`
         })
         
         await tempAuth.signOut();
@@ -153,6 +169,13 @@ export default function UsersPage() {
 
     try {
       await profileService.update(item.id, { role: newRole })
+      await activityLogService.create({
+        user: profile,
+        action: 'UPDATE',
+        target_type: 'pengguna',
+        target_id: item.id,
+        details: isCurrentlyBlocked ? `Memulihkan akses pengguna ${item.nama}` : `Memblokir akses pengguna ${item.nama}`
+      })
       showToast(isCurrentlyBlocked ? `Akses ${item.nama} dipulihkan.` : `Akses ${item.nama} berhasil dicabut.`)
       load()
     } catch (e) {
@@ -176,6 +199,13 @@ export default function UsersPage() {
       // Let's just block them for now, or delete doc.
       // Since deleteUser needs Admin SDK, we'll update role to blocked.
       await profileService.update(item.id, { role: 'blocked' })
+      await activityLogService.create({
+        user: profile,
+        action: 'DELETE',
+        target_type: 'pengguna',
+        target_id: item.id,
+        details: `Memblokir permanen (hapus) pengguna ${item.nama}`
+      })
       showToast(`Profil pengguna ${item.nama} berhasil diblokir / dihapus secara logika.`)
       load()
     } catch (e) {
