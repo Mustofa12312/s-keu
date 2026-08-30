@@ -25,7 +25,7 @@ export default function NotificationPanel() {
   const [open, setOpen] = useState(false)
   const [notifs, setNotifs] = useState([])
   const [readIds, setReadIds] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('s-keu_read_notifs') || '[]') }
+    try { return JSON.parse(localStorage.getItem('l-keu_read_notifs') || '[]') }
     catch { return [] }
   })
   const panelRef = useRef()
@@ -69,13 +69,13 @@ export default function NotificationPanel() {
   function markAllRead() {
     const allIds = notifs.map(n => n.id)
     setReadIds(allIds)
-    localStorage.setItem('s-keu_read_notifs', JSON.stringify(allIds))
+    localStorage.setItem('l-keu_read_notifs', JSON.stringify(allIds))
   }
 
   function markRead(id) {
     const updated = [...new Set([...readIds, id])]
     setReadIds(updated)
-    localStorage.setItem('s-keu_read_notifs', JSON.stringify(updated))
+    localStorage.setItem('l-keu_read_notifs', JSON.stringify(updated))
   }
 
   return (

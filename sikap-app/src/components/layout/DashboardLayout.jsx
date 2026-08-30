@@ -18,7 +18,7 @@ const PAGE_TITLES = {
 export default function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { pathname } = useLocation()
-  const title = PAGE_TITLES[pathname] || 'S-KEU'
+  const title = PAGE_TITLES[pathname] || 'L-Keu'
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50">

@@ -133,7 +133,7 @@ export default function Sidebar({ open, onClose }) {
             <ShieldCheckIcon className="w-5 h-5 text-white" />
           </div>
           <div>
-            <p className="text-base font-bold text-slate-800 font-display leading-tight tracking-tight">S-KEU</p>
+            <p className="text-base font-bold text-slate-800 font-display leading-tight tracking-tight">L-Keu</p>
             <p className="text-[10px] text-slate-500 font-medium uppercase tracking-widest mt-0.5">Darur Rohman</p>
           </div>
         </div>

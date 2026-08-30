@@ -63,7 +63,7 @@ export default function LoginPage() {
                 <ShieldCheckIcon className="w-8 h-8 text-emerald-300 drop-shadow-md" />
               </div>
               <div>
-                <p className="text-white font-bold text-2xl font-display tracking-wide">S-KEU</p>
+                <p className="text-white font-bold text-2xl font-display tracking-wide">L-Keu</p>
                 <p className="text-emerald-400/80 font-medium text-xs tracking-[0.2em] uppercase mt-0.5">Darur Rohman</p>
               </div>
             </div>
@@ -112,7 +112,7 @@ export default function LoginPage() {
               <ShieldCheckIcon className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="font-bold text-slate-800 font-display">S-KEU</p>
+              <p className="font-bold text-slate-800 font-display">L-Keu</p>
               <p className="text-slate-400 text-xs">Darur Rohman</p>
             </div>
           </div>
