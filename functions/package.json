@@ -1,6 +1,6 @@
 {
   "name": "functions",
-  "description": "Cloud Functions for S-KEU",
+  "description": "Cloud Functions for L-Keu",
   "scripts": {
     "serve": "firebase emulators:start --only functions",
     "shell": "firebase functions:shell",

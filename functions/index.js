@@ -14,7 +14,7 @@ exports.onTransaksiCreated = onDocumentCreated("transaksi/{docId}", async (event
   const tipe = data.tipe || "Pengeluaran";
   const nominal = data.nominal || 0;
   const uraian = data.uraian || "Transaksi Baru";
-  const namaInstansi = (data.instansi && data.instansi.nama_instansi) ? data.instansi.nama_instansi : "S-KEU";
+  const namaInstansi = (data.instansi && data.instansi.nama_instansi) ? data.instansi.nama_instansi : "L-Keu";
 
   // Format ke Rupiah
   const formattedNominal = new Intl.NumberFormat('id-ID', {

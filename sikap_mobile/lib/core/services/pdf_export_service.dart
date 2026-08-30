@@ -45,7 +45,7 @@ class PdfExportService {
           style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
         ),
         pw.Text(
-          'Sistem Informasi Keuangan Pondok Pesantren (S-KEU)',
+          'Sistem Informasi Keuangan Pondok Pesantren (L-Keu)',
           style: const pw.TextStyle(fontSize: 12),
         ),
         pw.SizedBox(height: 16),

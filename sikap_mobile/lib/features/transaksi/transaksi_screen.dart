@@ -207,7 +207,7 @@ class _TransaksiScreenState extends ConsumerState<TransaksiScreen> {
                         onPrint: () {
                           final instName = instansiList.cast<dynamic>().firstWhere(
                             (e) => e.id == t.instansiId, orElse: () => null
-                          )?.namaInstansi ?? 'S-KEU';
+                          )?.namaInstansi ?? 'L-Keu';
                           _handlePrint(t, instName);
                         },
                       );

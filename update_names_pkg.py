@@ -11,8 +11,8 @@ def process_file(filepath):
 
     original = content
     
-    # Replace sikap-app -> s-keu-app
-    content = content.replace("sikap-app", "s-keu-app")
+    # Replace sikap-app -> l-keu-app
+    content = content.replace("sikap-app", "l-keu-app")
     
     # Check if anything changed
     if content != original:

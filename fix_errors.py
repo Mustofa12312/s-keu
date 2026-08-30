@@ -10,15 +10,15 @@ def fix_file(filepath):
     original = content
     
     # 1. Fix invalid class names (Dart)
-    content = content.replace("S-KeuApp", "SkeuApp")
-    content = content.replace("S-KeuAppBar", "SkeuAppBar")
+    content = content.replace("L-KeuApp", "SkeuApp")
+    content = content.replace("L-KeuAppBar", "SkeuAppBar")
     
     # 2. Revert package names back to sikap_mobile so flutter builds
     # Since we promised not to change folder/package names.
-    content = content.replace("s-keu_mobile", "sikap_mobile")
+    content = content.replace("l-keu_mobile", "sikap_mobile")
     
-    # Also revert any com.s-keudarurrohman to com.sikapdarurrohman if it happened
-    content = content.replace("com.s-keudarurrohman", "com.sikapdarurrohman")
+    # Also revert any com.l-keudarurrohman to com.sikapdarurrohman if it happened
+    content = content.replace("com.l-keudarurrohman", "com.sikapdarurrohman")
 
     if content != original:
         with open(filepath, 'w', encoding='utf-8') as f:

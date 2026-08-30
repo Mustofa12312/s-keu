@@ -106,7 +106,8 @@ service cloud.firestore {
 
     // Activity Logs
     match /activity_logs/{logId} {
-      allow read: if isSuperAdmin() || (isAuthenticated() && isNotBlocked() && resource.data.user_id == request.auth.uid);
+      allow read: if isSuperAdmin();
+      allow read: if isAuthenticated() && isNotBlocked() && resource.data.user_id == request.auth.uid;
       allow create: if isAuthenticated() && isNotBlocked();
     }
   }

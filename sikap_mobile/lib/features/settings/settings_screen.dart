@@ -101,7 +101,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     children: [
                       Icon(Icons.account_balance_rounded, size: 48, color: AppColors.emerald500),
                       SizedBox(height: 12),
-                      Text('S-KEU Mobile', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text('L-Keu Mobile', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                       SizedBox(height: 4),
                       Text('Sistem Informasi Keuangan Pondok Pesantren\nDarur Roja\'ul Mukhtar', textAlign: TextAlign.center, style: TextStyle(color: AppColors.dark400, fontSize: 12)),
                       Divider(color: AppColors.dark600, height: 32),

@@ -28,7 +28,7 @@ class PrinterService {
       ),
     );
     bytes += generator.text(
-      'S-KEU Darur Rohman',
+      'L-Keu Darur Rohman',
       styles: const PosStyles(align: PosAlign.center, bold: true),
     );
     bytes += generator.emptyLines(1);

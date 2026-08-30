@@ -1,6 +1,6 @@
 class AppStrings {
-  static const appName     = 'S-KEU';
-  static const appFullName = 'S-KEU Darur Rohman';
+  static const appName     = 'L-Keu';
+  static const appFullName = 'L-Keu Darur Rohman';
   static const appTagline  = 'Sistem Informasi Keuangan & Pelaporan';
   static const pondokName  = 'Pondok Pesantren Darur Rohman';
 

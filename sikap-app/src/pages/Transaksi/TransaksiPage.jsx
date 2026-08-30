@@ -882,9 +882,13 @@ export default function TransaksiPage() {
             <label className="label">Kategori</label>
             <select className="input" value={form.kategori_id} onChange={e => setForm(f => ({...f, kategori_id: e.target.value}))}>
               <option value="">-- Pilih Kategori --</option>
-              {kategoriList.filter(k => k.jenis === form.jenis).map(k => (
-                <option key={k.id} value={k.id}>{k.nama_kategori}</option>
-              ))}
+              {kategoriList.filter(k => k.jenis === form.jenis || !k.jenis).length > 0 ? (
+                kategoriList.filter(k => k.jenis === form.jenis || !k.jenis).map(k => (
+                  <option key={k.id} value={k.id}>{k.nama_kategori}</option>
+                ))
+              ) : (
+                <option value="" disabled>-- Belum ada kategori untuk {form.jenis === 'pemasukan' ? 'Penerimaan' : 'Pengeluaran'} --</option>
+              )}
             </select>
           </div>
           <div className="col-span-2">

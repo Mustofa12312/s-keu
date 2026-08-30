@@ -11,12 +11,12 @@ def process_file(filepath):
 
     original = content
     
-    # 1. Replace SIKAP -> S-KEU
-    content = content.replace("SIKAP", "S-KEU")
-    # 2. Replace Sikap -> S-Keu
-    content = content.replace("Sikap", "S-Keu")
-    # 3. Replace sikap_ -> s-keu_ (like in sikap_read_notifs)
-    content = content.replace("sikap_", "s-keu_")
+    # 1. Replace SIKAP -> L-Keu
+    content = content.replace("SIKAP", "L-Keu")
+    # 2. Replace Sikap -> L-Keu
+    content = content.replace("Sikap", "L-Keu")
+    # 3. Replace sikap_ -> l-keu_ (like in sikap_read_notifs)
+    content = content.replace("sikap_", "l-keu_")
     
     # Check if anything changed
     if content != original:
